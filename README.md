@@ -1,7 +1,7 @@
 # mosaic-a13
 
 Edit pour faire un commit par Thomas Occelli.
-
+Edit pour faire un commit par Matthieu Vigier-Lafosse.
 
 ## Getting started
 
