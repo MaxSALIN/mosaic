@@ -2,6 +2,8 @@
 
 Edit pour faire un commit par Thomas Occelli.
 Edit pour faire un commit par Matthieu Vigier-Lafosse.
+Edit pour faire un commit par Maxence Salin.
+
 
 ## Getting started
 
