@@ -13,3 +13,4 @@ add_executable(game_test_toccelli game_test_toccelli.c)
 target_link_libraries(game_text game)
 
 add_test(game_test_toccelli_dummy ./game_test_toccelli dummy)
+add_test(game_test_masalin_dummy ./game_test_masalin dummy)
