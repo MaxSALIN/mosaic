@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-bool test_masalin(void);
+bool test_dummy(void);
 void usage(int argc, char *argv[]);
 
 void usage(int argc, char *argv[])
