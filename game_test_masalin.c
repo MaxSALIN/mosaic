@@ -11,7 +11,7 @@ void usage(int argc, char *argv[])
   exit(EXIT_FAILURE);
 }
 
-bool test_masalin(void)
+bool test_dummy(void)
 {
     return true;
 }
@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
     bool ok =false;
     if(strcmp("dummy", argv[1]) == 0)
     {
-        ok=test_masalin();
+        ok=test_dummy();
     }
     else
     {
