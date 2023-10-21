@@ -9,6 +9,7 @@
 //functions
 bool test_dummy(void);
 bool test_new_empty(void);
+bool test_get_color(void);
 void usage(int argc, char *argv[]);
 
 
@@ -41,6 +42,23 @@ bool test_new_empty(void)
     return true
 }
 
+bool test_get_color(void)
+{
+    game g = game_default()
+    for(int i =0; i<DEFAULT_SIZE, i++)
+    {
+        for(int j =0; j<DEFAULT_SIZE, j++)
+        {
+            if (game_get_color(g, i, j)!=EMPTY && game_get_color(g, i, j)!=BLACK && game_get_color(g, i, j)!=WHITE)
+            {
+                return false;
+            }
+        }
+    }
+    game_delete(g)
+    return true
+}
+
 int main(int argc, char* argv[])
 {
     if (argc == 1)
@@ -54,20 +72,22 @@ int main(int argc, char* argv[])
     {
         result_test=test_dummy();
     }
-    else
-    {
-        fprintf(stderr, "1\n");
-        exit(EXIT_FAILURE);
-    }
 
     //test new_empty
     if(strcmp("new_empty", argv[1]) == 0)
     {
         result_test=test_new_empty();
     }
+
+    //test get_color
+    if(strcmp("get_color", argv[1]) == 0)
+    {
+        result_test=test_get_color();
+    }
+
+    
     else
     {
-        fprintf(stderr, "Error test_new_empty\n");
         exit(EXIT_FAILURE);
     }
 
