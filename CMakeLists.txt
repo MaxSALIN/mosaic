@@ -15,5 +15,10 @@ add_executable(game_test_mavigierlafo game_test_mavigierlafo.c)
 target_link_libraries(game_text game)
 
 add_test(test_toccelli_dummy ./game_test_toccelli dummy)
+
+
 add_test(test_masalin_dummy ./game_test_masalin dummy)
+add_test(test_masalin_new_empty./game_test_masalin new_empty)
+
+
 add_test(test_mavigierlafo_dummy ./game_test_mavigierlafo dummy)
