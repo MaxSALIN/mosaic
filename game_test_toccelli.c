@@ -49,6 +49,31 @@ bool test_restart(){
     return true;
 }
 
+bool test_equal(){
+    game g1 = game_default();
+    game g2 = game_default();
+    game_play_move(g1,1,1,BLACK);
+    game_play_move(g2,1,1,BLACK);
+    if(!game_equal(g1,g2)){
+        return false;
+    }
+    game_play_move(g2,1,1,WHITE);
+    if(game_equal(g1,g2)){
+        return false;
+    }
+    return true;
+}
+
+bool test_copy(){
+    game g1 = game_default();
+    game_play_move(g1,1,1,BLACK);
+    game g2 = game_copy(g1);
+    if(!game_equal(g1,g2)){
+        return false;
+    }
+    return true;
+}
+
 int test_toccelli(char *argv[])
 {
     bool ok = false;
@@ -66,6 +91,14 @@ int test_toccelli(char *argv[])
     else if(!(strcmp("restart", argv[1])))
     {
         ok = test_restart();
+    }
+    else if(!(strcmp("equal", argv[1])))
+    {
+        ok = test_equal();
+    }    
+    else if(!(strcmp("copy", argv[1])))
+    {
+        ok = test_copy();
     } 
     else
     {
