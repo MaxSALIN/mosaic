@@ -74,6 +74,17 @@ bool test_copy(){
     return true;
 }
 
+bool test_set_constraint(){
+    game g = game_default();
+    game_set_constraint(g,1,1,7);
+    constraint c = game_get_constraint(g,1,1);
+    game_set_constraint(g,1,1,5);
+    if (game_get_constraint(g,1,1) == c){
+        return false;
+    }
+    return true;
+}
+
 int test_toccelli(char *argv[])
 {
     bool ok = false;
@@ -99,7 +110,11 @@ int test_toccelli(char *argv[])
     else if(!(strcmp("copy", argv[1])))
     {
         ok = test_copy();
-    } 
+    }
+    else if(!(strcmp("set_constraint", argv[1])))
+    {
+        ok = test_set_constraint();
+    }  
     else
     {
         fprintf(stderr, "Error: test \"%s\" not found!\n", argv[1]);
