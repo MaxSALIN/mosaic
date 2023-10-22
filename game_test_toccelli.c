@@ -34,6 +34,21 @@ bool test_play_move(){
     return true;
 }
 
+bool test_restart(){
+    game g = game_default();
+    game_play_move(g,1,1,BLACK);
+    game_restart(g);
+    if(game_get_color(g,1,1) == BLACK){
+        return false;
+    }
+    game_play_move(g,2,2,WHITE);
+    game_restart(g);
+    if(game_get_color(g,2,2) == WHITE){
+        return false;
+    }
+    return true;
+}
+
 int test_toccelli(char *argv[])
 {
     bool ok = false;
@@ -47,6 +62,10 @@ int test_toccelli(char *argv[])
     else if(!(strcmp("play_move", argv[1])))
     {
         ok = test_play_move();
+    } 
+    else if(!(strcmp("restart", argv[1])))
+    {
+        ok = test_restart();
     } 
     else
     {

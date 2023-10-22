@@ -16,7 +16,8 @@ target_link_libraries(game_text game)
 
 add_test(test_toccelli_dummy ./game_test_toccelli dummy)
 add_test(test_toccelli_set_color ./game_test_toccelli set_color)
-add_test(test_toccelli_play_move ./game_test_toccelli pkay_move)
+add_test(test_toccelli_play_move ./game_test_toccelli play_move)
+add_test(test_toccelli_restart ./game_test_toccelli restart)
 
 
 add_test(test_masalin_dummy ./game_test_masalin dummy)
