@@ -29,9 +29,9 @@ bool test_dummy(void)
 bool test_new_empty(void)
 {
     game g = game_new_empty();
-    for(int i =0; i<DEFAULT_SIZE, i++)
+    for(int i =0; i<DEFAULT_SIZE; i++)
     {
-        for(int j =0; j<DEFAULT_SIZE, j++)
+        for(int j =0; j<DEFAULT_SIZE; j++)
         {
             if (game_get_color(g, i, j)!=EMPTY)
             {
@@ -66,6 +66,7 @@ bool test_get_constraint(void)
 }
 
 bool test_delete(void)
+{
     game g = game_default();
     game_delete(g);
     if (g ==NULL)
@@ -73,6 +74,7 @@ bool test_delete(void)
         return true;
     }
     return false;
+}
 
 /*bool test_new(void)
 {
