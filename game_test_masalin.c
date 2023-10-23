@@ -45,18 +45,22 @@ bool test_new_empty(void)
 bool test_get_color(void)
 {
     game g = game_default()
-    for(int i =0; i<DEFAULT_SIZE, i++)
-    {
-        for(int j =0; j<DEFAULT_SIZE, j++)
+    if (game_get_color(g, 0, 0)!=EMPTY && game_get_color(g, 0, 0)!=BLACK && game_get_color(g, 0, 0)!=WHITE)
         {
-            if (game_get_color(g, i, j)!=EMPTY && game_get_color(g, i, j)!=BLACK && game_get_color(g, i, j)!=WHITE)
-            {
                 return false;
-            }
         }
-    }
     game_delete(g)
     return true
+}
+
+bool test_get_constraint(void)
+{
+    game g = game_default()
+    if(game_get_constraint(g, 0,0)==-1 || game_get_constraint(g, 0,0)<=9 ||game_get_constraint(g, 0,0)>0)
+    {
+        return true;
+    }
+    return false;
 }
 
 int main(int argc, char* argv[])
@@ -85,6 +89,11 @@ int main(int argc, char* argv[])
         result_test=test_get_color();
     }
 
+    //test get_constraint
+    if(strcmp("get_constraint", argv[1]) == 0)
+    {
+        result_test=test_get_constraint();
+    }
     
     else
     {

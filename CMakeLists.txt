@@ -27,6 +27,6 @@ add_test(test_toccelli_set_constraint ./game_test_toccelli set_constraint)
 add_test(test_masalin_dummy ./game_test_masalin dummy)
 add_test(test_masalin_new_empty ./game_test_masalin new_empty)
 add_test(test_masalin_get_color ./game_test_masalin get_color)
-
+add_test(test_masalin_get_constraint ./game_test_masalin get_constraint)
 
 add_test(test_mavigierlafo_dummy ./game_test_mavigierlafo dummy)
