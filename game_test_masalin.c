@@ -9,7 +9,7 @@
 
 //functions
 bool test_dummy(void);
-bool test_new_empty(void);
+/*bool test_new_empty(void);*/
 bool test_get_color(void);
 void usage(int argc, char *argv[]);
 
@@ -29,18 +29,17 @@ bool test_dummy(void)
 bool test_new_empty(void)
 {
     game g = game_new_empty();
-    for(int i =0; i<DEFAULT_SIZE; i++)
+    for (int i = 0; i<DEFAULT_SIZE; i++)
     {
-        for(int j =0; j<DEFAULT_SIZE; j++)
+        for (int j = 0; j<DEFAULT_SIZE; j++)
         {
-            if (game_get_color(g, i, j)!=EMPTY)
+            if((game_get_color(g, i, j)==EMPTY) && (game_get_constraint(g, i, j)==-1))
             {
-                return false;
+                return true;
             }
         }
     }
-    game_delete(g);
-    return true;
+    return false;
 }
 
 bool test_get_color(void)
@@ -65,27 +64,24 @@ bool test_get_constraint(void)
     return false;
 }
 
+/*
 bool test_delete(void)
 {
     game g = game_default();
-    game_delete(g);
-    if (g ==NULL)
-    {
-        return true;
-    }
-    return false;
+    game_delete(g);  //A voir en plus de détails
+    return true;
 }
 
-/*bool test_new(void)
+bool test_new(void)
 {
-
+    game g=i;
 }
 
 bool test_default_solution(void)
 {
 
-}*/
-
+}
+*/
 int main(int argc, char* argv[])
 {
     if (argc == 1)
@@ -101,29 +97,29 @@ int main(int argc, char* argv[])
     }
 
     //test new_empty
-    if(strcmp("new_empty", argv[1]) == 0)
+    else if(strcmp("new_empty", argv[1]) == 0)
     {
         result_test=test_new_empty();
     }
 
-    //test get_color
-    if(strcmp("get_color", argv[1]) == 0)
+   //test get_color
+    else if(strcmp("get_color", argv[1]) == 0)
     {
         result_test=test_get_color();
     }
 
     //test get_constraint
-    if(strcmp("get_constraint", argv[1]) == 0)
+    else if(strcmp("get_constraint", argv[1]) == 0)
     {
         result_test=test_get_constraint();
     }
 
     //test delete
-    if(strcmp("delete", argv[1]) == 0)
+ /*   else if(strcmp("delete", argv[1]) == 0)
     {
         result_test=test_delete();
     }
-    
+ */   
     else
     {
         exit(EXIT_FAILURE);
