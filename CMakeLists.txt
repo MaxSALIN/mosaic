@@ -14,6 +14,7 @@ add_executable(game_test_mavigierlafo game_test_mavigierlafo.c)
 
 target_link_libraries(game_text game)
 target_link_libraries(game_test_toccelli game)
+target_link_libraries(game_test_masalin game)
 
 add_test(test_toccelli_dummy ./game_test_toccelli dummy)
 add_test(test_toccelli_set_color ./game_test_toccelli set_color)
