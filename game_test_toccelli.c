@@ -15,22 +15,41 @@ bool test_set_color(){
     game g = game_default();
     game_set_color(g,1,1,BLACK);
     game_set_color(g,2,2,WHITE);
+    game_set_color(g,3,3,BLACK);
     game_set_color(g,3,3,EMPTY);
     if(game_get_color(g,1,1) != BLACK || game_get_color(g,2,2) != WHITE || game_get_color(g,3,3) != EMPTY){
         return false;
     }
-
+    game_delete(g);
     return true;
 }
 
 bool test_play_move(){
-    game g = game_default();
-    game_play_move(g,1,1,BLACK);
-    game_play_move(g,2,2,WHITE);
-    game_play_move(g,3,3,EMPTY);
-    if(game_get_color(g,1,1) != BLACK || game_get_color(g,2,2) != WHITE || game_get_color(g,3,3) != EMPTY){
-        return false;
+    game g = game_new_empty();
+    game_set_constraint(g,1,1,1);
+    for(int i = 0;i<3;i++){
+        for(int j = 0;j<3;j++){
+            if(i == 1 && j == 1){
+                game_play_move(g,i,j,BLACK);
+            }else{
+                game_play_move(g,i,j,WHITE);
+            }
+        }
     }
+    for(int i = 0;i<3;i++){
+        for(int j = 0;j<3;j++){
+            if(i == 1 && j == 1){
+                if(game_get_color(g,i,j) != BLACK && game_get_status(g,i,j) != SATISFIED){
+                    return false;
+                }
+            }else{
+                if(game_get_color(g,i,j) != WHITE){
+                    return false;
+                }
+            }
+        }
+    }
+    game_delete(g);
     return true;
 }
 
@@ -46,6 +65,7 @@ bool test_restart(){
     if(game_get_color(g,2,2) == WHITE){
         return false;
     }
+    game_delete(g);
     return true;
 }
 
@@ -61,6 +81,8 @@ bool test_equal(){
     if(game_equal(g1,g2)){
         return false;
     }
+    game_delete(g1);
+    game_delete(g2);
     return true;
 }
 
@@ -71,6 +93,8 @@ bool test_copy(){
     if(!game_equal(g1,g2)){
         return false;
     }
+    game_delete(g1);
+    game_delete(g2);
     return true;
 }
 
@@ -82,6 +106,7 @@ bool test_set_constraint(){
     if (game_get_constraint(g,1,1) == c){
         return false;
     }
+    game_delete(g);
     return true;
 }
 
