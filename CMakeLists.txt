@@ -28,5 +28,8 @@ add_test(test_masalin_dummy ./game_test_masalin dummy)
 add_test(test_masalin_new_empty ./game_test_masalin new_empty)
 add_test(test_masalin_get_color ./game_test_masalin get_color)
 add_test(test_masalin_get_constraint ./game_test_masalin get_constraint)
+add_test(test_masalin_test_delete ./game_test_masalin test_delete)
+add_test(test_masalin_new ./game_test_masalin new)
+add_test(test_masalin_default_solution ./game_test_masalin default_solution)
 
 add_test(test_mavigierlafo_dummy ./game_test_mavigierlafo dummy)

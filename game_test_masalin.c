@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "game.h"
+#include "game_aux.h"
 
 //functions
 bool test_dummy(void);
@@ -27,7 +28,7 @@ bool test_dummy(void)
 
 bool test_new_empty(void)
 {
-    game g = game_new_empty()
+    game g = game_new_empty();
     for(int i =0; i<DEFAULT_SIZE, i++)
     {
         for(int j =0; j<DEFAULT_SIZE, j++)
@@ -38,30 +39,50 @@ bool test_new_empty(void)
             }
         }
     }
-    game_delete(g)
-    return true
+    game_delete(g);
+    return true;
 }
 
 bool test_get_color(void)
 {
-    game g = game_default()
+    game g = game_default();
     if (game_get_color(g, 0, 0)!=EMPTY && game_get_color(g, 0, 0)!=BLACK && game_get_color(g, 0, 0)!=WHITE)
         {
                 return false;
         }
-    game_delete(g)
-    return true
+    game_delete(g);
+    return true;
 }
 
 bool test_get_constraint(void)
 {
-    game g = game_default()
+    game g = game_default();
     if(game_get_constraint(g, 0,0)==-1 || game_get_constraint(g, 0,0)<=9 ||game_get_constraint(g, 0,0)>0)
     {
         return true;
     }
+    game_delete(g);
     return false;
 }
+
+bool test_delete(void)
+    game g = game_default();
+    game_delete(g);
+    if (g ==NULL)
+    {
+        return true;
+    }
+    return false;
+
+/*bool test_new(void)
+{
+
+}
+
+bool test_default_solution(void)
+{
+
+}*/
 
 int main(int argc, char* argv[])
 {
@@ -93,6 +114,12 @@ int main(int argc, char* argv[])
     if(strcmp("get_constraint", argv[1]) == 0)
     {
         result_test=test_get_constraint();
+    }
+
+    //test delete
+    if(strcmp("delete", argv[1]) == 0)
+    {
+        result_test=test_delete();
     }
     
     else
