@@ -34,3 +34,5 @@ add_test(test_masalin_new ./game_test_masalin new)
 add_test(test_masalin_default_solution ./game_test_masalin default_solution)
 
 add_test(test_mavigierlafo_dummy ./game_test_mavigierlafo dummy)
+add_test(test_mavigierlafo_won ./game_test_mavigierlafo test_won)
+add_test(test_mavigierlafo_nb_neighbors ./game_test_mavigierlafo test_nb_neighbors)
