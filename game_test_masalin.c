@@ -52,14 +52,13 @@ bool test_new_empty(void)
 
 bool test_get_color(void)
 {
-    //general test
+
     game g = game_default();
     if (game_get_color(g, 0, 0)!=EMPTY && game_get_color(g, 0, 0)!=BLACK && game_get_color(g, 0, 0)!=WHITE)
         {
                 return false;
         }
 
-    //case by case
     game_set_color(g, 1,1, BLACK);
     if(game_get_color(g,1,1)!=BLACK)
     {
@@ -82,18 +81,17 @@ bool test_get_color(void)
 bool test_get_constraint(void)
 {
     game g = game_default();
-    if(game_get_constraint(g, 0,0)==-1 || game_get_constraint(g, 0,0)<=9 ||game_get_constraint(g, 0,0)>=0)
+    if(game_get_constraint(g, 0,0)>9 ||game_get_constraint(g, 0,0)<-1)
     {
-        return true;
+        return false;
     }
     game_set_constraint(g, 1,1, UNCONSTRAINED);
     if(game_get_constraint(g,1,1)!=UNCONSTRAINED)
     {
         return false;
     }
-    for(int i=0; i<10;i++)
+    for(int i=0; i<=9;i++)
     {
-        
         game_set_constraint(g, 2,2, i);
         if(game_get_constraint(g,2,2)!=i)
         {
@@ -102,46 +100,82 @@ bool test_get_constraint(void)
         
     }
     game_delete(g);
-    return false;
+    return true;
 }
 
 
 bool test_delete(void)
 {
     game g = game_default();
-    game g_compare = game_default();
     game_delete(g);
-    game g2=game_new_empty();
-    game g2_compare = game_new_empty();
-    game_delete(g2);
-    if(g==g_compare || g2==g2_compare)
-    {
-        return false;
-    }
     return true;
 
 }
 
 bool test_new(void)
 {
-    int constraints1[25];
+    int k =0;
+    constraint constraints1[25];
     for(int i =0; i<DEFAULT_SIZE*5; i++)
     {
         constraints1[i] = -1;
     }
-    constraint * constraints2 = constraints1;
-    game g= game_new(constraints2, NULL);
+    game g_Test= game_new(constraints1, NULL);
+
     for (int i = 0; i<DEFAULT_SIZE; i++)
     {
         for (int j = 0; j<DEFAULT_SIZE; j++)
         {
-            if((game_get_color(g, i, j)!=EMPTY) || (game_get_constraint(g, i, j)!=-1))
+            if((game_get_color(g_Test, i, j)!=EMPTY) || (game_get_constraint(g_Test, i, j)!=-1))
             {
                 return false;
             }
         }
     }
-    return true; //Ajoutez teste avec d'autres couleurs et un autre array de constraints
+
+    game g_sol= game_default_solution();
+    constraint constraints2[25];
+
+    for (int i = 0; i<DEFAULT_SIZE; i++)
+    {
+        for (int j = 0; j<DEFAULT_SIZE; j++)
+        {
+            constraints2[k] = game_get_constraint(g_sol, i, j);
+            k++;
+        }
+    }
+
+    k=0;
+    
+    color colors[25];
+
+    for (int i = 0; i<DEFAULT_SIZE; i++)
+    {
+        for (int j = 0; j<DEFAULT_SIZE; j++)
+        {
+            colors[k] = game_get_color(g_sol, i, j);
+            k++;
+        }
+    }
+
+    game g_Test2 = game_new(constraints2, colors);
+
+    for (int i = 0; i<DEFAULT_SIZE; i++)
+    {
+        for (int j = 0; j<DEFAULT_SIZE; j++)
+        {
+            if((game_get_color(g_sol, i, j)!=(game_get_color(g_Test2, i, j))) || (game_get_constraint(g_sol, i, j)!=(game_get_constraint(g_Test2, i, j))))
+            {
+                return false;
+            }
+            
+        }
+    }
+    
+    game_delete(g_Test);
+    game_delete(g_Test2);
+    game_delete(g_sol);
+    return true;
 
 }
 
@@ -152,6 +186,19 @@ bool test_default_solution(void)
     {
         return false;
     }
+    game g_ref= game_default();
+    for (int i = 0; i<DEFAULT_SIZE; i++)
+    {
+        for (int j = 0; j<DEFAULT_SIZE; j++)
+        {
+            if((game_get_constraint(g, i, j)!=game_get_constraint(g_ref, i, j)) || game_get_status(g, i, j)!=SATISFIED)
+            {
+                return false;
+            }
+        }
+    }
+    game_delete(g);
+    game_delete(g_ref);
     return true;
 }
 
