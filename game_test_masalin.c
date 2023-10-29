@@ -121,6 +121,10 @@ bool test_new(void)
         constraints1[i] = -1;
     }
     game g_Test= game_new(constraints1, NULL);
+    if(g_Test==NULL)
+    {
+        return false;
+    }
 
     for (int i = 0; i<DEFAULT_SIZE; i++)
     {
@@ -159,6 +163,11 @@ bool test_new(void)
     }
 
     game g_Test2 = game_new(constraints2, colors);
+    if(g_Test2==NULL)
+    {
+        return false;
+    }
+
 
     for (int i = 0; i<DEFAULT_SIZE; i++)
     {
@@ -182,6 +191,11 @@ bool test_new(void)
 bool test_default_solution(void)
 {
     game g = game_default_solution();
+    if(g==NULL)
+    {
+        return false;
+    }
+
     if(!game_won(g))
     {
         return false;
