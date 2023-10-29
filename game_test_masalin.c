@@ -15,6 +15,7 @@ bool test_get_constraint(void);
 bool test_delete(void);
 bool test_new(void);
 bool test_default_solution(void);
+bool test_print(void);
 void usage(int argc, char *argv[]);
 
 
@@ -216,6 +217,18 @@ bool test_default_solution(void)
     return true;
 }
 
+bool test_print(void)
+{
+    game g = game_default();
+    game_print(g);
+    game g2 = game_new_empty();
+    game_print(g2);
+    game_delete(g);
+    game_delete(g2);
+    return true;
+}
+
+
 int main(int argc, char* argv[])
 {
     if (argc == 1)
@@ -259,11 +272,17 @@ int main(int argc, char* argv[])
     {
         result_test=test_new();
     }
-    
+
     //test default_solution
     else if(strcmp("default_solution", argv[1]) == 0)
     {
         result_test=test_default_solution();
+    }
+
+    //test print
+    else if(strcmp("print", argv[1]) == 0)
+    {
+        result_test=test_print();
     }
 
     else
