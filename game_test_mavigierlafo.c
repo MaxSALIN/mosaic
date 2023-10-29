@@ -204,7 +204,7 @@ bool test_default(void) {
       }
     }
 
-    if (count_noempty == 7) {
+    if (count_noempty == 8) {
       return true;
     } else {
       return false;
