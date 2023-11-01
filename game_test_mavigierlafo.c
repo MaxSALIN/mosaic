@@ -11,6 +11,7 @@ bool test_nb_neighbors();
 bool test_get_status();
 // bool test_next_square();
 bool test_default();
+bool test_print();
 void usage(int argc, char *argv[]);
 
 bool test_dummy(void) {
@@ -212,6 +213,15 @@ bool test_default(void) {
 
 }
 
+bool test_print(void) {
+    game g;
+    g = game_default();
+
+    game_print(g)
+
+    return true;
+}
+
 void usage(int argc, char *argv[]) {
 
 	fprintf(stderr, "Usage: %s <test> \n", argv[0]);
@@ -245,8 +255,10 @@ int main(int argc, char *argv[])
     ok = test_nb_neighbors();
   } else if (strcmp("test_get_status", argv[1]) == 0) {
     ok = test_get_status();
-  }else if (strcmp("test_default", argv[1]) == 0) {
+  } else if (strcmp("test_default", argv[1]) == 0) {
     ok = test_default();
+  } else if (strcmp("test_print", argv[1]) == 0) {
+    ok = test_print();
   } else {
     fprintf(stderr, "Error: test \"%s\" not found!\n", argv[1]);
     exit(EXIT_FAILURE);
