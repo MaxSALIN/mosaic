@@ -197,7 +197,7 @@ bool test_default(void) {
 
     for (int x = 0; x < DEFAULT_SIZE; x++) {
       for (int y = 0; y < DEFAULT_SIZE; y++) {
-        if (game_get_color(g, x, y) != EMPTY) {
+        if (game_get_color(g, x, y) == EMPTY && game_get_status(g, x, y)==UNSATISFIED) {
           if (game_get_constraint(g, x, y) > MIN_CONSTRAINT && game_get_constraint(g, x, y) <= MAX_CONSTRAINT) {
               count_noempty++;
           }
@@ -217,7 +217,7 @@ bool test_print(void) {
     game g;
     g = game_default();
 
-    game_print(g)
+    game_print(g);
 
     return true;
 }
