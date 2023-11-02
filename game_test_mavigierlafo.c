@@ -101,23 +101,47 @@ bool test_nb_neighbors(void) {
 
 bool test_get_status(void) {
     game g;
-    g = game_default();
-
-    bool test = false;
-
     int i = 3;
     int j = 3;
-
-    // il ne faut pas qu'il y ait plus de 3 carré noir dans l'espace 3x3 d'un bloc
-    if (game_nb_neighbors(g, i, j, BLACK) == 3 && game_get_status(g,i,j) == SATISFIED) {
-        test = true;
-    } else if (game_nb_neighbors(g, i, j, BLACK) > 3 && game_get_status(g,i,j) == ERROR) {
-        test = true;
-    } else if (game_nb_neighbors(g, i, j, BLACK) < 3 && game_get_status(g,i,j) == UNSATISFIED) {
-        test = true;
+    game g_dummy=game_new_empty();
+    for(int k =0; k<=9; k++){
+      g=game_new_empty();
+      game_set_constraint(g, i, j, k);
+      //test pour satisfied et error
+      for(int x =i-1; x<=i+1;x++){
+        for(int y=j-1; y<=j+1; y++)
+        {
+          game_set_color(g, x,y, WHITE);
+        }
+      }
+      for(int x =i-1; x<=i+1;x++){
+        for(int y=j-1; y<=j+1; y++)
+        {
+          
+          if (game_nb_neighbors(g, i, j, BLACK) == k && game_get_status(g,i,j) != SATISFIED) {
+            return false;
+          }
+          else if ((game_nb_neighbors(g, i, j, BLACK) > k && game_get_status(g,i,j) != ERROR) || ((game_nb_neighbors(g, i ,j, WHITE) < (game_nb_neighbors(g_dummy, i, j, EMPTY)-k)) && game_get_status(g,i,j) != ERROR)) {
+            return false;
+          }
+          game_set_color(g, x,y, BLACK);
+        }
+      }
+      game_delete(g);
+      g=game_new_empty();
+      //test pour unsatisfied
+      for(int x =i-1; x<=i+1;x++){
+        for(int y=j-1; y<=j+1; y++)
+        {
+          if (game_nb_neighbors(g, i, j, BLACK) < k && game_get_status(g,i,j) != UNSATISFIED) {
+            return false;
+          }
+          game_set_color(g, x,y, BLACK);
+        }
+      }
+      game_delete(g);
     }
-
-    return test;
+    return true;
 }
 
 /*bool test_next_square(void) {
@@ -198,7 +222,7 @@ bool test_default(void) {
     for (int x = 0; x < DEFAULT_SIZE; x++) {
       for (int y = 0; y < DEFAULT_SIZE; y++) {
         if (game_get_color(g, x, y) == EMPTY && game_get_status(g, x, y)==UNSATISFIED) {
-          if (game_get_constraint(g, x, y) > MIN_CONSTRAINT && game_get_constraint(g, x, y) <= MAX_CONSTRAINT) {
+          if (game_get_constraint(g, x, y) > MIN_CONSTRAINT && game_get_constraint(g, x, y) <= MAX_CONSTRAINT) {  //Faut peut être essayer de tester si les contraintes sur les cases de défaults sont les bons nombres
               count_noempty++;
           }
         }
