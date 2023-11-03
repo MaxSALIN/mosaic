@@ -51,7 +51,7 @@ bool test_nb_neighbors(void) {
 
   // on fait la mm chose que fait la fct et on compare le résultat
   game g;
-  g=game_default();
+  g=game_new_empty();
 
   int i = 2;
   int j = 2;
@@ -61,17 +61,13 @@ bool test_nb_neighbors(void) {
 
   // plusieurs jeux
 
-  for (int x = i-2; x <= i+2; x++) {
-    if (game_get_color(g, x, j) == c) {
-        nb_neighbors++;
+  for (int x = i-1; x <= i+1; x++) {
+    for (int y = j-1; y <= j+1; y++) {
+      if (game_get_color(g, x, j) == c) {
+          nb_neighbors++;
+      }
     }
   }
-  for (int y = j-2; y <= j+2; y++) {
-    if (game_get_color(g, i, y) == c) {
-        nb_neighbors++;
-    }
-  }
-
   if (nb_neighbors == game_nb_neighbors(g, i, j, c)) {
     result = true;
   } else {
@@ -80,17 +76,18 @@ bool test_nb_neighbors(void) {
 
   c = BLACK;
   nb_neighbors = 0;
-  for (int x = i-2; x <= i+2; x++) {
-    if (game_get_color(g, x, j) == c) {
-        nb_neighbors++;
+  for (int x = i-1; x <= i+1; x++) {
+    for (int y = j-1; y <= j+1; y++) {
+      game_set_color(g,x,y,c);
     }
   }
-  for (int y = j-2; y <= j+2; y++) {
-    if (game_get_color(g, i, y) == c) {
-        nb_neighbors++;
+  for (int x = i-1; x <= i+1; x++) {
+    for (int y = j-1; y <= j+1; y++) {
+      if (game_get_color(g, x, j) == c) {
+          nb_neighbors++;
+      }
     }
   }
-
   if (nb_neighbors == game_nb_neighbors(g, i, j, c)) {
     result = true;
   } else {
