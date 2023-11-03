@@ -23,15 +23,16 @@ bool test_won(void) {
 
     game g;
     g=game_default_solution();
-
+    game g_compare=game_default();
     // on vérifie si toutes les cases sont noires ou blanches
     int count_success = 0;
     for (int x = 0; x < DEFAULT_SIZE; x++) {
       for (int y = 0; y < DEFAULT_SIZE; y++) {
         if (game_get_color(g, x, y) == WHITE || game_get_color(g, x, y) == BLACK) {
-          if (game_get_status(g, x, y) == SATISFIED) {
+          if (game_get_status(g, x, y) == SATISFIED && (game_get_constraint(g, x, y)==game_get_constraint(g_compare, x, y))) {
               count_success++;
           }
+          
         }
       }
     }
@@ -216,24 +217,45 @@ bool test_default(void) {
 
     game g;
     g = game_default();
-
     int count_noempty = 0;
-
     for (int x = 0; x < DEFAULT_SIZE; x++) {
       for (int y = 0; y < DEFAULT_SIZE; y++) {
         if (game_get_color(g, x, y) == EMPTY && game_get_status(g, x, y)==UNSATISFIED) {
-          if (game_get_constraint(g, x, y) > MIN_CONSTRAINT && game_get_constraint(g, x, y) <= MAX_CONSTRAINT) {  //Faut peut être essayer de tester si les contraintes sur les cases de défaults sont les bons nombres
+          if (game_get_constraint(g, x, y)==0 && x==0 && y==0 ) { 
               count_noempty++;
+          }
+          else if (game_get_constraint(g, x, y)==3 && x==0 && y==3 ) { 
+              count_noempty++;
+          }
+          else if (game_get_constraint(g, x, y)==5 && x==1 && y==1 ) { 
+              count_noempty++;
+          }
+          else if (game_get_constraint(g, x, y)==4 && x==2 && y==2 ) { 
+              count_noempty++;
+          }
+          else if (game_get_constraint(g, x, y)==6 && x==3 && y==0 ) {
+              count_noempty++;
+          }
+          else if (game_get_constraint(g, x, y)==6 && x==3 && y==2 ) { 
+              count_noempty++;
+          }
+          else if (game_get_constraint(g, x, y)==3 && x==3 && y==3 ) { 
+              count_noempty++;
+          }
+          else if (game_get_constraint(g, x, y)==1 && x==2 && y==4 ) { 
+              count_noempty++;
+          }
+          else if (game_get_constraint(g, x, y)!=-1) { 
+              return false;
           }
         }
       }
     }
-
-    if (count_noempty == 8) {
-      return true;
-    } else {
+    game_delete(g);
+    if(count_noempty!=8){
       return false;
     }
+    return true;
 
 }
 
