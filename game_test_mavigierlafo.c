@@ -72,11 +72,22 @@ bool test_won(void) {
       return false;
     }
 
-   game g4= game_new_empty();
-   game_play_move(g4, 2, 2, BLACK);
-   if(game_won(g4)==true){
-    return false;
-   }
+    game g4= game_new_empty();
+    while(game_won(g4)!=true){
+      for (int x = 0; x < DEFAULT_SIZE; x++) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+          game_play_move(g4,x,y, WHITE);
+        }
+      }
+    }
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+      for (int y = 0; y < DEFAULT_SIZE; y++) {
+        if(game_won(g4)!=true || game_get_color(g4,x,y)==EMPTY || game_get_status(g4,x,y)!=SATISFIED){
+          return false;
+        }
+      }
+    }
+  
    return true;
    
    
