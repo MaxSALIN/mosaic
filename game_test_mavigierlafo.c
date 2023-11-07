@@ -145,37 +145,38 @@ bool test_get_status(void) {
 bool test_get_next_square(void) {
     game g;
     g = game_default();
-    uint grid[DEFAULT_SIZE];
+    uint px_next[DEFAULT_SIZE+2];
+    uint py_next[DEFAULT_SIZE+2];
     
     for(uint x=0; x<DEFAULT_SIZE; x++)
     {
       for(uint y=0; y<DEFAULT_SIZE; y++)
       {
-        if (game_get_next_square(g, x, y, HERE, grid, grid) == false) {
+        if (game_get_next_square(g, x, y, HERE, px_next, py_next) == false) {
           return false;  
         }
-        if (game_get_next_square(g, x, y, UP, grid, grid) == false) {
+        if (game_get_next_square(g, x, y, UP, px_next, py_next) == false) {
           return false;  
         } 
-        if (game_get_next_square(g, x, y, DOWN, grid, grid) == false) {
+        if (game_get_next_square(g, x, y, DOWN, px_next, py_next) == false) {
           return false;  
         } 
-        if (game_get_next_square(g, x, y, LEFT, grid, grid) == false) {
+        if (game_get_next_square(g, x, y, LEFT, px_next, py_next) == false) {
           return false;  
         } 
-        if (game_get_next_square(g, x, y, RIGHT,grid, grid) == false) {
+        if (game_get_next_square(g, x, y, RIGHT,px_next, py_next) == false) {
           return false;  
         } 
-        if (game_get_next_square(g, x, y, DOWN_LEFT, grid, grid) == false) {
+        if (game_get_next_square(g, x, y, DOWN_LEFT, px_next, py_next) == false) {
           return false;  
         } 
-        if (game_get_next_square(g, x, y, DOWN_RIGHT, grid, grid) == false) {
+        if (game_get_next_square(g, x, y, DOWN_RIGHT, px_next, py_next) == false) {
           return false;  
         } 
-        if (game_get_next_square(g, x, y, UP_LEFT, grid, grid) == false) {
+        if (game_get_next_square(g, x, y, UP_LEFT, px_next, py_next) == false) {
           return false;  
         }
-        if (game_get_next_square(g, x, y, UP_RIGHT, grid, grid) == false) {
+        if (game_get_next_square(g, x, y, UP_RIGHT, px_next, py_next) == false) {
           return false;  
         }     
       } 
