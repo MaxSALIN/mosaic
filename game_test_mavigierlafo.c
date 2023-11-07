@@ -71,7 +71,15 @@ bool test_won(void) {
     if (game_won(g3)==false){
       return false;
     }
+
+   game g4= game_new_empty();
+   game_play_move(g, 2, 2, BLACK);
+   if(game_won(g4)==true){
+    return false;
+   }
    return true;
+   
+   
 }
 
 bool test_nb_neighbors(void) {
@@ -172,14 +180,16 @@ bool test_get_status(void) {
 bool test_get_next_square(void) {
     game g;
     g = game_default();
-    uint px_next[DEFAULT_SIZE+2];
+    uint * px_next=[DEFAULT_SIZE+2];
     uint py_next[DEFAULT_SIZE+2];
+    bool b=game_get_next_square(g, 1, 1, UP, px_next, py_next);
     
     for(uint x=0; x<DEFAULT_SIZE; x++)
     {
       for(uint y=0; y<DEFAULT_SIZE; y++)
       {
         if (game_get_next_square(g, x, y, HERE, px_next, py_next) == false) {
+          printf("%d", *px_next);
           return false;  
         }
         if (game_get_next_square(g, x, y, UP, px_next, py_next) == false) {
