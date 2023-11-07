@@ -180,10 +180,9 @@ bool test_get_status(void) {
 bool test_get_next_square(void) {
     game g;
     g = game_default();
-    uint * px_next=[DEFAULT_SIZE+2];
+    uint px_next[DEFAULT_SIZE+2];
     uint py_next[DEFAULT_SIZE+2];
-    bool b=game_get_next_square(g, 1, 1, UP, px_next, py_next);
-    
+
     for(uint x=0; x<DEFAULT_SIZE; x++)
     {
       for(uint y=0; y<DEFAULT_SIZE; y++)
