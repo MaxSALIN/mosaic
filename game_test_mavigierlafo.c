@@ -24,27 +24,54 @@ bool test_won(void) {
     game g;
     g=game_default_solution();
     game g_compare=game_default();
+    bool result=true;
     // on vérifie si toutes les cases sont noires ou blanches
-    int count_success = 0;
     for (int x = 0; x < DEFAULT_SIZE; x++) {
       for (int y = 0; y < DEFAULT_SIZE; y++) {
-        if (game_get_color(g, x, y) == WHITE || game_get_color(g, x, y) == BLACK) {
-          if (game_get_status(g, x, y) == SATISFIED && (game_get_constraint(g, x, y)==game_get_constraint(g_compare, x, y))) {
-              count_success++;
+        if (game_get_color(g, x, y) != WHITE && game_get_color(g, x, y) != BLACK) {
+          result= false;
+        }
+        if ((game_get_status(g, x, y) != SATISFIED) || (game_get_constraint(g, x, y)!=game_get_constraint(g_compare, x, y))) {
+          result= false;
+        }
+        if (game_get_constraint(g, x, y)!=-1)
+        {
+          if (game_nb_neighbors(g, x, y, BLACK)!=game_get_constraint(g, x, y)){
+            result = false;
           }
-          
         }
       }
     }
 
     // si c'est le cas ET que la fct renvoie truc -> won fonctionne
-
-    if (count_success == (DEFAULT_SIZE * DEFAULT_SIZE) && game_won(g)) {
-        return true;
-    } else {
+    if(game_won(g)!=result){
       return false;
     }
-    return true;
+
+    //test d'une game qui n'est pas won
+    game g2= game_new_empty();
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+      for (int y = 0; y < DEFAULT_SIZE; y++) {
+        game_set_constraint(g2, x, y, 1);
+        game_play_move(g2,x,y, WHITE);
+      }
+    }
+    if (game_won(g2)==true){
+      return false;
+    }
+
+    //test d'une game qui est won
+    game g3= game_new_empty();
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+      for (int y = 0; y < DEFAULT_SIZE; y++) {
+        game_set_constraint(g3, x, y, 0);
+        game_play_move(g3,x,y, WHITE);
+      }
+    }
+    if (game_won(g3)==false){
+      return false;
+    }
+   return true;
 }
 
 bool test_nb_neighbors(void) {
