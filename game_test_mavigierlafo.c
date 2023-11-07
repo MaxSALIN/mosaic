@@ -9,7 +9,7 @@ bool test_dummy();
 bool test_won();
 bool test_nb_neighbors();
 bool test_get_status();
-// bool test_next_square();
+bool test_next_square();
 bool test_default();
 bool test_print();
 void usage(int argc, char *argv[]);
@@ -142,19 +142,46 @@ bool test_get_status(void) {
     return true;
 }
 
-/*bool test_next_square(void) {
+bool test_get_next_square(void) {
     game g;
     g = game_default();
-
-    bool result = false;
-
-    int i = 2;
-    int j = 3;
-
-    pi_next = 2;
-    pj_next = 3;
-
-    if (i < DEFAULT_SIZE && j < DEFAULT_SIZE) {
+    uint grid[DEFAULT_SIZE];
+    
+    for(uint x=0; x<DEFAULT_SIZE; x++)
+    {
+      for(uint y=0; y<DEFAULT_SIZE; y++)
+      {
+        if (game_get_next_square(g, x, y, HERE, grid, grid) == false) {
+          return false;  
+        }
+        if (game_get_next_square(g, x, y, UP, grid, grid) == false) {
+          return false;  
+        } 
+        if (game_get_next_square(g, x, y, DOWN, grid, grid) == false) {
+          return false;  
+        } 
+        if (game_get_next_square(g, x, y, LEFT, grid, grid) == false) {
+          return false;  
+        } 
+        if (game_get_next_square(g, x, y, RIGHT,grid, grid) == false) {
+          return false;  
+        } 
+        if (game_get_next_square(g, x, y, DOWN_LEFT, grid, grid) == false) {
+          return false;  
+        } 
+        if (game_get_next_square(g, x, y, DOWN_RIGHT, grid, grid) == false) {
+          return false;  
+        } 
+        if (game_get_next_square(g, x, y, UP_LEFT, grid, grid) == false) {
+          return false;  
+        }
+        if (game_get_next_square(g, x, y, UP_RIGHT, grid, grid) == false) {
+          return false;  
+        }     
+      } 
+    }
+    return true;
+    /*if (i < DEFAULT_SIZE && j < DEFAULT_SIZE) {
 
         if ((i+pi_next) < DEFAULT_SIZE && (j+pj_next < DEFAULT_SIZE)) {
 
@@ -207,8 +234,8 @@ Tuple getCoo(direction d, int i, int j, int i2, int j2) {
     } else if (d == HERE) {
         return (i, j);
     }
-    return (i, j);
-}*/
+    return (i, j);*/
+}
 
 bool test_default(void) {
 
@@ -296,6 +323,8 @@ int main(int argc, char *argv[])
     ok = test_won();
   } else if (strcmp("test_nb_neighbors", argv[1]) == 0) {
     ok = test_nb_neighbors();
+  } else if (strcmp("test_get_next_square", argv[1]) == 0) {
+    ok = test_print();
   } else if (strcmp("test_get_status", argv[1]) == 0) {
     ok = test_get_status();
   } else if (strcmp("test_default", argv[1]) == 0) {
