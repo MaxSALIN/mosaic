@@ -73,7 +73,7 @@ bool test_won(void) {
     }
 
    game g4= game_new_empty();
-   game_play_move(g, 2, 2, BLACK);
+   game_play_move(g4, 2, 2, BLACK);
    if(game_won(g4)==true){
     return false;
    }
