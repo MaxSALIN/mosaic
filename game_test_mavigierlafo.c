@@ -87,9 +87,11 @@ bool test_won(void) {
         }
       }
     }
-  
+   game_restart(g4);
+   if(game_won(g4)==true){
+    return false;
+   }
    return true;
-   
    
 }
 
