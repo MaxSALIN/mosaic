@@ -48,7 +48,7 @@ bool test_won(void) {
       return false;
     }
 
-    //test d'une game qui n'est pas won
+    //test d'une game finit qui n'est pas won
     game g2= game_new_empty();
     for (int x = 0; x < DEFAULT_SIZE; x++) {
       for (int y = 0; y < DEFAULT_SIZE; y++) {
@@ -60,7 +60,7 @@ bool test_won(void) {
       return false;
     }
 
-    //test d'une game qui est won
+    //test d'une game finit qui est won
     game g3= game_new_empty();
     for (int x = 0; x < DEFAULT_SIZE; x++) {
       for (int y = 0; y < DEFAULT_SIZE; y++) {
@@ -71,7 +71,8 @@ bool test_won(void) {
     if (game_won(g3)==false){
       return false;
     }
-
+    
+    //test en cours d'une partie
     game g4= game_new_empty();
     while(game_won(g4)!=true){
       for (int x = 0; x < DEFAULT_SIZE; x++) {
@@ -87,13 +88,30 @@ bool test_won(void) {
         }
       }
     }
+
+   //cas d'une game qui a restart
    game_restart(g4);
    if(game_won(g4)==true){
     return false;
    }
-
+   
+   //cas d'une game qui est une copie
    game g5=game_copy(g3);
    if(game_won(g5)==false)
+   {
+    return false;
+   }
+   
+   //cas d'une game juste créer
+   game g6 = game_default();
+   if(game_won(g6)==true){
+    return false;
+   }
+
+  //cas de 'on modifie une game gagnée'
+  game g7=game_copy(g);
+  game_play_move(g7, 0,0, BLACK);
+   if(game_won(g7)==true)
    {
     return false;
    }
@@ -417,60 +435,6 @@ bool test_get_next_square(void) {
         }     
     }
     return true;
-    /*if (i < DEFAULT_SIZE && j < DEFAULT_SIZE) {
-
-        if ((i+pi_next) < DEFAULT_SIZE && (j+pj_next < DEFAULT_SIZE)) {
-
-            result = true;
-
-            Tuple coo = getCoo(d, i,j,pi_next, pj_next);
-
-            int i_bis = coo.index(0);
-            int j_bis = coo.index(1);
-
-            result = (i_bis <= DEFAULT_SIZE && j_bis <= DEFAULT_SIZE);
-
-            if (game_get_next_square(g, i, j, LEFT, pi_next, pj_next) == result) {
-                result = true;  
-            }
-
-            return result;
-        }
-    }
-
-    return result;
-}
-
-struct Point {
-    int x;
-    int y;
-};
-
-Tuple getCoo(direction d, int i, int j, int i2, int j2) {
-
-  struct Point point;   
-
-    if (d == LEFT) {
-        point.x = i-i2;
-        return point.x;
-    } else if (d == RIGHT) {
-        return i+i2;
-    } else if (d == DOWN) {
-        return j-j2;
-    } else if (d == UP) {
-        return j+j2;
-    } else if (d == DOWN_RIGHT) {
-        return (i+i2, j-j2);
-    } else if (d == DOWN_LEFT) {
-        return (i-i2, j-j2);
-    } else if (d == UP_RIGHT) {
-        return (i+i2, j+j2);
-    } else if (d == UP_LEFT) {
-        return (i-i2, j+j2);
-    } else if (d == HERE) {
-        return (i, j);
-    }
-    return (i, j);*/
 }
 
 bool test_default(void) {
