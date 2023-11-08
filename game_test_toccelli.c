@@ -141,8 +141,51 @@ bool test_set_constraint(){
         return false;
     }
 
+    game g3 = game_new_empty();
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+            game_set_constraint(g3, x, y, -1);
+        }
+    }
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+            game_set_color(g3, x, y, BLACK);
+        }
+    }
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+            if(game_get_constraint(g3, x, y)!=-1 || game_get_status(g3, x, y)!=SATISFIED){
+                return false;
+            }
+        }
+    }
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+            game_set_color(g3, x, y, WHITE);
+        }
+    }
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+            if(game_get_constraint(g3, x, y)!=-1 || game_get_status(g3, x, y)!=SATISFIED){
+                return false;
+            }
+        }
+    }
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+            game_set_color(g3, x, y, WHITE);
+        }
+    }
+    for (int x = 0; x < DEFAULT_SIZE; x=x+2) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+            if(game_get_constraint(g3, x, y)!=-1 || game_get_status(g3, x, y)!=SATISFIED){
+                return false;
+            }
+        }
+    }
     game_delete(g);
     game_delete(g2);
+    game_delete(g3);
     return true;
 }
 
