@@ -216,46 +216,6 @@ bool test_default_solution(void)
     return true;
 }
 
-bool get_next_square(void){
-    game g = game_new_empty();
-    uint x_next[DEFAULT_SIZE+2];
-    uint y_next[DEFAULT_SIZE+2];
-    for (int x=1; x<4; x++){
-        for (int y=1; y<4;y++){
-            if(game_get_next_square(g, x, y, UP, x_next, y_next)==false){
-                return false;
-            }
-            if(game_get_next_square(g, x, y, DOWN, x_next, y_next)==false){
-                return false;
-            }
-            if(game_get_next_square(g, x, y, LEFT, x_next, y_next)==false){
-                return false;
-            }
-            if(game_get_next_square(g, x, y, RIGHT, x_next, y_next)==false){
-                return false;
-            }
-            if(game_get_next_square(g, x, y, UP_LEFT, x_next, y_next)==false){
-                return false;
-            }
-            if(game_get_next_square(g, x, y, UP_RIGHT, x_next, y_next)==false){
-                return false;
-            }
-            if(game_get_next_square(g, x, y, DOWN_LEFT, x_next, y_next)==false){
-                return false;
-            }
-            if(game_get_next_square(g, x, y, DOWN_RIGHT, x_next, y_next)==false){
-                return false;
-            }
-            if(game_get_next_square(g, x, y, HERE, x_next, y_next)==false){
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-
-
 int main(int argc, char* argv[])
 {
     if (argc == 1)
@@ -302,12 +262,6 @@ int main(int argc, char* argv[])
 
     //test default_solution
     else if(strcmp("default_solution", argv[1]) == 0)
-    {
-        result_test=test_default_solution();
-    }
-
-    //test default_solution
-    else if(strcmp("get_next_square", argv[1]) == 0)
     {
         result_test=test_default_solution();
     }
