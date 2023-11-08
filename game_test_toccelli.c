@@ -129,7 +129,14 @@ bool test_set_constraint(){
             }
         }
     }
-
+    game_restart(g);
+    for(int k =-1; k<10; k++)
+    {
+        game_set_constraint(g,3,3, k);
+        if(game_get_constraint(g,3,3)!=k){
+            return false;
+        }
+    }
     game_delete(g);
     return true;
 }
