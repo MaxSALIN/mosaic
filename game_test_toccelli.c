@@ -99,13 +99,37 @@ bool test_copy(){
 }
 
 bool test_set_constraint(){
-    game g = game_default();
-    game_set_constraint(g,1,1,7);
-    constraint c = game_get_constraint(g,1,1);
-    game_set_constraint(g,1,1,5);
-    if (game_get_constraint(g,1,1) == c){
-        return false;
+    game g = game_new_empty();
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+            game_set_constraint(g,x,x,0);
+            game_play_move(g, x, y, WHITE);
+        }
     }
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+            if(game_nb_neighbors(g, x, y, BLACK)!=0 && game_get_status(g,x,y)==SATISFIED)
+            {
+                return false;
+            }
+        }
+    }
+    for (int x = 0; x < DEFAULT_SIZE; x++) {
+        for (int y = 0; y < DEFAULT_SIZE; y++) {
+            game_set_constraint(g,x,x,9);
+            game_play_move(g, x, y, BLACK);
+        }
+    }
+    
+    for (int x = 1; x < DEFAULT_SIZE-1; x++) {
+        for (int y = 1; y < DEFAULT_SIZE-1; y++) {
+            if(game_nb_neighbors(g, x, y, BLACK)!=9 && game_get_status(g,x,y)==SATISFIED)
+            {
+                return false;
+            }
+        }
+    }
+
     game_delete(g);
     return true;
 }
