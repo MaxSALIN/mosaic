@@ -91,7 +91,14 @@ bool test_won(void) {
    if(game_won(g4)==true){
     return false;
    }
+
+   game g5=game_copy(g3);
+   if(game_won(g5)==false)
+   {
+    return false;
+   }
    return true;
+   
    
 }
 
