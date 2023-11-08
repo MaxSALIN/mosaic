@@ -19,4 +19,5 @@ target_link_libraries(game_test_mavigierlafo game)
 
 add_test(test_toccelli_dummy ./game_test_toccelli dummy)
 
-add_test(test_toccelli_equal ./game_test_toccelli equal)
+add_test(test_toccelli_copy ./game_test_toccelli copy)
+
