@@ -19,5 +19,4 @@ target_link_libraries(game_test_mavigierlafo game)
 
 add_test(test_toccelli_dummy ./game_test_toccelli dummy)
 
-add_test(test_toccelli_copy ./game_test_toccelli copy)
-
+add_test(test_toccelli_set_constraint ./game_test_toccelli set_constraint)
