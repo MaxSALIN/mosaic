@@ -1,7 +1,7 @@
-#ifndef __GAME_AUX_H__
-#define __GAME_AUX_H__
-
-#include "game.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 #include "game_aux.h"
 
 
@@ -22,7 +22,7 @@ void game_print(cgame g) {
  * @return the created game
  **/
 game game_default(void) {
-
+    return EXIT_SUCCESS;
 }
 
 /**
@@ -31,7 +31,6 @@ game game_default(void) {
  * @return the created game
  **/
 game game_default_solution(void) {
-    
+    return EXIT_SUCCESS;
 }
 
-#endif  // __GAME_AUX_H__
