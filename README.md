@@ -1,8 +1,9 @@
 # mosaic-a13
 
-Edit pour faire un commit par Thomas Occelli.
-Edit pour faire un commit par Matthieu Vigier-Lafosse.
-Edit pour faire un commit par Maxence Salin.
+The goal of this project is to code the mosaic game. Starting from the base of the code with game.c or game_aux.c.
+Also, making the implementation of the project is important task of the project.
+
+Members of the team: Occelli Thomas-Bruno, Vigier-Lafosse Matthieu, Salin Maxence
 
 
 ## Getting started
