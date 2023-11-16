@@ -14,7 +14,7 @@ int main(void)
         printf("\n");
         game_print(g);
 
-        //Verify if the game has any error
+        /*//Verify if the game has any error
         for (i = 0; i < DEFAULT_SIZE; i++)  
         {
             for (j = 0; j < DEFAULT_SIZE; j++)
@@ -24,7 +24,7 @@ int main(void)
                     printf("\nSquare (%d,%d) : error\n", i, j);
                 }
             }
-        } 
+        } */
         //End of the verification
         
         //First scanf between help, restart, quit and the move

@@ -4,16 +4,19 @@
 #include <string.h>
 #include "game.h"
 
+void gameNull(game g);
+
 
 /**
  * @brief The structure pointer that stores the game state.
  **/
-typedef struct game_s {
-    color* couleur;
-    constraint* contrainte;
-    status* statut;
-    uint* tableau;
-} * game;
+struct game_s{
+    color couleur[DEFAULT_SIZE*DEFAULT_SIZE];
+    constraint contrainte[DEFAULT_SIZE*DEFAULT_SIZE];
+    status statut[DEFAULT_SIZE*DEFAULT_SIZE];
+
+};
+typedef struct game_s *game;
 
 /**
  * @brief The structure constant pointer that stores the game state.
@@ -84,7 +87,13 @@ bool game_equal(cgame g1, cgame g2)
  **/
 void game_delete(game g)
 {
-
+  /*gameNull(g);
+  if(g!=NULL){
+    free(g->couleur);
+    free(g->contrainte);
+    free(g->statut);
+  }
+  free(g);*/
 }
 
 /**
@@ -103,7 +112,9 @@ void game_delete(game g)
  **/
 void game_set_constraint(game g, uint i, uint j, constraint n)
 {
-
+  /*gameNull(g);
+  
+  g->contrainte[i+5*j]=n;*/
 }
 
 /**
@@ -138,7 +149,9 @@ void game_set_color(game g, uint i, uint j, color c)
  **/
 constraint game_get_constraint(cgame g, uint i, uint j)
 {
-  return EXIT_SUCCESS;
+
+  constraint getConstraint=g->contrainte[i+5*j];
+  return getConstraint;
 }
 
 /**
