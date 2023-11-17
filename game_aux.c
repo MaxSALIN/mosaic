@@ -211,6 +211,30 @@ game game_default(void) {
  * @return the created game
  **/
 game game_default_solution(void) {
-    return EXIT_SUCCESS;
+    game g=game_default();
+    gameNull(g);
+    for(int j=0;j<DEFAULT_SIZE;j++){
+        for(int i=0;i<DEFAULT_SIZE;i++){
+            g->statut[i+5*j]=SATISFIED;
+            if(j>1 && i>-1 && i<2){
+                g->couleur[i+5*j]=BLACK;
+            }
+            else if(j!=3 && i==2){
+                g->couleur[i+5*j]=BLACK;
+            }
+            else  if(j==4 && i==3){
+                g->couleur[i+5*j]=BLACK;
+            }
+            else if(j==1 && i==4){
+                g->couleur[i+5*j]=BLACK;
+            }
+            else{
+                g->couleur[i+5*j]=WHITE;    
+            }
+        }
+    }
+    game_print(g);
+    return g;
+
 }
 

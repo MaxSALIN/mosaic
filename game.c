@@ -42,8 +42,8 @@ game game_new(constraint *constraints, color *colors)
 {
 //création de game et vérification de sa création
     game g=malloc(sizeof(game));    
-    if(g==NULL){
-        fprintf(stderr, "Game NULL in game_new\n");
+    if(g==NULL || constraints==NULL){
+        fprintf(stderr, "Game NULL or inserted parameters in game_new\n");
         exit(EXIT_FAILURE);
     }
 
@@ -57,9 +57,16 @@ game game_new(constraint *constraints, color *colors)
     }
 
     //mise en place des conditions de game_new
-    for(int i=0; i<DEFAULT_SIZE*DEFAULT_SIZE; i++){
-      g->contrainte[i]=constraints[i];
-      g->couleur[i]=colors[i];
+    for(int i=0; i<DEFAULT_SIZE*DEFAULT_SIZE; i++){   
+        g->statut[i]=UNSATISFIED;
+        g->contrainte[i]=constraints[i];
+        printf("%d %d \n",i, g->contrainte[i]);
+        if(colors==NULL){
+          g->couleur[i]=EMPTY;
+        }
+        else{
+          g->couleur[i]=colors[i];
+        }
     }
     return g;
 }
@@ -276,7 +283,14 @@ void game_play_move(game g, uint i, uint j, color c)
  **/
 bool game_won(cgame g)
 {
-  return EXIT_SUCCESS;
+  for(int j=0; j<DEFAULT_SIZE; j++){
+    for(int i=0; i<DEFAULT_SIZE; i++){
+      if(g->couleur[i+5*j]==EMPTY || g->statut[i+5*j]!=SATISFIED){
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 /**
