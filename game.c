@@ -11,12 +11,13 @@ void gameNull(game g);
  * @brief The structure pointer that stores the game state.
  **/
 struct game_s{
-    color couleur[DEFAULT_SIZE*DEFAULT_SIZE];
-    constraint contrainte[DEFAULT_SIZE*DEFAULT_SIZE];
-    status statut[DEFAULT_SIZE*DEFAULT_SIZE];
+    color *couleur;
+    constraint *contrainte;
+    status *statut;
 
 };
 typedef struct game_s *game;
+
 
 /**
  * @brief The structure constant pointer that stores the game state.
@@ -39,8 +40,30 @@ typedef const struct game_s *cgame;
  **/
 game game_new(constraint *constraints, color *colors)
 {
-  return EXIT_SUCCESS;
+//création de game et vérification de sa création
+    game g=malloc(sizeof(game));    
+    if(g==NULL){
+        fprintf(stderr, "Game NULL in game_new\n");
+        exit(EXIT_FAILURE);
+    }
+
+     //création des paramètres de game et vérification de leurs créations
+    g->couleur=malloc(sizeof(int)*DEFAULT_SIZE*DEFAULT_SIZE);  
+    g->contrainte=malloc(sizeof(int)*DEFAULT_SIZE*DEFAULT_SIZE);
+    g->statut=malloc(sizeof(int)*DEFAULT_SIZE*DEFAULT_SIZE);
+    if(g->couleur==NULL || g->contrainte==NULL || g->statut==NULL){
+        fprintf(stderr, "Game parameters NULL in game_new\n");
+        exit(EXIT_FAILURE);
+    }
+
+    //mise en place des conditions de game_new
+    for(int i=0; i<DEFAULT_SIZE*DEFAULT_SIZE; i++){
+      g->contrainte[i]=constraints[i];
+      g->couleur[i]=colors[i];
+    }
+    return g;
 }
+    
 
 /**
  * @brief Creates a new empty game with defaut size.
@@ -167,7 +190,8 @@ constraint game_get_constraint(cgame g, uint i, uint j)
  **/
 color game_get_color(cgame g, uint i, uint j)
 {
-  return EXIT_SUCCESS;
+  color getColor=g->couleur[i+5*j];
+  return getColor;
 }
 
 /**
@@ -198,7 +222,8 @@ bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next,
  */
 status game_get_status(cgame g, uint i, uint j)
 {
-  return EXIT_SUCCESS;
+  status getStatus=g->statut[i+5*j];
+  return getStatus;
 }
 
 /**
