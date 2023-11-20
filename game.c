@@ -56,18 +56,25 @@ game game_new(constraint *constraints, color *colors)
     }
 
     //mise en place des conditions de game_new
-    for(int i=0; i<GAME_SIZE; i++){
-        size_t size_constraint=sizeof(g->contrainte); 
-        size_t size_color=sizeof(g->couleur);
+    size_t size_constraint=sizeof(g->contrainte); 
+    size_t size_color=sizeof(g->couleur);
+    for(int j=0; j<GAME_SIZE; j++){
+        for(int i=0; i<GAME_SIZE; i++){
 
-        // occuper de status
-        memcpy(g->contrainte, constraints, size_constraint);
-        if(colors==NULL){
-          
-          memset(g->couleur, EMPTY, size_color);
-        }
-        else{
-          memcpy(g->couleur, colors, size_color);
+          if(game_nb_neighbors(g, i, j, BLACK)==game_get_constraint(g, i ,j)){
+            g->statut[i+DEFAULT_SIZE*j]=SATISFIED;
+          }
+          else{
+            g->statut[i+DEFAULT_SIZE*j]=UNSATISFIED;
+          }
+          memcpy(g->contrainte, constraints, size_constraint);
+          if(colors==NULL){
+            
+            memset(g->couleur, EMPTY, size_color);
+          }
+          else{
+            memcpy(g->couleur, colors, size_color);
+          }
         }
     }
     return g;
@@ -115,7 +122,30 @@ game game_new_empty(void)
  **/
 game game_copy(cgame g)
 {
-  return EXIT_SUCCESS;
+  game g2=malloc(sizeof(game));    
+  if(g2==NULL){
+      fprintf(stderr, "Game NULL or inserted parameters in game_new\n");
+      exit(EXIT_FAILURE);
+  }
+
+   //création des paramètres de game et vérification de leurs créations
+  g2->couleur=malloc(sizeof(*(g2->couleur))*GAME_SIZE);  
+  g2->contrainte=malloc(sizeof(*(g2->contrainte))*GAME_SIZE);
+  g2->statut=malloc(sizeof(*(g2->statut))*GAME_SIZE);
+  if(g2->couleur==NULL || g2->contrainte==NULL || g2->statut==NULL){  //safe malloc fonction
+      fprintf(stderr, "Game parameters NULL in game_copy\n");
+      exit(EXIT_FAILURE);
+  }
+
+  size_t size_constraint=sizeof(g2->contrainte); 
+  size_t size_color=sizeof(g2->couleur);
+  size_t size_status=sizeof(g2->couleur);
+
+  memcpy(g2->contrainte, g->contrainte, size_constraint);
+  memcpy(g2->couleur, g->couleur, size_color);
+  memcpy(g2->statut, g->statut, size_status);
+  
+  return g2;
 }
 
 /**
@@ -129,7 +159,15 @@ game game_copy(cgame g)
  **/
 bool game_equal(cgame g1, cgame g2)
 {
-  return (g1->couleur == g2->couleur) && (g1->statut == g2->statut) && (g1->contrainte == g2->contrainte);
+  for(int j=0; j<DEFAULT_SIZE; j++){
+    for(int i=0; i<DEFAULT_SIZE; i++){
+      if(game_get_constraint(g1, i, j)!=game_get_constraint(g2, i, j) || game_get_color(g1, i ,j)!=game_get_color(g2, i ,j) || game_get_status(g1, i, j)!=game_get_status(g2, i, j) || game_won(g1)!=game_won(g2))
+      {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 /**
@@ -139,13 +177,13 @@ bool game_equal(cgame g1, cgame g2)
  **/
 void game_delete(game g)
 {
-  /*gameNull(g);
+  gameNull(g);
   if(g!=NULL){
     free(g->couleur);
     free(g->contrainte);
     free(g->statut);
   }
-  free(g);*/
+  free(g);
 }
 
 /**
@@ -185,9 +223,9 @@ void game_set_color(game g, uint i, uint j, color c)
 {
 
   if (i > DEFAULT_SIZE || j > DEFAULT_SIZE) {
-        print("game_set_color: Les index entrés sont > à la longueur/largeur du tableau.");
+        printf("game_set_color: Les index entrés sont > à la longueur/largeur du tableau.");
 
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
   }
 
   if (g != NULL) {
@@ -402,5 +440,9 @@ bool game_won(cgame g)
  **/
 void game_restart(game g)
 {
-
+  for(int j=0; j<DEFAULT_SIZE; j++){
+    for(int i=0; i<DEFAULT_SIZE; i++){
+      game_set_color(g, i, j, EMPTY);
+    }
+  }
 }
