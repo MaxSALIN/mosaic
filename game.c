@@ -109,7 +109,7 @@ game game_copy(cgame g)
  **/
 bool game_equal(cgame g1, cgame g2)
 {
-  return (g1->couleur == g2->couleur) && (g1->statut == g2->statut) && (g1->contrainte == g2->contrainte);;
+  return (g1->couleur == g2->couleur) && (g1->statut == g2->statut) && (g1->contrainte == g2->contrainte);
 }
 
 /**
