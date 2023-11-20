@@ -308,6 +308,15 @@ status game_get_status(cgame g, uint i, uint j)
  */
 int game_nb_neighbors(cgame g, uint i, uint j, color c)
 {
+  if(i>DEFAULT_SIZE || j>DEFAULT_SIZE){
+    fprintf(stderr, "i ou j mauvais\n");
+    return EXIT_FAILURE;
+  }
+  if(g == NULL){
+    fprintf(stderr, "Game NULL\n");
+    return EXIT_FAILURE;
+  }
+  
   return EXIT_SUCCESS;
 }
 
