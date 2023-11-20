@@ -57,11 +57,11 @@ game game_new(constraint *constraints, color *colors)
 
     //mise en place des conditions de game_new
     for(int i=0; i<GAME_SIZE; i++){
-        size_t size_contrainte=sizeof(g->contrainte); 
+        size_t size_constraint=sizeof(g->contrainte); 
         size_t size_color=sizeof(g->couleur);
 
         // occuper de status
-        memcpy(g->contrainte, constraints, size_contrainte);
+        memcpy(g->contrainte, constraints, size_constraint);
         if(colors==NULL){
           
           memset(g->couleur, EMPTY, size_color);
@@ -83,7 +83,27 @@ game game_new(constraint *constraints, color *colors)
  **/
 game game_new_empty(void)
 {
-  return EXIT_SUCCESS;
+  game g=malloc(sizeof(game));    
+  if(g==NULL){
+      fprintf(stderr, "Game NULL or inserted parameters in game_new\n");
+      exit(EXIT_FAILURE);
+  }
+
+   //création des paramètres de game et vérification de leurs créations
+  g->couleur=malloc(sizeof(*(g->couleur))*GAME_SIZE);  
+  g->contrainte=malloc(sizeof(*(g->contrainte))*GAME_SIZE);
+  g->statut=malloc(sizeof(*(g->statut))*GAME_SIZE);
+  if(g->couleur==NULL || g->contrainte==NULL || g->statut==NULL){  //safe malloc fonction
+      fprintf(stderr, "Game parameters NULL in game_new\n");
+      exit(EXIT_FAILURE);
+  }
+  size_t size_color=sizeof(g->couleur);
+  for(int i=0; i<GAME_SIZE; i++){
+    g->statut[i]=UNSATISFIED;
+    memset(g->couleur, EMPTY, size_color);
+    g->contrainte[i]=UNCONSTRAINED;
+  }
+  return g;
 }
 
 /**
