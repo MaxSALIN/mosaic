@@ -18,7 +18,6 @@ struct game_s{
 };
 typedef struct game_s *game;
 
-
 /**
  * @brief The structure constant pointer that stores the game state.
  * @details That means that it is not possible to modify the game using this
@@ -216,7 +215,67 @@ color game_get_color(cgame g, uint i, uint j)
  */
 bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next, uint *pj_next)
 {
-  return EXIT_SUCCESS;
+  if(i>DEFAULT_SIZE || j>DEFAULT_SIZE){
+    fprintf(stderr, "i ou j mauvais\n");
+    return EXIT_FAILURE;
+  }
+  if(g == NULL){
+    fprintf(stderr, "Game NULL\n");
+    return EXIT_FAILURE;
+  }
+  if((j==DEFAULT_SIZE-1 && ((dir == RIGHT) || (dir == UP_RIGHT) || (dir==DOWN_RIGHT)))
+  || (i==DEFAULT_SIZE-1 && ((dir == DOWN) || (dir == DOWN_RIGHT) || (dir==DOWN_LEFT))) 
+  || (j==0 && ((dir == LEFT) || (dir == DOWN_LEFT) || (dir==UP_LEFT)))
+  || (i==0 && ((dir == UP) || (dir == UP_RIGHT) || (dir==UP_LEFT)))){
+    printf("dir mauvais %d %d %d\n",i,j,dir);
+    return false;
+  }else{
+    printf("dir correst %d %d %d\n",i,j, dir);
+  } 
+
+  switch (dir)
+  {
+  case UP:
+    *pi_next = i;
+    *pj_next = j-1;
+    break;
+  case DOWN:
+    *pi_next = i;
+    *pj_next = j+1;
+    break;
+  case LEFT:
+    *pi_next = i-1;
+    *pj_next = j;
+    break;
+  case RIGHT:
+    *pi_next = i+1;
+    *pj_next = j;
+    break;
+  case UP_LEFT:
+    *pi_next = i-1;
+    *pj_next = j-1;
+    break;
+  case UP_RIGHT:
+    *pi_next = i+1;
+    *pj_next = j-1;
+    break;
+  case DOWN_LEFT:
+    *pi_next = i-1;
+    *pj_next = j+1;
+    break;
+  case DOWN_RIGHT:
+    *pi_next = i+1;
+    *pj_next = j+1;
+    break;
+  case HERE:
+    *pi_next = i;
+    *pj_next = j;
+    break;
+  default:
+    break;
+  }
+
+  return true;
 }
 
 /**
