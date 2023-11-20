@@ -109,7 +109,7 @@ game game_copy(cgame g)
  **/
 bool game_equal(cgame g1, cgame g2)
 {
-  return EXIT_SUCCESS;
+  return (g1->couleur == g2->couleur) && (g1->statut == g2->statut) && (g1->contrainte == g2->contrainte);;
 }
 
 /**
@@ -163,7 +163,16 @@ void game_set_constraint(game g, uint i, uint j, constraint n)
  **/
 void game_set_color(game g, uint i, uint j, color c)
 {
-  g->couleur[i+DEFAULT_SIZE*j]=c;
+
+  if (i > DEFAULT_SIZE || j > DEFAULT_SIZE) {
+        print("game_set_color: Les index entrés sont > à la longueur/largeur du tableau.");
+
+        return EXIT_FAILURE;
+  }
+
+  if (g != NULL) {
+    g->couleur[i+DEFAULT_SIZE*j]=c;
+  }
 }
 
 /**
