@@ -4,12 +4,9 @@
 #include <string.h>
 #include "game_aux.h"
 
-void gameNull(game g){
-  if(g==NULL){
-    fprintf(stderr, "Game NULL\n");
-    exit(EXIT_FAILURE);
-  }
-}
+#define GAME_SIZE (DEFAULT_SIZE*DEFAULT_SIZE)
+
+void safeMalloc(game g);
 
 struct game_s{
     color *couleur;
@@ -17,15 +14,8 @@ struct game_s{
     status *statut;
 
 };
-typedef struct game_s *game;
 
-/**
- * @brief Prints a game as text on the standard output stream.
- * @details The different squares are respectively displayed as text, as
- * described in @ref index.
- * @param g the game
- * @pre @p g must be a valid pointer toward a game structure.
- **/
+
 void game_print(cgame g) {
 
     //affichage de la barre du haut et des nombres du haut
@@ -146,28 +136,12 @@ void game_print(cgame g) {
     printf("\n");
 }
 
-/**
- * @brief Creates the default game.
- * @details See the description of the default game in @ref index.
- * @return the created gamemake
-**/
+
 game game_default(void) {
 
     //création de game et vérification de sa création
-    game g=malloc(sizeof(game));    
-    if(g==NULL){
-        fprintf(stderr, "Game NULL in game_default\n");
-        exit(EXIT_FAILURE);
-    }
-
-     //création des paramètres de game et vérification de leurs créations
-    g->couleur=malloc(sizeof(int)*DEFAULT_SIZE*DEFAULT_SIZE);  
-    g->contrainte=malloc(sizeof(int)*DEFAULT_SIZE*DEFAULT_SIZE);
-    g->statut=malloc(sizeof(int)*DEFAULT_SIZE*DEFAULT_SIZE);
-    if(g->couleur==NULL || g->contrainte==NULL || g->statut==NULL){
-        fprintf(stderr, "Game parameters NULL in game_default\n");
-        exit(EXIT_FAILURE);
-    }
+    game g=malloc(sizeof(game));
+    safeMalloc(g); 
 
     //mise en place des conditions de game_default
     for(int i=0; i<DEFAULT_SIZE*DEFAULT_SIZE; i++){   
@@ -205,14 +179,9 @@ game game_default(void) {
     return g;
 }
 
-/**
- * @brief Creates the default game solution.
- * @details See the description of the default game in @ref index.
- * @return the created game
- **/
+
 game game_default_solution(void) {
     game g=game_default();
-    gameNull(g);
     for(int j=0;j<DEFAULT_SIZE;j++){
         for(int i=0;i<DEFAULT_SIZE;i++){
             g->statut[i+5*j]=SATISFIED;
