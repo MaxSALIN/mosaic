@@ -7,6 +7,9 @@
 #define GAME_SIZE (DEFAULT_SIZE*DEFAULT_SIZE)
 
 void safeMalloc(game g);
+void checkIJ(uint i, uint j, char* text);
+void gameNull(game g);
+void gameConstNull(cgame g);
 
 struct game_s{
     color *couleur;
@@ -17,7 +20,7 @@ struct game_s{
 
 
 void game_print(cgame g) {
-
+    gameConstNull(g);
     //affichage de la barre du haut et des nombres du haut
     printf("   ");
     for(int i =0; i<DEFAULT_SIZE;i++){
