@@ -176,13 +176,12 @@ bool test_get_status(void) {
         game_play_move(g, x, y, WHITE);
       }
     }
-    for (int x = i - 1; x <= i + 1; x++) {
-      for (int y = j - 1; y <= j + 1; y++) {
+    for (int y = i - 1; y <= i + 1; y++) {
+      for (int x = j - 1; x <= x + 1; y++) {
         if (game_nb_neighbors(g, i, j, BLACK) == k && game_get_status(g, i, j) != SATISFIED) {
           return false;
-        } else if ((game_nb_neighbors(g, i, j, BLACK) > k && game_get_status(g, i, j) != ERROR) ||
-                   ((game_nb_neighbors(g, i, j, WHITE) < (game_nb_neighbors(g_dummy, i, j, EMPTY) - k)) &&
-                    game_get_status(g, i, j) != ERROR)) {
+        } else if ((game_nb_neighbors(g, i, j, BLACK) > k && game_get_status(g, i, j) != ERROR) || ((game_nb_neighbors(g, i, j, WHITE) < (game_nb_neighbors(g_dummy, i, j, EMPTY) - k)) && game_get_status(g, i, j) != ERROR)) {
+
           return false;
         }
         game_play_move(g, x, y, BLACK);
@@ -191,8 +190,8 @@ bool test_get_status(void) {
     game_delete(g);
     g = game_new_empty();
     // test pour unsatisfied
-    for (int x = i - 1; x <= i + 1; x++) {
-      for (int y = j - 1; y <= j + 1; y++) {
+    for (int y = i - 1; y <= i + 1; y++) {
+      for (int x = j - 1; x <= j + 1; x++) {
         if (game_nb_neighbors(g, i, j, BLACK) < k && game_get_status(g, i, j) != UNSATISFIED) {
           return false;
         }

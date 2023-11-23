@@ -10,6 +10,7 @@ void safeMalloc(game g);
 void checkIJ(uint i, uint j, char* text);
 void gameNull(game g);
 void gameConstNull(cgame g);
+void putStatus(game g, uint i, uint j);
 
 struct game_s{
     color *couleur;
@@ -205,7 +206,6 @@ game game_default_solution(void) {
             }
         }
     }
-    game_print(g);
     return g;
 
 }

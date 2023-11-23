@@ -134,10 +134,11 @@ bool test_new(void) {
     return false;
   }
 
-  for (int i = 0; i < DEFAULT_SIZE; i++) {
-    for (int j = 0; j < DEFAULT_SIZE; j++) {
+  for (int j = 0; j < DEFAULT_SIZE; j++) {
+    for (int i = 0; i < DEFAULT_SIZE; i++) {
       if ((game_get_color(g_sol, i, j) != (game_get_color(g_Test2, i, j))) ||
           (game_get_constraint(g_sol, i, j) != (game_get_constraint(g_Test2, i, j)))) {
+           printf("x=%d, y=%d, %d %d %d %d",i,j, game_get_color(g_Test2, i, j),game_get_constraint(g_Test2, i, j), game_get_color(g_sol, i, j),game_get_constraint(g_sol, i, j));
         return false;
       }
     }
