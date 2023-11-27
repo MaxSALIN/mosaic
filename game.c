@@ -320,50 +320,13 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c)
   uint count=0;
   uint pi_next[DEFAULT_SIZE+2];
   uint pj_next[DEFAULT_SIZE+2];
-  
-  if(game_get_next_square(g, i, j, HERE, pi_next, pj_next)==true){
-    if(game_get_color(g, *pi_next, *pj_next)==c){
-      count++;
-    }
-  }
-  if(game_get_next_square(g, i, j, UP, pi_next, pj_next)==true){
-    if(game_get_color(g, *pi_next, *pj_next)==c){
-      count++;
-    }
-  }
-  if(game_get_next_square(g, i, j, DOWN, pi_next, pj_next)==true){
-    if(game_get_color(g, *pi_next, *pj_next)==c){
-      count++;
-    }
-  }
-  if(game_get_next_square(g, i, j, LEFT, pi_next, pj_next)==true){
-    if(game_get_color(g, *pi_next, *pj_next)==c){
-      count++;
-    }
-  }
-  if(game_get_next_square(g, i, j, RIGHT, pi_next, pj_next)==true){
-    if(game_get_color(g, *pi_next, *pj_next)==c){
-      count++;
-    }
-  }
-  if(game_get_next_square(g, i, j, UP_LEFT, pi_next, pj_next)==true){
-    if(game_get_color(g, *pi_next, *pj_next)==c){
-      count++;
-    }
-  }
-  if(game_get_next_square(g, i, j, UP_RIGHT, pi_next, pj_next)==true){
-    if(game_get_color(g, *pi_next, *pj_next)==c){
-      count++;
-    }
-  }
-  if(game_get_next_square(g, i, j, DOWN_LEFT, pi_next, pj_next)==true){
-    if(game_get_color(g, *pi_next, *pj_next)==c){
-      count++;
-    }
-  }
-  if(game_get_next_square(g, i, j, DOWN_RIGHT, pi_next, pj_next)==true){
-    if(game_get_color(g, *pi_next, *pj_next)==c){
-      count++;
+
+  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+      if(game_get_next_square(g, i, j, dir, pi_next, pj_next)==true){
+      printf("i= %d, j= %d", *pi_next, *pj_next);
+      if(game_get_color(g, *pi_next, *pj_next)==c){
+        count++;
+      }
     }
   }
   return count;
@@ -381,33 +344,13 @@ void game_play_move(game g, uint i, uint j, color c)
   //Ajouter que cela valide aussi si les voisins de i j peuvent être satisfait
   uint pi_next[DEFAULT_SIZE+2];
   uint pj_next[DEFAULT_SIZE+2];
-  if(game_get_next_square(g, i, j, HERE, pi_next, pj_next)==true){
-    putStatus(g,*pi_next,*pj_next);
+
+  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+
+    if(game_get_next_square(g, i, j, dir, pi_next, pj_next)==true){
+      putStatus(g,*pi_next,*pj_next);
   
-  }
-  if(game_get_next_square(g, i, j, UP, pi_next, pj_next)==true){
-    putStatus(g,*pi_next,*pj_next);
-  }
-  if(game_get_next_square(g, i, j, DOWN, pi_next, pj_next)==true){
-    putStatus(g,*pi_next,*pj_next);
-  }
-  if(game_get_next_square(g, i, j, LEFT, pi_next, pj_next)==true){
-    putStatus(g,*pi_next,*pj_next);
-  }
-  if(game_get_next_square(g, i, j, RIGHT, pi_next, pj_next)==true){
-    putStatus(g,*pi_next,*pj_next);
-  }
-  if(game_get_next_square(g, i, j, UP_LEFT, pi_next, pj_next)==true){
-    putStatus(g,*pi_next,*pj_next);
-  }
-  if(game_get_next_square(g, i, j, UP_RIGHT, pi_next, pj_next)==true){
-    putStatus(g,*pi_next,*pj_next);
-  }
-  if(game_get_next_square(g, i, j, DOWN_LEFT, pi_next, pj_next)==true){
-    putStatus(g,*pi_next,*pj_next);
-  }
-  if(game_get_next_square(g, i, j, DOWN_RIGHT, pi_next, pj_next)==true){
-    putStatus(g,*pi_next,*pj_next);
+    }
   }
 }
 
