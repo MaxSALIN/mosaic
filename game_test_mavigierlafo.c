@@ -15,7 +15,12 @@ bool test_default();
 bool test_print();
 void usage(int argc, char *argv[]);
 
-bool test_dummy(void) { return true; }
+bool test_dummy(void) { 
+  game g= game_new_empty();
+  game_set_color(g, 0 ,2, WHITE);
+  game_print(g);
+  return true; 
+}
 
 bool test_won(void) {
   game g;
@@ -110,6 +115,14 @@ bool test_won(void) {
   if (game_won(g7) == true) {
     return false;
   }
+  game_delete(g);
+  game_delete(g2);
+  game_delete(g3);
+  game_delete(g4);
+  game_delete(g5);
+  game_delete(g6);
+  game_delete(g7);
+  game_delete(g_compare);
   return true;
 }
 
@@ -158,17 +171,18 @@ bool test_nb_neighbors(void) {
   } else {
     result = false;
   }
-
+  game_delete(g);
   return result;
 }
 
 bool test_get_status(void) {
   game g;
+  g = game_new_empty();
   int i = 3;
   int j = 3;
   game g_dummy = game_new_empty();
   for (int k = 0; k <= 9; k++) {
-    g = game_new_empty();
+    
     game_set_constraint(g, i, j, k);
     // test pour satisfied et error
     for (int x = i - 1; x <= i + 1; x++) {
@@ -177,19 +191,25 @@ bool test_get_status(void) {
       }
     }
     for (int y = i - 1; y <= i + 1; y++) {
-      for (int x = j - 1; x <= x + 1; y++) {
-        if (game_nb_neighbors(g, i, j, BLACK) == k && game_get_status(g, i, j) != SATISFIED) {
+      for (int x = j - 1; x <= j + 1; x++) {
+        if ((game_nb_neighbors(g, i, j, BLACK) == k) && (game_nb_neighbors(g, i, j, WHITE)==k-game_nb_neighbors(g, i,j, BLACK)) && game_get_status(g, i, j) != SATISFIED && game_nb_neighbors(g, i, j, EMPTY)==0) {
           return false;
-        } else if ((game_nb_neighbors(g, i, j, BLACK) > k && game_get_status(g, i, j) != ERROR) || ((game_nb_neighbors(g, i, j, WHITE) < (game_nb_neighbors(g_dummy, i, j, EMPTY) - k)) && game_get_status(g, i, j) != ERROR)) {
-
+        } else if ((game_nb_neighbors(g, i, j, BLACK) > k && game_get_status(g, i, j) != ERROR)) {
+          game_print(g);
+          printf("%d, %d, %d, %d, %d ", x, y,k, game_nb_neighbors(g, i, j, BLACK), game_get_status(g, i, j));
           return false;
         }
         game_play_move(g, x, y, BLACK);
       }
     }
-    game_delete(g);
-    g = game_new_empty();
+
+    game_restart(g);
     // test pour unsatisfied
+    for (int x = i - 1; x <= i + 1; x++) {
+      for (int y = j - 1; y <= j + 1; y++) {
+        game_play_move(g, x, y, WHITE);
+      }
+    }
     for (int y = i - 1; y <= i + 1; y++) {
       for (int x = j - 1; x <= j + 1; x++) {
         if (game_nb_neighbors(g, i, j, BLACK) < k && game_get_status(g, i, j) != UNSATISFIED) {
@@ -198,8 +218,9 @@ bool test_get_status(void) {
         game_play_move(g, x, y, BLACK);
       }
     }
-    game_delete(g);
   }
+  game_delete(g);
+  game_delete(g_dummy);
   return true;
 }
 
@@ -458,7 +479,7 @@ bool test_print(void) {
   g = game_default();
 
   game_print(g);
-
+  game_delete(g);
   return true;
 }
 

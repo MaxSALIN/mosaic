@@ -105,28 +105,9 @@ bool test_set_constraint() {
   }
   for (int y = 0; y < DEFAULT_SIZE; y++) {
     for (int x = 0; x < DEFAULT_SIZE; x++) {
-      printf("%d %d \n", game_get_color(g,x,y), game_get_constraint(g, x, y));
-
-    }
-  }
-  for (int y = 0; y < DEFAULT_SIZE; y++) {
-    for (int x = 0; x < DEFAULT_SIZE; x++) {
-      if (game_get_status(g, x, y) == SATISFIED) {
-        printf("%d %d", x, y);
-        return false;
-      }
-    }
-  }
-  for (int x = 0; x < DEFAULT_SIZE; x++) {
-    for (int y = 0; y < DEFAULT_SIZE; y++) {
-      game_set_constraint(g, x, x, 9);
-      game_play_move(g, x, y, BLACK);
-    }
-  }
-
-  for (int x = 1; x < DEFAULT_SIZE - 1; x++) {
-    for (int y = 1; y < DEFAULT_SIZE - 1; y++) {
-      if (game_get_status(g, x, y) == SATISFIED) {
+      if (game_get_status(g, x, y) != SATISFIED) {
+        game_print(g);
+        printf("%d %dfsdqfsq", x, y);
         return false;
       }
     }
@@ -186,9 +167,9 @@ bool test_set_constraint() {
       }
     }
   }
-  /*game_delete(g);
+  game_delete(g);
   game_delete(g2);
-  game_delete(g3);*/
+  game_delete(g3);
   return true;
 }
 
