@@ -72,5 +72,6 @@ int main(void) {
   // Victory
   printf("\nCongratulation, you won! This is the final grid :\n \n");
   game_print(g);
+  game_delete(g);
   return EXIT_SUCCESS;
 }

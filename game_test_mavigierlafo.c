@@ -16,9 +16,6 @@ bool test_print();
 void usage(int argc, char *argv[]);
 
 bool test_dummy(void) {
-  game g = game_new_empty();
-  game_set_color(g, 0, 2, WHITE);
-  game_print(g);
   return true;
 }
 
@@ -438,6 +435,7 @@ bool test_get_next_square(void) {
       return false;
     }
   }
+  game_delete(g);
   return true;
 }
 

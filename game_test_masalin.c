@@ -38,6 +38,7 @@ bool test_new_empty(void) {
       }
     }
   }
+  game_delete(g);
   return true;
 }
 
