@@ -137,7 +137,6 @@ bool test_set_constraint() {
   for (int x = 0; x < DEFAULT_SIZE; x++) {
     for (int y = 0; y < DEFAULT_SIZE; y++) {
       if (game_get_constraint(g3, x, y) != -1 || game_get_status(g3, x, y) != SATISFIED) {
-        
         return false;
       }
     }

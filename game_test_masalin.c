@@ -90,7 +90,7 @@ bool test_delete(void) {
 
 bool test_new(void) {
   int k = 0;
-  constraint constraints1[DEFAULT_SIZE*DEFAULT_SIZE];
+  constraint constraints1[DEFAULT_SIZE * DEFAULT_SIZE];
   for (int i = 0; i < DEFAULT_SIZE * DEFAULT_SIZE; i++) {
     constraints1[i] = -1;
   }
@@ -102,7 +102,7 @@ bool test_new(void) {
   for (int i = 0; i < DEFAULT_SIZE; i++) {
     for (int j = 0; j < DEFAULT_SIZE; j++) {
       if ((game_get_color(g_Test, i, j) != EMPTY) || (game_get_constraint(g_Test, i, j) != -1)) {
-        printf("x=%d, y=%d, %d %d",i,j, game_get_color(g_Test, i, j),game_get_constraint(g_Test, i, j));
+        printf("x=%d, y=%d, %d %d", i, j, game_get_color(g_Test, i, j), game_get_constraint(g_Test, i, j));
         return false;
       }
     }
@@ -138,7 +138,8 @@ bool test_new(void) {
     for (int i = 0; i < DEFAULT_SIZE; i++) {
       if ((game_get_color(g_sol, i, j) != (game_get_color(g_Test2, i, j))) ||
           (game_get_constraint(g_sol, i, j) != (game_get_constraint(g_Test2, i, j)))) {
-           printf("x=%d, y=%d, %d %d %d %d",i,j, game_get_color(g_Test2, i, j),game_get_constraint(g_Test2, i, j), game_get_color(g_sol, i, j),game_get_constraint(g_sol, i, j));
+        printf("x=%d, y=%d, %d %d %d %d", i, j, game_get_color(g_Test2, i, j), game_get_constraint(g_Test2, i, j),
+               game_get_color(g_sol, i, j), game_get_constraint(g_sol, i, j));
         return false;
       }
     }

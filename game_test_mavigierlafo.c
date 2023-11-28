@@ -15,11 +15,11 @@ bool test_default();
 bool test_print();
 void usage(int argc, char *argv[]);
 
-bool test_dummy(void) { 
-  game g= game_new_empty();
-  game_set_color(g, 0 ,2, WHITE);
+bool test_dummy(void) {
+  game g = game_new_empty();
+  game_set_color(g, 0, 2, WHITE);
   game_print(g);
-  return true; 
+  return true;
 }
 
 bool test_won(void) {
@@ -182,7 +182,6 @@ bool test_get_status(void) {
   int j = 3;
   game g_dummy = game_new_empty();
   for (int k = 0; k <= 9; k++) {
-    
     game_set_constraint(g, i, j, k);
     // test pour satisfied et error
     for (int x = i - 1; x <= i + 1; x++) {
@@ -192,11 +191,13 @@ bool test_get_status(void) {
     }
     for (int y = i - 1; y <= i + 1; y++) {
       for (int x = j - 1; x <= j + 1; x++) {
-        if ((game_nb_neighbors(g, i, j, BLACK) == k) && (game_nb_neighbors(g, i, j, WHITE)==k-game_nb_neighbors(g, i,j, BLACK)) && game_get_status(g, i, j) != SATISFIED && game_nb_neighbors(g, i, j, EMPTY)==0) {
+        if ((game_nb_neighbors(g, i, j, BLACK) == k) &&
+            (game_nb_neighbors(g, i, j, WHITE) == k - game_nb_neighbors(g, i, j, BLACK)) &&
+            game_get_status(g, i, j) != SATISFIED && game_nb_neighbors(g, i, j, EMPTY) == 0) {
           return false;
         } else if ((game_nb_neighbors(g, i, j, BLACK) > k && game_get_status(g, i, j) != ERROR)) {
           game_print(g);
-          printf("%d, %d, %d, %d, %d ", x, y,k, game_nb_neighbors(g, i, j, BLACK), game_get_status(g, i, j));
+          printf("%d, %d, %d, %d, %d ", x, y, k, game_nb_neighbors(g, i, j, BLACK), game_get_status(g, i, j));
           return false;
         }
         game_play_move(g, x, y, BLACK);
@@ -441,49 +442,39 @@ bool test_get_next_square(void) {
 }
 
 bool test_default(void) {
-
-    game g;
-    g = game_default();
-    int count_noempty = 0;
-    for (int x = 0; x < DEFAULT_SIZE; x++) {
-      for (int y = 0; y < DEFAULT_SIZE; y++) {
-        if (game_get_color(g, x, y) == EMPTY && game_get_status(g, x, y)==UNSATISFIED) {
-          if (game_get_constraint(g, x, y)==0 && x==0 && y==0 ) { 
-              count_noempty++;
-          }
-          else if (game_get_constraint(g, x, y)==3 && x==0 && y==3 ) { 
-              count_noempty++;
-          }
-          else if (game_get_constraint(g, x, y)==5 && x==1 && y==1 ) { 
-              count_noempty++;
-          }
-          else if (game_get_constraint(g, x, y)==4 && x==2 && y==2 ) { 
-              count_noempty++;
-          }
-          else if (game_get_constraint(g, x, y)==6 && x==3 && y==0 ) {
-              count_noempty++;
-          }
-          else if (game_get_constraint(g, x, y)==6 && x==3 && y==2 ) { 
-              count_noempty++;
-          }
-          else if (game_get_constraint(g, x, y)==3 && x==3 && y==3 ) { 
-              count_noempty++;
-          }
-          else if (game_get_constraint(g, x, y)==1 && x==2 && y==4 ) { 
-              count_noempty++;
-          }
-          else if (game_get_constraint(g, x, y)!=-1) { 
-              return false;
-          }
+  game g;
+  g = game_default();
+  int count_noempty = 0;
+  for (int x = 0; x < DEFAULT_SIZE; x++) {
+    for (int y = 0; y < DEFAULT_SIZE; y++) {
+      if (game_get_color(g, x, y) == EMPTY && game_get_status(g, x, y) == UNSATISFIED) {
+        if (game_get_constraint(g, x, y) == 0 && x == 0 && y == 0) {
+          count_noempty++;
+        } else if (game_get_constraint(g, x, y) == 3 && x == 0 && y == 3) {
+          count_noempty++;
+        } else if (game_get_constraint(g, x, y) == 5 && x == 1 && y == 1) {
+          count_noempty++;
+        } else if (game_get_constraint(g, x, y) == 4 && x == 2 && y == 2) {
+          count_noempty++;
+        } else if (game_get_constraint(g, x, y) == 6 && x == 3 && y == 0) {
+          count_noempty++;
+        } else if (game_get_constraint(g, x, y) == 6 && x == 3 && y == 2) {
+          count_noempty++;
+        } else if (game_get_constraint(g, x, y) == 3 && x == 3 && y == 3) {
+          count_noempty++;
+        } else if (game_get_constraint(g, x, y) == 1 && x == 2 && y == 4) {
+          count_noempty++;
+        } else if (game_get_constraint(g, x, y) != -1) {
+          return false;
         }
       }
     }
-    game_delete(g);
-    if(count_noempty!=8){
-      return false;
-    }
-    return true;
-
+  }
+  game_delete(g);
+  if (count_noempty != 8) {
+    return false;
+  }
+  return true;
 }
 
 bool test_print(void) {
