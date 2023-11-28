@@ -16,7 +16,7 @@ struct game_s {
 // fonction safe malloc qui vérifie l'allocation de g
 game safeMalloc() {
   // vérification de l'allocation pour g
-  game g = malloc(sizeof(game));
+  game g = malloc(sizeof(game)*3);
   if (g == NULL) {
     fprintf(stderr, "Game NULL\n");
     exit(EXIT_FAILURE);
@@ -35,7 +35,7 @@ game safeMalloc() {
 
 void checkGame(game g, uint i, uint j, char *text) {
   if (i >= DEFAULT_SIZE || j >= DEFAULT_SIZE) {
-    printf("Dans %s, les index entrés sont > à la longueur/largeur du tableau.", text);
+    fprintf(stderr, "Dans %s, les index entrés sont > à la longueur/largeur du tableau.", text);
     exit(EXIT_FAILURE);
   }
   if (g == NULL) {
