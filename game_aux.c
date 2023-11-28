@@ -6,10 +6,8 @@
 
 #define GAME_SIZE (DEFAULT_SIZE*DEFAULT_SIZE)
 
-void safeMalloc(game g);
-void checkIJ(uint i, uint j, char* text);
-void gameNull(game g);
-void gameConstNull(cgame g);
+game safeMalloc(void);
+void checkGame(game g,uint i, uint j, char* text);
 void putStatus(game g, uint i, uint j);
 
 struct game_s{
@@ -21,7 +19,7 @@ struct game_s{
 
 
 void game_print(cgame g) {
-    gameConstNull(g);
+    checkGame((game)g,0 ,0, "game_print");
     //affichage de la barre du haut et des nombres du haut
     printf("   ");
     for(int i =0; i<DEFAULT_SIZE;i++){
@@ -144,8 +142,7 @@ void game_print(cgame g) {
 game game_default(void) {
 
     //création de game et vérification de sa création
-    game g=malloc(sizeof(game));
-    safeMalloc(g); 
+    game g=safeMalloc(); 
 
     //mise en place des conditions de game_default
     for(int i=0; i<GAME_SIZE; i++){   

@@ -14,8 +14,9 @@ struct game_s{
 };
 
 //fonction safe malloc qui vérifie l'allocation de g
-void safeMalloc(game g){   
+game safeMalloc(){   
     //vérification de l'allocation pour g
+    game g=malloc(sizeof(game)); 
     if(g==NULL){
         fprintf(stderr, "Game NULL\n");
         exit(EXIT_FAILURE);
@@ -29,59 +30,22 @@ void safeMalloc(game g){
         fprintf(stderr, "Game parameters NULL\n");
         exit(EXIT_FAILURE);
     }
+    return g;
 }
 
-void checkIJ(uint i, uint j, char* text){
+void checkGame(game g, uint i, uint j, char * text){
   if (i >= DEFAULT_SIZE || j >= DEFAULT_SIZE) {
     printf("Dans %s, les index entrés sont > à la longueur/largeur du tableau.", text);
     exit(EXIT_FAILURE);
   }
+  if(g==NULL){
+    fprintf(stderr, "Game NULL dans %s\n", text);
+    exit(EXIT_FAILURE);
+  }
 }
 
-void gameNull(game g){
-  if(g==NULL){
-    fprintf(stderr, "Game NULL\n");
-    exit(EXIT_FAILURE);
-  }
-}
-void gameConstNull(cgame g){
-  if(g==NULL){
-    fprintf(stderr, "Game const NULL\n");
-    exit(EXIT_FAILURE);
-  }
-}
 
 void putStatus(game g, uint i, uint j){
-  /*switch (game_get_constraint(g,i,j))
-  {
-  case -1:
-    g->statut[i+DEFAULT_SIZE*j]=SATISFIED;
-    break;
-  
-  case 0:
-    if(game_nb_neighbors(g, i, j, BLACK)>=1){
-      g->statut[i+DEFAULT_SIZE*j]=ERROR;
-    }
-    if (game_nb_neighbors(g, i, j, BLACK)==game_get_constraint(g,i, j) && game_nb_neighbors(g,i,j, EMPTY)==0)
-    {
-      g->statut[i+DEFAULT_SIZE*j]=SATISFIED;
-    }
-    else{
-      g->statut[i+DEFAULT_SIZE*j]=UNSATISFIED;
-    }
-    break;
-  default:
-    if((game_nb_neighbors(g, i ,j, BLACK)==game_get_constraint(g, i ,j) && game_nb_neighbors(g, i ,j, WHITE)==MAX_CONSTRAINT-game_get_constraint(g, i ,j))&& game_nb_neighbors(g,i ,j, EMPTY)==0){
-      g->statut[i+DEFAULT_SIZE*j]=SATISFIED;
-    }
-    if((game_nb_neighbors(g, i ,j, BLACK)<game_get_constraint(g, i ,j) && game_nb_neighbors(g, i ,j, WHITE)>MAX_CONSTRAINT-game_get_constraint(g, i ,j))){
-      g->statut[i+DEFAULT_SIZE*j]=UNSATISFIED;
-    }
-    if((game_nb_neighbors(g, i ,j, BLACK)>game_get_constraint(g, i ,j) && game_nb_neighbors(g, i ,j, WHITE)<MAX_CONSTRAINT-game_get_constraint(g, i ,j))){
-      g->statut[i+DEFAULT_SIZE*j]=ERROR;
-    }
-    break;
-  }*/
   if(game_get_constraint(g, i, j)==0){
     if(game_nb_neighbors(g, i, j, BLACK)>=1){
       g->statut[j+DEFAULT_SIZE*i]=ERROR;
@@ -95,13 +59,13 @@ void putStatus(game g, uint i, uint j){
     }
     
   }
-  if((game_nb_neighbors(g, i ,j, BLACK)==game_get_constraint(g, i ,j) && game_nb_neighbors(g, i ,j, WHITE)==MAX_CONSTRAINT-game_get_constraint(g, i ,j))&& game_nb_neighbors(g,i ,j, EMPTY)==0){
+  if((game_nb_neighbors(g, i ,j, BLACK)==game_get_constraint(g, i ,j) && game_nb_neighbors(g, i ,j, WHITE)==(game_nb_neighbors(g, i, j, BLACK)+game_nb_neighbors(g, i, j, WHITE))-game_get_constraint(g, i ,j))&& game_nb_neighbors(g,i ,j, EMPTY)==0){
     g->statut[j+DEFAULT_SIZE*i]=SATISFIED;
   }
-  if((game_nb_neighbors(g, i ,j, BLACK)<game_get_constraint(g, i ,j) && game_nb_neighbors(g, i ,j, WHITE)>MAX_CONSTRAINT-game_get_constraint(g, i ,j))){
+  if((game_nb_neighbors(g, i ,j, BLACK)<game_get_constraint(g, i ,j) && game_nb_neighbors(g, i ,j, WHITE)>(game_nb_neighbors(g, i, j, BLACK)+game_nb_neighbors(g, i, j, WHITE))-game_get_constraint(g, i ,j))){
     g->statut[j+DEFAULT_SIZE*i]=UNSATISFIED;
   }
-  if((game_nb_neighbors(g, i ,j, BLACK)>game_get_constraint(g, i ,j) && game_nb_neighbors(g, i ,j, WHITE)<MAX_CONSTRAINT-game_get_constraint(g, i ,j))){
+  if((game_nb_neighbors(g, i ,j, BLACK)>game_get_constraint(g, i ,j) && game_nb_neighbors(g, i ,j, WHITE)<(game_nb_neighbors(g, i, j, BLACK)+game_nb_neighbors(g, i, j, WHITE))-game_get_constraint(g, i ,j))){
     g->statut[j+DEFAULT_SIZE*i]=ERROR;
   }
   if(game_get_constraint(g, i, j)==-1){
@@ -114,14 +78,12 @@ void putStatus(game g, uint i, uint j){
 game game_new(constraint *constraints, color *colors)
 {
   //création de game
-    game g=malloc(sizeof(game)); 
-    safeMalloc(g);
+    game g=safeMalloc();
 
     //mise en place des conditions de game_new
     size_t size_color=sizeof(g->couleur);
     for(int i=0; i<DEFAULT_SIZE; i++){
         for(int j=0; j<DEFAULT_SIZE; j++){
-
           if(game_nb_neighbors(g, i, j, BLACK)==game_get_constraint(g, i ,j) || game_nb_neighbors(g, i, j, WHITE)==MAX_CONSTRAINT-game_get_constraint(g, i ,j)){
             g->statut[j+DEFAULT_SIZE*i]=SATISFIED;
           }
@@ -144,9 +106,7 @@ game game_new(constraint *constraints, color *colors)
 
 game game_new_empty(void)
 {
-  game g=malloc(sizeof(game)); 
-  safeMalloc(g);
-
+  game g=safeMalloc();
   size_t size_color=sizeof(g->couleur);
   for(int i=0; i<GAME_SIZE; i++){
     g->statut[i]=UNSATISFIED;
@@ -159,9 +119,8 @@ game game_new_empty(void)
 
 game game_copy(cgame g)
 {
-  gameConstNull(g);
-  game g2=malloc(sizeof(game)); 
-  safeMalloc(g2);
+  checkGame((game)g, 0,0, "game_copy");
+  game g2=safeMalloc();
   for(int i=0; i<GAME_SIZE; i++){
     g2->contrainte[i]=g->contrainte[i];
     g2->statut[i]=g->statut[i];
@@ -174,18 +133,8 @@ game game_copy(cgame g)
 
 bool game_equal(cgame g1, cgame g2)
 {
-  gameConstNull(g2);
-  gameConstNull(g1);
-  /*size_t size_constraint=sizeof(g1->contrainte); 
-  size_t size_color=sizeof(g1->couleur);
-  size_t size_status=sizeof(g1->statut);
-
-  for(int i=0; i<GAME_SIZE; i++){
-      if(memcmp(g1->contrainte, g2->contrainte, size_constraint)!=0 || memcmp(g1->couleur, g2->couleur, size_color)!=0 || memcmp(g1->statut, g2->statut, size_status)!=0)
-      {
-        return false;
-      }
-    }*/
+  checkGame((game)g2, 0,0, "game_equal");
+  checkGame((game)g1, 0,0, "game_equal");
   for(int i=0; i<GAME_SIZE; i++){
     if(g2->contrainte[i]!=g1->contrainte[i] || g2->statut[i]!=g1->statut[i] || g2->couleur[i]!=g1->couleur[i]){
       return false;
@@ -198,7 +147,7 @@ bool game_equal(cgame g1, cgame g2)
 
 void game_delete(game g)
 {
-  gameNull(g);
+  checkGame(g, 0,0, "game_delete");
   if(g!=NULL){
     free(g->couleur);
     free(g->contrainte);
@@ -210,42 +159,35 @@ void game_delete(game g)
 
 void game_set_constraint(game g, uint i, uint j, constraint n)
 {
-  gameNull(g);
-  checkIJ(i,j, "game_set_constraint");
+  checkGame(g,i ,j, "game_get_constraint");
   g->contrainte[j+DEFAULT_SIZE*i]=n;
 }
 
 
 void game_set_color(game g, uint i, uint j, color c)
 {
-  gameNull(g);
-  checkIJ(i,j, "game_set_color");
-  if (g != NULL) {
-    g->couleur[j+DEFAULT_SIZE*i]=c;
-  }
+  checkGame(g,i ,j, "game_set_color");
+  g->couleur[j+DEFAULT_SIZE*i]=c;
 }
 
 
 constraint game_get_constraint(cgame g, uint i, uint j)
 {
-  gameConstNull(g);
-  checkIJ(i,j, "game_get,constraint");
+  checkGame((game)g,i ,j, "game_get_constraint");
   return g->contrainte[j+DEFAULT_SIZE*i];
 }
 
 
 color game_get_color(cgame g, uint i, uint j)
 {
-  gameConstNull(g);
-  checkIJ(i,j, "game_get_color");
+  checkGame((game)g,i ,j, "game_get_color");
   return g->couleur[j+DEFAULT_SIZE*i];
 }
 
 
 bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next, uint *pj_next)
 {
-  gameConstNull(g);
-  checkIJ(i,j, "game_get_next_square");
+  checkGame((game)g,i,j, "game_get_next_square");
   if(g == NULL){
     fprintf(stderr, "Game NULL\n");
     return EXIT_FAILURE;
@@ -306,20 +248,17 @@ bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next,
 
 status game_get_status(cgame g, uint i, uint j)
 {
-  gameConstNull(g);
-  checkIJ(i,j, "game_get_status");
+  checkGame((game)g,i ,j, "game_get_status");
   return g->statut[j+DEFAULT_SIZE*i];
 }
 
 
 int game_nb_neighbors(cgame g, uint i, uint j, color c)
 {
-  gameConstNull(g);
-  
-  checkIJ(i,j, "game_nb_neighbors");
+  checkGame((game)g,i, j, "game_nb_neighbors");
   uint count=0;
-  uint pi_next[DEFAULT_SIZE+2];
-  uint pj_next[DEFAULT_SIZE+2];
+  uint pi_next[DEFAULT_SIZE];
+  uint pj_next[DEFAULT_SIZE];
 
   for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
       if(game_get_next_square(g, i, j, dir, pi_next, pj_next)==true){
@@ -334,15 +273,13 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c)
 
 void game_play_move(game g, uint i, uint j, color c)
 {
-  gameNull(g);
-  checkIJ(i,j, "game_play_move");
+  checkGame(g,i ,j, "game_play_move");
   game_set_color(g, i, j, c);
-
   putStatus(g,i,j);
 
   //Ajouter que cela valide aussi si les voisins de i j peuvent être satisfait
-  uint pi_next[DEFAULT_SIZE+2];
-  uint pj_next[DEFAULT_SIZE+2];
+  uint pi_next[DEFAULT_SIZE];
+  uint pj_next[DEFAULT_SIZE];
 
   for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
 
@@ -356,10 +293,10 @@ void game_play_move(game g, uint i, uint j, color c)
 
 bool game_won(cgame g)
 {
-  gameConstNull(g);
+  checkGame((game)g,0 ,0, "game_won");
   for(int i=0; i<DEFAULT_SIZE; i++){
     for(int j=0; j<DEFAULT_SIZE; j++){
-      if(game_get_color(g, i, j)==EMPTY || game_get_status(g, i, j)!=SATISFIED){
+      if(game_get_color(g, i, j)==EMPTY || game_get_status(g, i,j)!=SATISFIED){
         return false;
       }
     }
@@ -370,7 +307,7 @@ bool game_won(cgame g)
 
 void game_restart(game g)
 {
-  gameNull(g);
+  checkGame(g,0 ,0, "game_restart");
   for(int i=0; i<DEFAULT_SIZE; i++){
     for(int j=0; j<DEFAULT_SIZE; j++){
       game_set_color(g, i, j, EMPTY);

@@ -107,7 +107,6 @@ bool test_set_constraint() {
     for (int x = 0; x < DEFAULT_SIZE; x++) {
       if (game_get_status(g, x, y) != SATISFIED) {
         game_print(g);
-        printf("%d %dfsdqfsq", x, y);
         return false;
       }
     }
