@@ -103,7 +103,6 @@ bool test_new(void) {
   for (int i = 0; i < DEFAULT_SIZE; i++) {
     for (int j = 0; j < DEFAULT_SIZE; j++) {
       if ((game_get_color(g_Test, i, j) != EMPTY) || (game_get_constraint(g_Test, i, j) != -1)) {
-        printf("x=%d, y=%d, %d %d", i, j, game_get_color(g_Test, i, j), game_get_constraint(g_Test, i, j));
         return false;
       }
     }

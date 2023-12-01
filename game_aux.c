@@ -19,7 +19,7 @@ struct game_s {
 
 void game_print(cgame g) {
   checkGame((game)g, 0, 0, "game_print");
-  // affichage de la barre du haut et des nombres du haut
+  // prints the numbers and the top outline
   printf("   ");
   for (int i = 0; i < DEFAULT_SIZE; i++) {
     printf("%d", i);
@@ -32,12 +32,14 @@ void game_print(cgame g) {
   }
   printf("\n");
 
-  // affichage des nombres
+  // prints the game numbers
   for (int i = 0; i < DEFAULT_SIZE; i++) {
+    // prints the numbers on the left side
     printf("%d |", i);
+    //
     for (int j = 0; j < DEFAULT_SIZE; j++) {
       switch (g->couleur[j + DEFAULT_SIZE * i]) {
-        case EMPTY:  // pour EMPTY
+        case EMPTY:  // for EMPTY
           if (g->contrainte[j + DEFAULT_SIZE * i] == UNCONSTRAINED) {
             printf(" ");
           } else
@@ -49,7 +51,7 @@ void game_print(cgame g) {
           printf(" ");
           break;
 
-        case WHITE:  // pour WHITE
+        case WHITE:  // for WHITE
           if (g->contrainte[j + DEFAULT_SIZE * i] == UNCONSTRAINED) {
             printf("□ ");
           }
@@ -86,7 +88,7 @@ void game_print(cgame g) {
           }
 
           break;
-        case BLACK:  // pour BLACK
+        case BLACK:  // for BLACK
           if (g->contrainte[j + DEFAULT_SIZE * i] == UNCONSTRAINED) {
             printf("■ ");
           }
@@ -124,10 +126,11 @@ void game_print(cgame g) {
           break;
       }
     }
+    // prints the left and right outline
     printf("|\n");
   }
-  // affichage de la barre du bas
   printf("   ");
+  // prints the outline at the bottom
   for (int i = 0; i < DEFAULT_SIZE; i++) {
     printf("--");
   }
@@ -135,13 +138,13 @@ void game_print(cgame g) {
 }
 
 game game_default(void) {
-  // création de game et vérification de sa création
   game g = safeMalloc();
-
-  // mise en place des conditions de game_default
+  // setting up the different precise constraints in game_default
   for (int i = 0; i < GAME_SIZE; i++) {
+    // puts the color EMPTY and the status UNSTATISFIED to all squares
     g->statut[i] = UNSATISFIED;
     g->couleur[i] = EMPTY;
+    // puts the correct constraint to all squares
     if (i == 0) {
       g->contrainte[i] = 0;
     } else if (i == 3) {
@@ -167,6 +170,7 @@ game game_default(void) {
 
 game game_default_solution(void) {
   game g = game_default();
+  // puts all of the squares to SATISFIED and changes the colors of it according to the solution
   for (int i = 0; i < DEFAULT_SIZE; i++) {
     for (int j = 0; j < DEFAULT_SIZE; j++) {
       g->statut[j + DEFAULT_SIZE * i] = SATISFIED;

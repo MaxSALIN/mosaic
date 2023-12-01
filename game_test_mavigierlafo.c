@@ -15,9 +15,7 @@ bool test_default();
 bool test_print();
 void usage(int argc, char *argv[]);
 
-bool test_dummy(void) {
-  return true;
-}
+bool test_dummy(void) { return true; }
 
 bool test_won(void) {
   game g;
@@ -138,7 +136,7 @@ bool test_nb_neighbors(void) {
 
   for (int x = i - 1; x <= i + 1; x++) {
     for (int y = j - 1; y <= j + 1; y++) {
-      if (game_get_color(g, x, j) == c) {
+      if (game_get_color(g, x, y) == c) {
         nb_neighbors++;
       }
     }
