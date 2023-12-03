@@ -165,6 +165,11 @@ game game_default(void) {
       g->contrainte[i] = -1;
     }
   }
+  for (int i = 0; i < DEFAULT_SIZE; i++) {
+    for (int j = 0; j < DEFAULT_SIZE; j++) {
+      putStatus(g, i, j);
+    }
+  }
   return g;
 }
 

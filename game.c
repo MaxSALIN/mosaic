@@ -48,26 +48,30 @@ void checkGame(game g, uint i, uint j, char *text) {
 }
 
 void putStatus(game g, uint i, uint j) {
-  // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
-  if ((game_nb_neighbors(g, i, j, BLACK) == game_get_constraint(g, i, j) &&
-       game_nb_neighbors(g, i, j, WHITE) ==
-           (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE)) - game_get_constraint(g, i, j)) &&
-      game_nb_neighbors(g, i, j, EMPTY) == 0) {
-    g->statut[j + DEFAULT_SIZE * i] = SATISFIED;
-  }
-  if ((game_nb_neighbors(g, i, j, BLACK) < game_get_constraint(g, i, j) &&
-       game_nb_neighbors(g, i, j, WHITE) >
-           (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE)) - game_get_constraint(g, i, j))) {
-    g->statut[j + DEFAULT_SIZE * i] = UNSATISFIED;
-  }
-  if ((game_nb_neighbors(g, i, j, BLACK) > game_get_constraint(g, i, j) &&
-       game_nb_neighbors(g, i, j, WHITE) <
-           (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE)) - game_get_constraint(g, i, j))) {
-    g->statut[j + DEFAULT_SIZE * i] = ERROR;
-  }
   // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
   if (game_get_constraint(g, i, j) == -1) {
     g->statut[j + DEFAULT_SIZE * i] = SATISFIED;
+  }
+  // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
+  else if (game_get_constraint(g, i, j) != -1) {
+    if ((game_nb_neighbors(g, i, j, BLACK) == game_get_constraint(g, i, j) &&
+         game_nb_neighbors(g, i, j, WHITE) ==
+             (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE)) - game_get_constraint(g, i, j)) &&
+        game_nb_neighbors(g, i, j, EMPTY) == 0) {
+      g->statut[j + DEFAULT_SIZE * i] = SATISFIED;
+    } else if ((game_nb_neighbors(g, i, j, BLACK) > game_get_constraint(g, i, j) ||
+                game_nb_neighbors(g, i, j, WHITE) >
+                    (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE) +
+                     game_nb_neighbors(g, i, j, EMPTY)) -
+                        game_get_constraint(g, i, j))) {  // bug à patch
+      g->statut[j + DEFAULT_SIZE * i] = ERROR;
+    } else if ((game_nb_neighbors(g, i, j, BLACK) < game_get_constraint(g, i, j) ||
+                game_nb_neighbors(g, i, j, WHITE) <
+                    (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE) +
+                     game_nb_neighbors(g, i, j, EMPTY)) -
+                        game_get_constraint(g, i, j))) {
+      g->statut[j + DEFAULT_SIZE * i] = UNSATISFIED;
+    }
   }
 }
 

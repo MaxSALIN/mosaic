@@ -206,14 +206,19 @@ bool test_get_status(void) {
         game_play_move(g, x, y, WHITE);
       }
     }
+    game_print(g);
     for (int y = i - 1; y <= i + 1; y++) {
       for (int x = j - 1; x <= j + 1; x++) {
-        if (game_nb_neighbors(g, i, j, BLACK) < k && game_get_status(g, i, j) != UNSATISFIED) {
+        if ((game_nb_neighbors(g, i, j, BLACK) >= k && game_get_status(g, i, j) == UNSATISFIED)) {
+          printf("%d %d , %d  | %d %d %d %d \n", i, j, game_get_status(g, i, j), game_nb_neighbors(g, i, j, BLACK),
+                 game_nb_neighbors(g, i, j, WHITE), game_nb_neighbors(g, i, j, EMPTY), game_get_constraint(g, i, j));
+          game_print(g);
           return false;
         }
         game_play_move(g, x, y, BLACK);
       }
     }
+    game_restart(g);
   }
   game_delete(g);
   game_delete(g_dummy);
