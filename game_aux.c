@@ -135,6 +135,25 @@ void game_print(cgame g) {
     printf("--");
   }
   printf("\n");
+    // Afficher les indices des colonnes en haut
+    printf("   ");
+    for (int i = 0; i < DEFAULT_SIZE; i++) {
+        printf("%d  ", i);
+    }
+    printf("\n");
+
+    // Afficher les indices des lignes et les éléments du tableau
+    for (int i = 0; i < DEFAULT_SIZE; i++) {
+        // Afficher l'indice de la ligne sur le côté gauche
+        printf("%d |", i);
+
+        // Afficher les éléments du tableau
+        for (int j = 0; j < DEFAULT_SIZE; j++) {
+            printf(" %d ", g.tableau[i][j]);
+        }
+
+        printf("\n");
+    }
 }
 
 game game_default(void) {
