@@ -1,328 +1,289 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
 #include "game.h"
 
-/**
- * @brief Standard unsigned integer type.
- **/
-typedef unsigned int uint;
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-/**
- * @brief Size of the default game grid.
- **/
-#define DEFAULT_SIZE 5
+#define GAME_SIZE (DEFAULT_SIZE * DEFAULT_SIZE)
 
-/** square colors */
-typedef enum
-{
-  EMPTY, /**< empty square */
-  WHITE, /**< white square */
-  BLACK  /**< blacksquare */
-} color;
-
-/** square constraints
- * @details These constants are numerical constraints that indicate the expected
- * number of black squares in the 3x3 neighborhood of a given square (including
- * itself). All valid constant numbers are between 0 and 9. The special constant
- * UNCONSTRAINED (-1) indicates that there is no particular constraint on a
- * square, i.e. there can be any number of black squares in its neighborhood.
- *
- * @warning Values from 0 to 9 are not explicitly listed here, but can be used
- * normally with this enumeration type. For example, `constraint n = 3` is
- * correct.
- **/
-typedef enum
-{
-  UNCONSTRAINED = -1,  /**< unconstrained square */
-  MIN_CONSTRAINT = -1, /**< minimum square constraint */
-  MAX_CONSTRAINT = 9   /**< maximum square constraint */
-} constraint;
-/** square status
- * @details These constants are used to indicate the status of a square in the
- * grid, that can be either ERROR, SATISFIED or UNSATISFIED  depending on the
- * colors of its 3x3 neighborhood (including the square itself). More precisely,
- * the ERROR status indicates that the number of black (or white) squares in the
- * neighborhood is too high, so that the numerical square constraint cannot be
- * met. The SATISFIED status indicates that the number of black squares in the
- * neighborhood is equal to the numerical square constraint, and that the other
- * squares are white, i.e. there are no more EMPTY squares in the 3x3
- * neighborhood. Finally, the status UNSATISFIED indicates that the numerical
- * constraint has not yet been satisfied, but may still be. In this case, there
- * are still EMPTY squares in the neighborhood, but there are no obvious errors.
- * 
- * @warning All theses statuses are mutually exclusive, i.e. a square cannot be
- * both ERROR and UNSATISFIED.
-**/
-typedef enum
-{
-  ERROR,       /**< error status */
-  UNSATISFIED, /**< unsatisfied status */
-  SATISFIED    /**< satisfied status */
-} status;
-/**
- * @brief All possible directions in the game grid to explore the neighbourhood
- * of a given square.
- **/
-typedef enum
-{
-  HERE,
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT,
-  UP_LEFT,
-  UP_RIGHT,
-  DOWN_LEFT,
-  DOWN_RIGHT
-} direction;
-
-/**
- * @brief The structure pointer that stores the game state.
- **/
-typedef struct game_s *game{
-    color* couleur;
-    constraint* contrainte;
-    status* statut;
-    uint* tableau;
+struct game_s {
+  color *couleur;
+  constraint *contrainte;
+  status *statut;
 };
 
-/**
- * @brief The structure constant pointer that stores the game state.
- * @details That means that it is not possible to modify the game using this
- * pointer.
- **/
-typedef const struct game_s *cgame;
+game safeMalloc() {
+  // allocation of the game g
+  game g = malloc(sizeof(game) * 3);
+  // checks if it's correctly allocated
+  if (g == NULL) {
+    fprintf(stderr, "Game NULL\n");
+    exit(EXIT_FAILURE);
+  }
 
-/**
- * @brief Creates a new game with default size and initializes it.
- *
- * @param constraints an array describing the initial constraint of each square using
- * row-major storage (of size DEFAULT_SIZE squared)
- * @param colors an array describing the initial color of each square using
- * row-major storage  (of size DEFAULT_SIZE squared) or NULL to set all colors
- * as EMPTY
- * @pre @p constraints must be an initialized array of default size squared
- * @pre @p colors must be an initialized array of default size squared or NULL
- * @return the created game
- **/
-game game_new(constraint *constraints, color *colors)
-{
-  return EXIT_SUCCESS;
+  // creates the different arrays in the structure game
+  g->couleur = malloc(sizeof(*(g->couleur)) * GAME_SIZE);
+  g->contrainte = malloc(sizeof(*(g->contrainte)) * GAME_SIZE);
+  g->statut = malloc(sizeof(*(g->statut)) * GAME_SIZE);
+  // checks if they're correctly allocated
+  if (g->couleur == NULL || g->contrainte == NULL || g->statut == NULL) {
+    fprintf(stderr, "Game parameters NULL\n");
+    exit(EXIT_FAILURE);
+  }
+  return g;
 }
 
-/**
- * @brief Creates a new empty game with defaut size.
- *
- * @details All squares are initialized with unconstrained squares, with empty
- * color.
- * @return the created game
- **/
-game game_new_empty(void)
-{
-  return EXIT_SUCCESS;
+void checkGame(game g, uint i, uint j, char *text) {
+  // checks if i and j are between 0 and DEFAULT_SIZE-1
+  if (i >= DEFAULT_SIZE || j >= DEFAULT_SIZE) {
+    fprintf(stderr, "In %s, the parameters for i and j are not between 0 and %d", text, DEFAULT_SIZE - 1);
+    exit(EXIT_FAILURE);
+  }
+  // checks if the game is not NULL
+  if (g == NULL) {
+    fprintf(stderr, "Game NULL in %s\n", text);
+    exit(EXIT_FAILURE);
+  }
 }
 
-/**
- * @brief Duplicates a game.
- *
- * @param g the game to copy
- * @return the copy of the game
- * @pre @p g must be a valid pointer toward a game structure.
- **/
-game game_copy(cgame g)
-{
-  return EXIT_SUCCESS;
+void putStatus(game g, uint i, uint j) {
+  // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
+  if (game_get_constraint(g, i, j) == -1) {
+    g->statut[j + DEFAULT_SIZE * i] = SATISFIED;
+  }
+  // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
+  else if (game_get_constraint(g, i, j) != -1) {
+    if ((game_nb_neighbors(g, i, j, BLACK) == game_get_constraint(g, i, j) &&
+         game_nb_neighbors(g, i, j, WHITE) ==
+             (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE)) - game_get_constraint(g, i, j)) &&
+        game_nb_neighbors(g, i, j, EMPTY) == 0) {
+      g->statut[j + DEFAULT_SIZE * i] = SATISFIED;
+    } else if ((game_nb_neighbors(g, i, j, BLACK) > game_get_constraint(g, i, j) ||
+                game_nb_neighbors(g, i, j, WHITE) >
+                    (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE) +
+                     game_nb_neighbors(g, i, j, EMPTY)) -
+                        game_get_constraint(g, i, j))) {  // bug à patch
+      g->statut[j + DEFAULT_SIZE * i] = ERROR;
+    } else if ((game_nb_neighbors(g, i, j, BLACK) < game_get_constraint(g, i, j) ||
+                game_nb_neighbors(g, i, j, WHITE) <
+                    (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE) +
+                     game_nb_neighbors(g, i, j, EMPTY)) -
+                        game_get_constraint(g, i, j))) {
+      g->statut[j + DEFAULT_SIZE * i] = UNSATISFIED;
+    }
+  }
 }
 
-/**
- * @brief Tests if two games are equal.
- *
- * @param g1 the first game
- * @param g2 the second game
- * @return true if the two games are equal, false otherwise
- * @pre @p g1 must be a valid pointer toward a game structure.
- * @pre @p g2 must be a valid pointer toward a game structure.
- **/
-bool game_equal(cgame g1, cgame g2)
-{
-  return EXIT_SUCCESS;
+game game_new(constraint *constraints, color *colors) {
+  game g = safeMalloc();
+  if (constraints == NULL) {
+    exit(EXIT_FAILURE);
+  }
+  // puts the constraints and colors of the wanted game
+  for (int i = 0; i < DEFAULT_SIZE; i++) {
+    for (int j = 0; j < DEFAULT_SIZE; j++) {
+      g->contrainte[j + DEFAULT_SIZE * i] = constraints[j + DEFAULT_SIZE * i];
+      if (colors == NULL) {
+        g->couleur[j + DEFAULT_SIZE * i] = EMPTY;
+      } else {
+        g->couleur[j + DEFAULT_SIZE * i] = colors[j + DEFAULT_SIZE * i];
+      }
+    }
+  }
+  // changes the status according to the colors and constraints previously chosen
+  for (int i = 0; i < DEFAULT_SIZE; i++) {
+    for (int j = 0; j < DEFAULT_SIZE; j++) {
+      putStatus(g, i, j);
+    }
+  }
+  return g;
 }
 
-/**
- * @brief Deletes the game and frees the allocated memory.
- * @param g the game to delete
- * @pre @p g must be a valid pointer toward a game structure.
- **/
-void game_delete(game g)
-{
-  return EXIT_SUCCESS;
+game game_new_empty(void) {
+  game g = safeMalloc();
+  // creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
+  for (int i = 0; i < GAME_SIZE; i++) {
+    g->statut[i] = UNSATISFIED;
+    g->couleur[i] = EMPTY;
+    g->contrainte[i] = UNCONSTRAINED;
+  }
+  return g;
 }
 
-/**
- * @brief Sets the constraint of a given square.
- *
- * @details This function is useful for initializing the squares of an empty
- * game.
- * @param g the game
- * @param i row index
- * @param j column index
- * @param n the square constraint (or -1 if unconstrained square)
- * @pre @p g must be a valid pointer toward a game structure.
- * @pre @p i < game height
- * @pre @p j < game width
- * @pre @p n >= MIN_CONSTRAINT and @p n <= MAX_CONSTRAINT
- **/
-void game_set_constraint(game g, uint i, uint j, constraint n)
-{
-  return EXIT_SUCCESS;
+game game_copy(cgame g) {
+  checkGame((game)g, 0, 0, "game_copy");
+  game g2 = safeMalloc();
+  // copies the constraint, color and status from g to g2
+  for (int i = 0; i < GAME_SIZE; i++) {
+    g2->contrainte[i] = g->contrainte[i];
+    g2->statut[i] = g->statut[i];
+    g2->couleur[i] = g->couleur[i];
+  }
+
+  return g2;
 }
 
-/**
- * @brief Sets the color of a given square.
- *
- * @details This function is useful for initializing the squares of an empty
- * game.
- * @param g the game
- * @param i row index
- * @param j column index
- * @param c the square color
- * @pre @p g must be a valid pointer toward a game structure.
- * @pre @p i < game height
- * @pre @p j < game width
- * @pre @p c must be a valid color (BLACK, WHITE or EMPTY)
- **/
-void game_set_color(game g, uint i, uint j, color c)
-{
-  return EXIT_SUCCESS;
+bool game_equal(cgame g1, cgame g2) {
+  checkGame((game)g2, 0, 0, "game_equal");
+  checkGame((game)g1, 0, 0, "game_equal");
+  // checks if the constraint, color and status are the same between g1 and g2 for all squares
+  for (int i = 0; i < GAME_SIZE; i++) {
+    if (g2->contrainte[i] != g1->contrainte[i] || g2->statut[i] != g1->statut[i] || g2->couleur[i] != g1->couleur[i]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
-/**
- * @brief Gets the constraint of a given square.
- *
- * @param g the game
- * @param i row index
- * @param j column index
- * @pre @p g must be a valid pointer toward a game structure.
- * @pre @p i < game height
- * @pre @p j < game width
- * @return the square constraint or -1 if unconstrained square
- **/
-constraint game_get_constraint(cgame g, uint i, uint j)
-{
-  return EXIT_SUCCESS;
+void game_delete(game g) {
+  checkGame(g, 0, 0, "game_delete");
+  free(g->couleur);
+  free(g->contrainte);
+  free(g->statut);
+  free(g);
 }
 
-/**
- * @brief Gets the color of a given square.
- *
- * @param g the game
- * @param i row index
- * @param j column index
- * @pre @p g must be a valid pointer toward a game structure.
- * @pre @p i < game height
- * @pre @p j < game width
- * @return the square color
- **/
-color game_get_color(cgame g, uint i, uint j)
-{
-  return EXIT_SUCCESS;
+void game_set_constraint(game g, uint i, uint j, constraint n) {
+  checkGame(g, i, j, "game_get_constraint");
+  g->contrainte[j + DEFAULT_SIZE * i] = n;
 }
 
-/**
- * @brief Gets the coordinate of the next square in a given direction.
- * @param g the game
- * @param i row index
- * @param j column index
- * @param dir the direction
- * @param[out] pi_next the row index of the next square (output)
- * @param[out] pj_next the column index of the next square (output)
- * @pre @p g must be a valid pointer toward a game structure.
- * @pre @p i < game height
- * @pre @p j < game width
- * @return true if the next square is inside the grid, false otherwise
- */
-bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next, uint *pj_next)
-{
-  return EXIT_SUCCESS;
+void game_set_color(game g, uint i, uint j, color c) {
+  checkGame(g, i, j, "game_set_color");
+  g->couleur[j + DEFAULT_SIZE * i] = c;
 }
 
-/**
- * @brief Gets the square status.
- *
- * @param g the game
- * @param i the row index
- * @param j the column index
- * @return the square status, either ERROR, UNSATISFIED or SATISFIED.
- */
-status game_get_status(cgame g, uint i, uint j)
-{
-  return EXIT_SUCCESS;
+constraint game_get_constraint(cgame g, uint i, uint j) {
+  checkGame((game)g, i, j, "game_get_constraint");
+  return g->contrainte[j + DEFAULT_SIZE * i];
 }
 
-/**
- * @brief Returns the number of neighbors of the same color.
- *
- * @details This function counts the number of squares of color @p c in the 3x3
- * neighborhood of the square at coordinate (i, j), including the square itself
- * in this count.
- * @param g the game
- * @param i row index
- * @param j column index
- * @param c the choosen color
- * @pre @p g must be a valid pointer toward a game structure.
- * @pre @p i < game height
- * @pre @p j < game width
- * @return the number of neighbors of the same color
- */
-int game_nb_neighbors(cgame g, uint i, uint j, color c)
-{
-  return EXIT_SUCCESS;
+color game_get_color(cgame g, uint i, uint j) {
+  checkGame((game)g, i, j, "game_get_color");
+  return g->couleur[j + DEFAULT_SIZE * i];
 }
 
-/**
- * @brief Plays a move in a given square.
- *
- * @param g the game
- * @param i row index
- * @param j column index
- * @param c the color to play
- * @pre @p g must be a valid pointer toward a game structure.
- * @pre @p i < game height
- * @pre @p j < game width
- * @pre @p c must be a valid color (BLACK, WHITE or EMPTY)
- **/
-void game_play_move(game g, uint i, uint j, color c)
-{
-  return EXIT_SUCCESS;
+bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next, uint *pj_next) {
+  checkGame((game)g, i, j, "game_get_next_square");
+
+  // cases of the sides
+  if ((j == DEFAULT_SIZE - 1 && ((dir == RIGHT) || (dir == UP_RIGHT) || (dir == DOWN_RIGHT))) ||
+      (i == DEFAULT_SIZE - 1 && ((dir == DOWN) || (dir == DOWN_RIGHT) || (dir == DOWN_LEFT))) ||
+      (j == 0 && ((dir == LEFT) || (dir == DOWN_LEFT) || (dir == UP_LEFT))) ||
+      (i == 0 && ((dir == UP) || (dir == UP_RIGHT) || (dir == UP_LEFT)))) {
+    return false;
+  }
+
+  // changes the output values of pi_next and pj_next to match the direction
+  switch (dir) {
+    case UP:
+      *pi_next = i - 1;
+      *pj_next = j;
+      break;
+    case DOWN:
+      *pi_next = i + 1;
+      *pj_next = j;
+      break;
+    case LEFT:
+      *pi_next = i;
+      *pj_next = j - 1;
+      break;
+    case RIGHT:
+      *pi_next = i;
+      *pj_next = j + 1;
+      break;
+    case UP_LEFT:
+      *pi_next = i - 1;
+      *pj_next = j - 1;
+      break;
+    case UP_RIGHT:
+      *pi_next = i - 1;
+      *pj_next = j + 1;
+      break;
+    case DOWN_LEFT:
+      *pi_next = i + 1;
+      *pj_next = j - 1;
+      break;
+    case DOWN_RIGHT:
+      *pi_next = i + 1;
+      *pj_next = j + 1;
+      break;
+    case HERE:
+      *pi_next = i;
+      *pj_next = j;
+      break;
+    default:
+      fprintf(stderr, "Error in game_get_next_square");
+      exit(EXIT_FAILURE);
+      break;
+  }
+
+  return true;
 }
 
-/**
- * @brief Checks if the game is won.
- *
- * @param g the game
- * @details This function checks that all the game rules are satisfied, i.e. all
- * squares have color WHITE or BLACK with status SATISFIED.
- * @return true if the game is won, false otherwise
- * @pre @p g must be a valid pointer toward a game structure.
- * @pre @p i < game height
- * @pre @p j < game width
- **/
-bool game_won(cgame g)
-{
-  return EXIT_SUCCESS;
+status game_get_status(cgame g, uint i, uint j) {
+  checkGame((game)g, i, j, "game_get_status");
+  return g->statut[j + DEFAULT_SIZE * i];
 }
 
-/**
- * @brief Restarts a game.
- *
- * @details All the game is reset to its initial state. In particular, all the
- * colors are removed.
- * @param g the game
- * @pre @p g must be a valid pointer toward a game structure.
- **/
-void game_restart(game g)
-{
-  return EXIT_SUCCESS;
+int game_nb_neighbors(cgame g, uint i, uint j, color c) {
+  checkGame((game)g, i, j, "game_nb_neighbors");
+  uint count = 0;
+  uint pi_next = 0;
+  uint pj_next = 0;
+  // checks all around the square chosen the number of neighbors with the same color as c
+  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+    if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+      if (game_get_color(g, pi_next, pj_next) == c) {
+        count++;
+      }
+    }
+  }
+  return count;
+}
+
+void game_play_move(game g, uint i, uint j, color c) {
+  checkGame(g, i, j, "game_play_move");
+  // changes the color and status of the played square
+  game_set_color(g, i, j, c);
+  putStatus(g, i, j);
+  uint pi_next = 0;
+  uint pj_next = 0;
+  // changes the status for the neighbor squares
+  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+    if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+      putStatus(g, pi_next, pj_next);
+    }
+  }
+}
+
+bool game_won(cgame g) {
+  checkGame((game)g, 0, 0, "game_won");
+  // checks if all of the squares are colored at satisfied
+  for (int i = 0; i < DEFAULT_SIZE; i++) {
+    for (int j = 0; j < DEFAULT_SIZE; j++) {
+      if (game_get_color(g, i, j) == EMPTY || game_get_status(g, i, j) != SATISFIED) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+void game_restart(game g) {
+  checkGame(g, 0, 0, "game_restart");
+  // puts all of the squares to EMPTY
+  for (int i = 0; i < DEFAULT_SIZE; i++) {
+    for (int j = 0; j < DEFAULT_SIZE; j++) {
+      game_set_color(g, i, j, EMPTY);
+    }
+  }
+  // changes all of the status of the squares
+  for (int i = 0; i < DEFAULT_SIZE; i++) {
+    for (int j = 0; j < DEFAULT_SIZE; j++) {
+      putStatus(g, i, j);
+    }
+  }
 }

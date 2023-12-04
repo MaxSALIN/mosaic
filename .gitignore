@@ -8,7 +8,8 @@ cmake_install.cmake
 CMakeCache.txt
 CTestTestfile.cmake
 DartConfiguration.tcl
-game_text
+
 game_test_masalin
 game_test_toccelli
 game_test_mavigierlafo
+game_text

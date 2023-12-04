@@ -12,6 +12,13 @@ add_executable(game_test_toccelli game_test_toccelli.c)
 add_executable(game_test_masalin game_test_masalin.c)
 add_executable(game_test_mavigierlafo game_test_mavigierlafo.c)
 
+add_library(game game.c game_aux.c)
+
+target_link_libraries(game_text game)
+target_link_libraries(game_test_toccelli game)
+target_link_libraries(game_test_masalin game)
+target_link_libraries(game_test_mavigierlafo game)
+
 add_test(test_toccelli_dummy ./game_test_toccelli dummy)
 add_test(test_toccelli_set_color ./game_test_toccelli set_color)
 add_test(test_toccelli_play_move ./game_test_toccelli play_move)
