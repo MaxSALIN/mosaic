@@ -5,6 +5,9 @@
 
 #include "game.h"
 #include "game_aux.h"
+#include "game_struct.h"
+#include "game_ext.h"
+
 
 bool test_dummy();
 bool test_won();
@@ -191,8 +194,6 @@ bool test_get_status(void) {
             game_get_status(g, i, j) != SATISFIED && game_nb_neighbors(g, i, j, EMPTY) == 0) {
           return false;
         } else if ((game_nb_neighbors(g, i, j, BLACK) > k && game_get_status(g, i, j) != ERROR)) {
-          game_print(g);
-          printf("%d, %d, %d, %d, %d ", x, y, k, game_nb_neighbors(g, i, j, BLACK), game_get_status(g, i, j));
           return false;
         }
         game_play_move(g, x, y, BLACK);
@@ -206,13 +207,9 @@ bool test_get_status(void) {
         game_play_move(g, x, y, WHITE);
       }
     }
-    game_print(g);
     for (int y = i - 1; y <= i + 1; y++) {
       for (int x = j - 1; x <= j + 1; x++) {
         if ((game_nb_neighbors(g, i, j, BLACK) >= k && game_get_status(g, i, j) == UNSATISFIED)) {
-          printf("%d %d , %d  | %d %d %d %d \n", i, j, game_get_status(g, i, j), game_nb_neighbors(g, i, j, BLACK),
-                 game_nb_neighbors(g, i, j, WHITE), game_nb_neighbors(g, i, j, EMPTY), game_get_constraint(g, i, j));
-          game_print(g);
           return false;
         }
         game_play_move(g, x, y, BLACK);

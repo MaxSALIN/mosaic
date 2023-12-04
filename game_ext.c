@@ -7,13 +7,13 @@
 #include "game_ext.h"
 
 
-game safeMalloc(void);
+game safeMalloc(uint row, uint col);
 void checkGame(game g, uint i, uint j, char *text);
 void putStatus(game g, uint i, uint j);
 
 game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *colors, bool wrapping,
                   neighbourhood neigh){
-  game g = safeMalloc();
+  game g = safeMalloc(nb_rows, nb_cols);
   if (constraints == NULL) {
     exit(EXIT_FAILURE);
   }
@@ -22,19 +22,19 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
   g->wrapping=wrapping;
   g->neighbour=neigh;
   // puts the constraints and colors of the wanted game
-  for (int i = 0; i < nb_cols; i++) {
-    for (int j = 0; j < nb_rows; j++) {
-      g->contrainte[j + nb_rows * i] = constraints[j + nb_rows * i];
+  for (int i = 0; i < nb_rows; i++) {
+    for (int j = 0; j < nb_cols; j++) {
+      g->contrainte[j + nb_cols * i] = constraints[j + nb_cols * i];
       if (colors == NULL) {
-        g->couleur[j + nb_rows * i] = EMPTY;
+        g->couleur[j + nb_cols * i] = EMPTY;
       } else {
-        g->couleur[j + nb_rows * i] = colors[j + nb_rows * i];
+        g->couleur[j + nb_cols * i] = colors[j + nb_cols * i];
       }
     }
   }
   // changes the status according to the colors and constraints previously chosen
-  for (int i = 0; i < g->row; i++) {
-    for (int j = 0; j < g->row; j++) {
+  for (int i = 0; i < nb_rows; i++) {
+    for (int j = 0; j < nb_cols; j++) {
       putStatus(g, i, j);
     }
   }
@@ -43,13 +43,13 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
 
 game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping, neighbourhood neigh){
 
-    game g = safeMalloc();
+    game g = safeMalloc(nb_rows, nb_cols);
     g->wrapping = wrapping;
     g->row = nb_rows;
     g->col = nb_cols;
-
+    g->neighbour=neigh;
     // creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
-    for (int i = 0; i < (g->col*g->row); i++) {
+    for (int i = 0; i < (nb_cols*nb_rows); i++) {
         g->statut[i] = UNSATISFIED;
         g->couleur[i] = EMPTY;
         g->contrainte[i] = UNCONSTRAINED;
@@ -70,7 +70,7 @@ bool game_is_wrapping(cgame g){
     return g->wrapping;
 }
 
-neighbourhood game_get_neighourhood(cgame g){
+neighbourhood game_get_neighbourhood(cgame g){
     return g->neighbour;
 }
 

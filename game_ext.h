@@ -82,7 +82,7 @@ bool game_is_wrapping(cgame g);
  * @return the neighborhood option
  * @pre @p g is a valid pointer toward a cgame structure
  **/
-neighbourhood game_get_neighourhood(cgame g);
+neighbourhood game_get_neighbourhood(cgame g);
 
 /**
  * @brief Undoes the last move.
