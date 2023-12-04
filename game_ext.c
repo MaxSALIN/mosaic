@@ -14,13 +14,17 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
 game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping, neighbourhood neigh){
 
     game g = safeMalloc();
+    g->wrapping = wrapping;
+    g->row = nb_rows;
+    g->col = nb_cols;
+
     // creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
     for (int i = 0; i < (g->col*g->row); i++) {
         g->statut[i] = UNSATISFIED;
         g->couleur[i] = EMPTY;
         g->contrainte[i] = UNCONSTRAINED;
-        g->wrapping = wrapping;
     }
+    
   return g;
 }
 
