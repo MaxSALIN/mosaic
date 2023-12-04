@@ -1,4 +1,5 @@
 #include "game.h"
+#include "game_struct.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -6,12 +7,6 @@
 #include <string.h>
 
 #define GAME_SIZE (DEFAULT_SIZE * DEFAULT_SIZE)
-
-struct game_s {
-  color *couleur;
-  constraint *contrainte;
-  status *statut;
-};
 
 game safeMalloc() {
   // allocation of the game g

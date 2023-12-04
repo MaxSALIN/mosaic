@@ -1,4 +1,5 @@
 #include "game_aux.h"
+#include "game_struct.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -10,12 +11,6 @@
 game safeMalloc(void);
 void checkGame(game g, uint i, uint j, char *text);
 void putStatus(game g, uint i, uint j);
-
-struct game_s {
-  color *couleur;
-  constraint *contrainte;
-  status *statut;
-};
 
 void game_print(cgame g) {
   checkGame((game)g, 0, 0, "game_print");
