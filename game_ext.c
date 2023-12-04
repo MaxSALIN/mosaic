@@ -12,7 +12,16 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
 }
 
 game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping, neighbourhood neigh){
-    return NULL;
+
+    game g = safeMalloc();
+    // creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
+    for (int i = 0; i < (g->col*g->row); i++) {
+        g->statut[i] = UNSATISFIED;
+        g->couleur[i] = EMPTY;
+        g->contrainte[i] = UNCONSTRAINED;
+        g->wrapping = wrapping;
+    }
+  return g;
 }
 
 uint game_nb_rows(cgame g){
@@ -28,8 +37,7 @@ bool game_is_wrapping(cgame g){
 }
 
 neighbourhood game_get_neighourhood(cgame g){
-    if (g->wrapping) {  return g->neighbour; }
-    return 0;
+    return g->neighbour;
 }
 
 void game_undo(game g){
