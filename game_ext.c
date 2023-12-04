@@ -25,15 +25,15 @@ game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping, neighbourhood
 }
 
 uint game_nb_rows(cgame g){
-    return 0;
+    return g->row;
 }
 
 uint game_nb_cols(cgame g){
-    return 0;
+    return g->col;
 }
 
 bool game_is_wrapping(cgame g){
-    return false;
+    return g->wrapping;
 }
 
 neighbourhood game_get_neighourhood(cgame g){
