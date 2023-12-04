@@ -16,6 +16,8 @@ struct game_s {
   status *statut;
   neighbourhood neighbour;
   bool wrapping;
+  uint row;
+  uint col;
 };
 
 #endif
