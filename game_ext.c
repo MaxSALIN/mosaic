@@ -28,6 +28,7 @@ bool game_is_wrapping(cgame g){
 }
 
 neighbourhood game_get_neighourhood(cgame g){
+    if (g->wrapping) {  return g->neighbour; }
     return 0;
 }
 
