@@ -15,13 +15,13 @@ void game_print(cgame g) {
   checkGame((game)g, 0, 0, "game_print");
   // prints the numbers and the top outline
   printf("   ");
-  for (int i = 0; i < g->row; i++) {
+  for (int i = 0; i < g->col; i++) {
     printf("%d", i);
     printf(" ");
   }
   printf("\n");
   printf("   ");
-  for (int i = 0; i < g->row; i++) {
+  for (int i = 0; i < g->col; i++) {
     printf("--");
   }
   printf("\n");
@@ -125,7 +125,7 @@ void game_print(cgame g) {
   }
   printf("   ");
   // prints the outline at the bottom
-  for (int i = 0; i < g->row; i++) {
+  for (int i = 0; i < g->col; i++) {
     printf("--");
   }
   printf("\n");

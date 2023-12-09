@@ -72,7 +72,40 @@ void putStatus(game g, uint i, uint j) {
   }
   //case of ORTHO
   if(g->neighbour==ORTHO){
-
+    uint black, white, empty=0;
+    uint pi_next=0;
+    uint pj_next=0;
+    for(int k =0; k<5;k++){
+      if(game_get_next_square(g, i, j, k, &pi_next, &pj_next)){
+        if(game_get_color(g, pi_next, pj_next)==BLACK){
+          black++;
+        }
+        else if(game_get_color(g, pi_next, pj_next)==WHITE){
+          white++;
+        }
+        else{
+          empty++;
+        }
+      }
+    }
+    if (black == game_get_constraint(g, i, j) &&
+        white ==
+            black + white - game_get_constraint(g, i, j) &&
+        empty == 0) {
+      g->statut[j + g->col* i] = SATISFIED;
+    } else if (black > game_get_constraint(g, i, j) ||
+                white >
+                    black + white +
+                    empty -
+                        game_get_constraint(g, i, j)) {
+      g->statut[j + g->col* i] = ERROR;
+    } else if (black < game_get_constraint(g, i, j) ||
+                white <
+                    black + white +
+                    empty -
+                        game_get_constraint(g, i, j)) {
+      g->statut[j + g->col* i] = UNSATISFIED;
+    }
   }
   //case of FULL_EXCLUDE
   if(g->neighbour==FULL_EXCLUDE){
@@ -103,7 +136,40 @@ void putStatus(game g, uint i, uint j) {
   }
   //case of ORTHO_EXCLUDE
   if(g->neighbour==ORTHO_EXCLUDE){
-    
+    uint black, white, empty=0;
+    uint pi_next=0;
+    uint pj_next=0;
+    for(int k =1; k<5;k++){
+      if(game_get_next_square(g, i, j, k, &pi_next, &pj_next)){
+        if(game_get_color(g, pi_next, pj_next)==BLACK){
+          black++;
+        }
+        else if(game_get_color(g, pi_next, pj_next)==WHITE){
+          white++;
+        }
+        else{
+          empty++;
+        }
+      }
+    }
+    if (black == game_get_constraint(g, i, j) &&
+        white ==
+            black + white - game_get_constraint(g, i, j) &&
+        empty == 0) {
+      g->statut[j + g->col* i] = SATISFIED;
+    } else if (black > game_get_constraint(g, i, j) ||
+                white >
+                    black + white +
+                    empty -
+                        game_get_constraint(g, i, j)) {
+      g->statut[j + g->col* i] = ERROR;
+    } else if (black < game_get_constraint(g, i, j) ||
+                white <
+                    black + white +
+                    empty -
+                        game_get_constraint(g, i, j)) {
+      g->statut[j + g->col* i] = UNSATISFIED;
+    }
   }
 }
 
@@ -270,7 +336,10 @@ bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next,
   //case of wrapping
   else{
     // cases of the corners
-    if ((j==g->row-1 && i==g->col-1 && dir==DOWN_RIGHT) || (j==g->col-1 && i==0 && dir== UP_RIGHT) || (j==0 && i==g->col-1 && dir == DOWN_LEFT) || (j==0 && i==0 && dir==UP_LEFT)){
+    if ((j==g->row-1 && i==g->col-1 && (dir==DOWN_RIGHT || dir==DOWN || dir==DOWN_LEFT)) || (j==g->col-1 && i==0 && dir== UP_RIGHT) || (j==0 && i==g->col-1 && (dir == DOWN_LEFT || dir==DOWN || dir==DOWN_RIGHT || dir==LEFT || dir==UP_LEFT)) || (j==0 && i==0 && (dir==UP_LEFT || dir==LEFT || dir==DOWN_LEFT))){
+      return false;
+    }
+    if((j==0 && (dir==UP_LEFT || dir==LEFT || dir==DOWN_LEFT)) || (i=g->row-1 && (dir==DOWN_LEFT || dir==DOWN ||dir==DOWN_RIGHT))){
       return false;
     }
 

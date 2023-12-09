@@ -8,6 +8,7 @@
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
+#include "queue.h"
 
 
 // functions
@@ -18,6 +19,8 @@ bool test_get_constraint(void);
 bool test_delete(void);
 bool test_new(void);
 bool test_default_solution(void);
+bool new_empty_ext(void);
+bool new_ext(void);
 void usage(int argc, char *argv[]);
 
 // coding of functions
@@ -176,6 +179,54 @@ bool test_default_solution(void) {
   return true;
 }
 
+bool test_new_empty_ext(void){
+  for(int row=1; row<=10; row++){
+    for(int col=1; col<=10; col++){
+      game g = game_new_empty_ext(row, col, false, FULL_EXCLUDE);
+      if (g == NULL) {
+        return false;
+      }
+      for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+          if ((game_get_color(g, i, j) != EMPTY) || (game_get_constraint(g, i, j) != -1)) {
+            return false;
+          }
+        }
+      }
+      game_print(g);
+      game_delete(g);
+    }
+  }
+  return true;
+}
+
+bool test_new_ext(void){
+  for(int row=1; row<=10; row++){ //marche pas avec 1
+    for(int col=1; col<=10; col++){
+      constraint constraints1[row * col];
+      for (int i = 0; i < row * col; i++) {
+        constraints1[i] = -1;
+      }
+      for(int neigh = FULL; neigh<=ORTHO_EXCLUDE; neigh++){
+        game g_Test = game_new_ext(row, col, constraints1, NULL, true, neigh);
+        if (g_Test == NULL) {
+          return false;
+        }
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+              if ((game_get_color(g_Test, i, j) != EMPTY) || (game_get_constraint(g_Test, i, j) != -1)) {
+                
+                return false;
+              }
+            }
+          }
+        game_delete(g_Test);
+      }
+    }
+  }
+  return true;
+}
+
 int main(int argc, char *argv[]) {
   if (argc == 1) {
     usage(argc, argv);
@@ -215,6 +266,16 @@ int main(int argc, char *argv[]) {
   // test default_solution
   else if (strcmp("default_solution", argv[1]) == 0) {
     result_test = test_default_solution();
+  }
+
+  // test new_empty_ext
+  else if (strcmp("new_empty_ext", argv[1]) == 0) {
+    result_test = test_new_empty_ext();
+  }
+
+   // test new_ext
+  else if (strcmp("new_ext", argv[1]) == 0) {
+    result_test = test_new_ext();
   }
 
   else {
