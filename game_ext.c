@@ -80,7 +80,7 @@ neighbourhood game_get_neighbourhood(cgame g){
 
 void game_undo(game g){
 
-  if (g->queue != NULL) {
+  if (g->queue != NULL && g->queue_saves != NULL) {
     queue_push_tail(g->queue_saves, queue_pop_head(g->queue));
     queue_pop_head(g->queue);
 
@@ -91,12 +91,12 @@ void game_undo(game g){
 }
 
 void game_redo(game g){
-    if (g->queue != NULL) {
+    if (!queue_is_empty(g->queue) && !queue_is_empty(g->queue_saves)) {
         queue_push_head(g->queue, queue_pop_tail(g->queue_saves));
         queue_pop_tail(g->queue_saves);
 
         print("Tail element of the saves queue has been moved to the game queue (redo).");
     } else {
-       print("Error: queue is undefined");
+       print("Error: queues is undefined");
     }
 }
