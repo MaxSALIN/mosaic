@@ -1,6 +1,7 @@
 #include "game.h"
 #include "game_struct.h"
 #include "game_ext.h"
+#include "queue.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -177,6 +178,8 @@ game game_new(constraint *constraints, color *colors) {
   g->col=DEFAULT_SIZE;
   g->wrapping=false;
   g->neighbour=FULL;
+  g->queue=queue_new();
+  g->queue_saves=queue_new();
   if (constraints == NULL) {
     exit(EXIT_FAILURE);
   }
@@ -206,6 +209,8 @@ game game_new_empty(void) {
   g->col=DEFAULT_SIZE;
   g->wrapping=false;
   g->neighbour=FULL;
+  g->queue=queue_new();
+  g->queue_saves=queue_new();
   // creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
   for (int i = 0; i < g->col*g->row; i++) {
     g->statut[i] = UNSATISFIED;
@@ -222,6 +227,10 @@ game game_copy(cgame g) {
   g2->wrapping=g->wrapping;
   g2->row=g->row;
   g2->col=g->col;
+  g2->queue=queue_new();
+  g2->queue_saves=queue_new();
+  g2->queue=g->queue;
+  g2->queue_saves=g->queue_saves;
   // copies the constraint, color and status from g to g2
   for (int i = 0; i < g2->col*g2->row; i++) {
     g2->contrainte[i] = g->contrainte[i];
@@ -250,6 +259,10 @@ void game_delete(game g) {
   free(g->couleur);
   free(g->contrainte);
   free(g->statut);
+  queue_clear_full(g->queue, free);
+  queue_free(g->queue);
+  queue_clear_full(g->queue_saves, free);
+  queue_free(g->queue_saves);
   free(g);
 }
 
@@ -485,6 +498,8 @@ void game_play_move(game g, uint i, uint j, color c) {
     printf("%d", game_get_next_square(g, i, j, dir, &pi_next, &pj_next));
     if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
       putStatus(g, pi_next, pj_next);
+      queue_push_head(game_copy(g));
+      queue_clear_full(g->queue_saves, free);
     }
   }
 }
@@ -516,4 +531,6 @@ void game_restart(game g) {
       putStatus(g, i, j);
     }
   }
+  queue_clear_full(g->queue, free);
+  queue_clear_full(g->queue_saves, free);
 }
