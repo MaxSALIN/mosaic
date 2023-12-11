@@ -1,6 +1,7 @@
 #include "game.h"
 #include "game_struct.h"
 #include "game_ext.h"
+#include "queue.h"
 
 #include <stdbool.h>
 #include <stdio.h>

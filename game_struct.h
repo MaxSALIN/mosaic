@@ -9,6 +9,7 @@
 #include "game.h"
 #include "game_ext.h"
 #include "game_aux.h"
+#include "queue.h"
 
 struct game_s {
   color *couleur;
@@ -18,6 +19,7 @@ struct game_s {
   bool wrapping;
   uint row;
   uint col;
+  queue_s queue;
 };
 
 #endif
