@@ -31,7 +31,7 @@ game safeMalloc(uint row, uint col) {
 void checkGame(game g, uint i, uint j, char *text) {
   // checks if i and j are between 0 and g->row-1 or g->col-1
   if (i >= g->row || j >= g->col) {
-    fprintf(stderr, "In %s, the parameters for i and j are not between 0 and %d for i and 0 and %d for j", text, g->row - 1, g->col-1);
+    fprintf(stderr, "In %s, the parameters for i and j are not between 0 and %d for i and 0 and %d for j :\ni=%d\nj=%d\n", text, g->row - 1, g->col-1,i, j);
     exit(EXIT_FAILURE);
   }
   // checks if the game is not NULL
@@ -71,7 +71,7 @@ void putStatus(game g, uint i, uint j) {
     }
   }
   //case of ORTHO
-  if(g->neighbour==ORTHO){
+  /*if(g->neighbour==ORTHO){
     uint black, white, empty=0;
     uint pi_next=0;
     uint pj_next=0;
@@ -106,17 +106,19 @@ void putStatus(game g, uint i, uint j) {
                         game_get_constraint(g, i, j)) {
       g->statut[j + g->col* i] = UNSATISFIED;
     }
-  }
+  }*/
   //case of FULL_EXCLUDE
   if(g->neighbour==FULL_EXCLUDE){
     //for 0
     if(game_get_constraint(g, i, j)==0 && game_get_color(g, i, j)==WHITE){
+      printf("%d %d", i, j);
       g->statut[j + g->col* i] = SATISFIED;
     }
     else if(game_get_constraint(g, i, j)==0 && game_get_color(g, i, j)==EMPTY){
       g->statut[j + g->col* i] = UNSATISFIED;
     }
     else if(game_get_constraint(g, i, j)==0 && game_get_color(g, i, j)==BLACK){
+      printf("%d %d", i, j);
       g->statut[j + g->col* i] = ERROR;
     }
     //for 1
@@ -130,12 +132,12 @@ void putStatus(game g, uint i, uint j) {
       g->statut[j + g->col* i] = UNSATISFIED;
     }
     //for the rest
-    else{
+    if(game_get_constraint(g, i, j)>1){
       g->statut[j + g->col* i] = ERROR;
     }
   }
   //case of ORTHO_EXCLUDE
-  if(g->neighbour==ORTHO_EXCLUDE){
+  /*if(g->neighbour==ORTHO_EXCLUDE){
     uint black, white, empty=0;
     uint pi_next=0;
     uint pj_next=0;
@@ -163,14 +165,10 @@ void putStatus(game g, uint i, uint j) {
                     empty -
                         game_get_constraint(g, i, j)) {
       g->statut[j + g->col* i] = ERROR;
-    } else if (black < game_get_constraint(g, i, j) ||
-                white <
-                    black + white +
-                    empty -
-                        game_get_constraint(g, i, j)) {
+    } else {
       g->statut[j + g->col* i] = UNSATISFIED;
     }
-  }
+  }*/
 }
 
 game game_new(constraint *constraints, color *colors) {
@@ -335,14 +333,6 @@ bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next,
   }
   //case of wrapping
   else{
-    // cases of the corners
-    if ((j==g->row-1 && i==g->col-1 && (dir==DOWN_RIGHT || dir==DOWN || dir==DOWN_LEFT)) || (j==g->col-1 && i==0 && dir== UP_RIGHT) || (j==0 && i==g->col-1 && (dir == DOWN_LEFT || dir==DOWN || dir==DOWN_RIGHT || dir==LEFT || dir==UP_LEFT)) || (j==0 && i==0 && (dir==UP_LEFT || dir==LEFT || dir==DOWN_LEFT))){
-      return false;
-    }
-    if((j==0 && (dir==UP_LEFT || dir==LEFT || dir==DOWN_LEFT)) || (i=g->row-1 && (dir==DOWN_LEFT || dir==DOWN ||dir==DOWN_RIGHT))){
-      return false;
-    }
-
     // changes the output values of pi_next and pj_next to match the direction
     switch (dir) {
       case UP:
@@ -355,12 +345,22 @@ bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next,
         }
         break;
       case DOWN:
-        *pi_next = i + 1;
-        *pj_next = j;
+        if(i==g->row-1){
+          *pi_next = 0;
+          *pj_next = j;
+        }else{
+          *pi_next = i +1;
+          *pj_next = j;
+        }
         break;
       case LEFT:
-        *pi_next = i;
-        *pj_next = j - 1;
+        if(j==0){
+          *pi_next = i;
+          *pj_next = g->col-1;
+        }else{
+          *pi_next = i;
+          *pj_next = j-1;
+        }
         break;
       case RIGHT:
         if(j==g->col-1){ //wrapping from right to left
@@ -372,20 +372,72 @@ bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next,
         }
         break;
       case UP_LEFT:
-        *pi_next = i - 1;
-        *pj_next = j - 1;
+        if(i==0 && j==0){
+          *pi_next = g->row-1;
+          *pj_next = g->col-1;
+        }
+        else if(i==0){ //wrapping from up to down
+          *pi_next = g->row-1;
+          *pj_next = j -1;
+        }
+        else if(j==0){
+          *pi_next = i-1;
+          *pj_next = g->col-1;
+        }else{
+          *pi_next = i - 1;
+          *pj_next = j - 1;
+        }
         break;
       case UP_RIGHT:
-        *pi_next = i - 1;
-        *pj_next = j + 1;
+        if(i==0 && j==g->col-1){
+          *pi_next = g->row-1;
+          *pj_next = 0;
+        }
+        else if(j==g->col-1){ //wrapping from right to left
+          *pi_next = i-1;
+          *pj_next = 0;
+        }
+        else if(i==0){ //wrapping from up to down
+          *pi_next = g->row-1;
+          *pj_next = j +1;
+        }else{
+          *pi_next = i-1;
+          *pj_next = j + 1;
+        }
         break;
       case DOWN_LEFT:
-        *pi_next = i + 1;
-        *pj_next = j - 1;
+        if(i==g->row-1 && j==0){
+          *pi_next = 0;
+          *pj_next = g->col-1;
+        }
+        else if(i==g->row-1){
+          *pi_next = 0;
+          *pj_next = j -1;
+        }
+        else if(j==0){
+          *pi_next = i + 1;
+          *pj_next = g->col-1;
+        }else{
+          *pi_next = i + 1;
+          *pj_next = j - 1;
+        }
         break;
       case DOWN_RIGHT:
-        *pi_next = i + 1;
-        *pj_next = j + 1;
+        if(i==g->row-1 && j==g->col-1){
+          *pi_next = 0;
+          *pj_next = 0;
+        }
+        else if(j==g->col-1){ //wrapping from right to left
+          *pi_next = i+1;
+          *pj_next = 0;
+        }
+        else if(i==g->row-1){
+          *pi_next = 0;
+          *pj_next = j+1;
+        }else{
+          *pi_next = i+1;
+          *pj_next = j + 1;
+        }
         break;
       case HERE:
         *pi_next = i;
@@ -430,6 +482,7 @@ void game_play_move(game g, uint i, uint j, color c) {
   uint pj_next = 0;
   // changes the status for the neighbor squares
   for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+    printf("%d", game_get_next_square(g, i, j, dir, &pi_next, &pj_next));
     if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
       putStatus(g, pi_next, pj_next);
     }

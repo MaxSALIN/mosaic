@@ -5,6 +5,7 @@
 #include "game.h"
 #include "game_struct.h"
 #include "game_ext.h"
+#include "queue.h"
 
 
 game safeMalloc(uint row, uint col);
@@ -79,5 +80,5 @@ void game_undo(game g){
 }
 
 void game_redo(game g){
-    
+
 }

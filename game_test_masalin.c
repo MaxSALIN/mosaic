@@ -201,7 +201,7 @@ bool test_new_empty_ext(void){
 }
 
 bool test_new_ext(void){
-  for(int row=1; row<=10; row++){ //marche pas avec 1
+  for(int row=1; row<=10; row++){ //problème de wrapping pour 1
     for(int col=1; col<=10; col++){
       constraint constraints1[row * col];
       for (int i = 0; i < row * col; i++) {
@@ -215,7 +215,6 @@ bool test_new_ext(void){
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
               if ((game_get_color(g_Test, i, j) != EMPTY) || (game_get_constraint(g_Test, i, j) != -1)) {
-                
                 return false;
               }
             }
@@ -224,6 +223,44 @@ bool test_new_ext(void){
       }
     }
   }
+  int row2=7;
+  int col2=6;
+  constraint constraints1[row2 * col2];
+  color colors1[row2 * col2];
+  for (int i = 0; i < row2 * col2; i++) {
+    constraints1[i] = 0;
+    colors1[i]=WHITE;
+  }
+  game g = game_new_ext(row2, col2, constraints1, colors1, true, FULL);
+  
+  for (int i = 0; i < row2; i++) {
+    for (int j = 0; j < col2; j++) {
+      if ((game_get_color(g, i, j) != WHITE) || (game_get_constraint(g, i, j) != 0) || game_get_status(g, i, j)!=SATISFIED) {
+        return false;
+      }
+    }
+  }
+  game_play_move(g, row2-1, col2-1, BLACK);
+  for (int i = 0; i < row2; i++) {
+    for (int j = 0; j < col2; j++) {
+      if((i==0 && j==0) || (i==0 && j>3) || (i>4 && j==0)){
+        if(game_is_wrapping(g)==true){   
+          if(game_get_status(g, i, j)!=ERROR){
+            return false;
+          }
+        }
+      }
+      else if(i>4 && j>3){
+        if(game_get_status(g, i, j)!=ERROR){
+          return false;
+        }
+      }
+      else if (game_get_status(g, i, j)!=SATISFIED){
+        return false;
+      }
+    }
+  }
+  game_delete(g);
   return true;
 }
 
