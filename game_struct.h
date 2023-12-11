@@ -20,6 +20,7 @@ struct game_s {
   uint row;
   uint col;
   queue *queue;
+  queue *queue_saves;
 };
 
 #endif
