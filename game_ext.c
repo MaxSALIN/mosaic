@@ -82,7 +82,6 @@ void game_undo(game g){
 
   if (g->queue != NULL && g->queue_saves != NULL) {
     queue_push_tail(g->queue_saves, queue_pop_head(g->queue));
-    queue_pop_head(g->queue);
 
     print("Head element of game queue has been moved to the saves queue (undo).");
   } else {
@@ -93,7 +92,6 @@ void game_undo(game g){
 void game_redo(game g){
     if (!queue_is_empty(g->queue) && !queue_is_empty(g->queue_saves)) {
         queue_push_head(g->queue, queue_pop_tail(g->queue_saves));
-        queue_pop_tail(g->queue_saves);
 
         print("Tail element of the saves queue has been moved to the game queue (redo).");
     } else {
