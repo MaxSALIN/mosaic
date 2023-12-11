@@ -21,8 +21,8 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
   g->col=nb_cols;
   g->wrapping=wrapping;
   g->neighbour=neigh;
-  g->queue=queue_new();
-  g->queue_saves=queue_new();
+  //g->queue=queue_new();
+  //g->queue_saves=queue_new();
   // puts the constraints and colors of the wanted game
   for (int i = 0; i < nb_rows; i++) {
     for (int j = 0; j < nb_cols; j++) {
@@ -50,8 +50,8 @@ game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping, neighbourhood
     g->row = nb_rows;
     g->col = nb_cols;
     g->neighbour=neigh;
-    g->queue=queue_new();
-    g->queue_saves=queue_new();
+    //g->queue=queue_new();
+    //g->queue_saves=queue_new();
     // creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
     for (int i = 0; i < (nb_cols*nb_rows); i++) {
         g->statut[i] = UNSATISFIED;
@@ -80,21 +80,21 @@ neighbourhood game_get_neighbourhood(cgame g){
 
 void game_undo(game g){
 
-  if (!queue_is_empty(g->queue)) {
+  /*if (!queue_is_empty(g->queue)) {
     queue_push_head(g->queue_saves, queue_pop_head(g->queue));
 
-    print("Head element of game queue has been moved to the saves queue (undo).");
+    printf("Head element of game queue has been moved to the saves queue (undo).");
   } else {
-    print("Error: queue is undefined");
-  }
+    printf("Error: queue is undefined");
+  }*/
 }
 
 void game_redo(game g){
-    if (!queue_is_empty(g->queue_saves)) {
+    /*if (!queue_is_empty(g->queue_saves)) {
         queue_push_head(g->queue, queue_pop_head(g->queue_saves));
 
-        print("Tail element of the saves queue has been moved to the game queue (redo).");
+        printf("Tail element of the saves queue has been moved to the game queue (redo).");
     } else {
-       print("Error: queues is undefined");
-    }
+       printf("Error: queues is undefined");
+    }*/
 }

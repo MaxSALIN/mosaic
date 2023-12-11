@@ -12,7 +12,7 @@ add_executable(game_test_toccelli game_test_toccelli.c)
 add_executable(game_test_masalin game_test_masalin.c)
 add_executable(game_test_mavigierlafo game_test_mavigierlafo.c)
 
-add_library(game game.c game_aux.c game_ext.c)
+add_library(game game.c game_aux.c game_ext.c queue.c)
 
 target_link_libraries(game_text game)
 target_link_libraries(game_test_toccelli game)
