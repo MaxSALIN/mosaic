@@ -19,7 +19,7 @@ struct game_s {
   bool wrapping;
   uint row;
   uint col;
-  queue_s *queue;
+  queue *queue;
 };
 
 #endif
