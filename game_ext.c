@@ -7,6 +7,8 @@
 #include "game_ext.h"
 #include "queue.h"
 
+// queue for saving all of undos to take them back then.
+queue* queue_saves;
 
 game safeMalloc(uint row, uint col);
 void checkGame(game g, uint i, uint j, char *text);
