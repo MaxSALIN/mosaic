@@ -102,7 +102,7 @@ void game_redo(game g){
   if (!queue_is_empty(g->queue_saves)) {
     game val=queue_peek_head(g->queue_saves);
     checkGame(val, 0, 0, "game_redo");
-    queue_push_head(g->queue, val);
+    queue_push_head(g->queue, game_copy(g));
     queue_pop_head(g->queue_saves);
     for (int i = 0; i < g->row; i++) {
       for (int j = 0; j < g->col; j++) {
