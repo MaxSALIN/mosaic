@@ -264,6 +264,51 @@ bool test_new_ext(void){
   return true;
 }
 
+bool test_undo_redo(void){
+  game g=game_default();
+  game g_copy1=game_copy(g);
+  game_play_move(g, 0, 0, BLACK);
+  game g_copy2=game_copy(g);
+  game_play_move(g, 0, 1, WHITE);
+  game g_copy3=game_copy(g);
+  game_undo(g);
+  if(!game_equal(g, g_copy2)){
+    printf("Erreur premier Undo");
+    return false;
+  }
+  game_undo(g);
+  if(!game_equal(g, g_copy1)){
+    printf("Erreur deuxième Undo");
+    return false;
+  }
+  game_redo(g);
+  if(!game_equal(g, g_copy2)){
+    printf("Erreur premier Redo");
+    return false;
+  }
+  game_redo(g);
+  if(!game_equal(g, g_copy3)){
+    printf("Erreur deuxième Redo");
+    return false;
+  }
+  game_undo(g);
+  game_play_move(g, 4, 4, WHITE);
+  game g_copyF=game_copy(g);
+  game_redo(g);
+  if(!game_equal(g, g_copyF)){
+    printf("Erreur dernier Undo/Redo");
+    return false;
+  }
+  game_delete(g);
+  game_delete(g_copy1);
+  game_delete(g_copy2);
+  game_delete(g_copy3);
+  game_delete(g_copyF);
+  return true;
+}
+
+//bool test_
+
 int main(int argc, char *argv[]) {
   if (argc == 1) {
     usage(argc, argv);
@@ -313,6 +358,11 @@ int main(int argc, char *argv[]) {
    // test new_ext
   else if (strcmp("new_ext", argv[1]) == 0) {
     result_test = test_new_ext();
+  }
+
+   // test undo_redo
+  else if (strcmp("undo_redo", argv[1]) == 0) {
+    result_test = test_undo_redo();
   }
 
   else {

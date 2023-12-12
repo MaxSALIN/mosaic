@@ -11,7 +11,7 @@
 
 game safeMalloc(uint row, uint col) {
   // allocation of the game g
-  game g = malloc(sizeof(game)*9);
+  game g = malloc(sizeof(game)*8);
   // checks if it's correctly allocated
   if (g == NULL) {
     fprintf(stderr, "Game NULL\n");
@@ -245,10 +245,10 @@ game game_new_empty(void) {
 game game_copy(cgame g) {
   checkGame((game)g, 0, 0, "game_copy");
   game g2 = safeMalloc(g->row, g->col);
-  g2->neighbour=g->neighbour;
-  g2->wrapping=g->wrapping;
   g2->row=g->row;
   g2->col=g->col;
+  g2->neighbour=g->neighbour;
+  g2->wrapping=g->wrapping;
   // copies the constraint, color and status from g to g2
   for (int i = 0; i < g2->col*g2->row; i++) {
     g2->contrainte[i] = g->contrainte[i];
@@ -277,8 +277,10 @@ void game_delete(game g) {
   free(g->couleur);
   free(g->contrainte);
   free(g->statut);
-  queue_free_full(g->queue, free);
-  queue_free_full(g->queue_saves, free);
+  queue_clear_full(g->queue, free);
+  queue_clear_full(g->queue_saves, free);
+  free(g->queue);
+  free(g->queue_saves);
   free(g);
 }
 
