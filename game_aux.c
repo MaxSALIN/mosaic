@@ -137,6 +137,8 @@ game game_default(void) {
   g->col=DEFAULT_SIZE;
   g->wrapping=false;
   g->neighbour=FULL;
+  g->queue=queue_new();
+  g->queue_saves=queue_new();
   // setting up the different precise constraints in game_default
   for (int i = 0; i < g->col*g->row; i++) {
     // puts the color EMPTY and the status UNSTATISFIED to all squares

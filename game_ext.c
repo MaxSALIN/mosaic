@@ -80,21 +80,38 @@ neighbourhood game_get_neighbourhood(cgame g){
 
 void game_undo(game g){
 
-  /*if (!queue_is_empty(g->queue)) {
-    queue_push_head(g->queue_saves, queue_pop_head(g->queue));
-
-    printf("Head element of game queue has been moved to the saves queue (undo).");
+  if (!queue_is_empty(g->queue)) {
+    game val=queue_peek_head(g->queue);
+    checkGame(val, 0, 0, "game_undo");
+    queue_push_head(g->queue_saves, game_copy(g));
+    queue_pop_head(g->queue);
+    for (int i = 0; i < g->row; i++) {
+      for (int j = 0; j < g->col; j++) {
+          g->statut[j + g->col* i]=val->statut[j + g->col* i];
+          g->contrainte[j + g->col* i]=val->contrainte[j + g->col* i];
+          g->couleur[j + g->col* i]=val->couleur[j + g->col* i];
+      }
+    }
+    
   } else {
-    printf("Error: queue is undefined");
-  }*/
+    printf("Error: no more undo");
+  }
 }
 
 void game_redo(game g){
-    /*if (!queue_is_empty(g->queue_saves)) {
-        queue_push_head(g->queue, queue_pop_head(g->queue_saves));
-
-        printf("Tail element of the saves queue has been moved to the game queue (redo).");
+  if (!queue_is_empty(g->queue_saves)) {
+    game val=queue_peek_head(g->queue_saves);
+    checkGame(val, 0, 0, "game_redo");
+    queue_push_head(g->queue, val);
+    queue_pop_head(g->queue_saves);
+    for (int i = 0; i < g->row; i++) {
+      for (int j = 0; j < g->col; j++) {
+          g->statut[j + g->col* i]=val->statut[j + g->col* i];
+          g->contrainte[j + g->col* i]=val->contrainte[j + g->col* i];
+          g->couleur[j + g->col* i]=val->couleur[j + g->col* i];
+      }
+    }
     } else {
-       printf("Error: queues is undefined");
-    }*/
+       printf("Error: no more redo");
+    }
 }

@@ -3,6 +3,7 @@
 
 #include "game.h"
 #include "game_aux.h"
+#include "game_ext.h"
 
 int main(void) {
   // Initialising game
@@ -44,6 +45,16 @@ int main(void) {
         printf("\nToo bad, you were so close, what a shame..\n");
         game_delete(g);
         return EXIT_SUCCESS;
+      }
+      if (choice == 'z')  // Undo
+      {
+        printf("\nMove Undo\n");
+        game_undo(g);
+      }
+      if (choice == 'y')  // Redo
+      {
+        printf("\nMove Redo\n");
+        game_redo(g);
       }
       if (choice == 'w' || choice == 'b' || choice == 'e')  // Move
       {

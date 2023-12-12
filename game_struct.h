@@ -19,8 +19,8 @@ struct game_s {
   bool wrapping;
   uint row;
   uint col;
-  //queue *queue;
-  //queue *queue_saves;
+  queue *queue;
+  queue *queue_saves;
 };
 
 #endif

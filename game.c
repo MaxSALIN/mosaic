@@ -3,6 +3,7 @@
 #include "game_ext.h"
 #include "queue.h"
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,13 +11,18 @@
 
 game safeMalloc(uint row, uint col) {
   // allocation of the game g
-  game g = malloc(sizeof(game) * 6);
+  game g = malloc(sizeof(game)*9);
   // checks if it's correctly allocated
   if (g == NULL) {
     fprintf(stderr, "Game NULL\n");
     exit(EXIT_FAILURE);
   }
-
+  g->queue=queue_new();
+  g->queue_saves=queue_new();
+  if (g->queue == NULL || g->queue_saves==NULL) {
+    fprintf(stderr, "queue NULL\n");
+    exit(EXIT_FAILURE);
+  }
   // creates the different arrays in the structure game
   g->couleur = malloc(sizeof(*(g->couleur)) * row* col);
   g->contrainte = malloc(sizeof(*(g->contrainte)) * row*col);
@@ -38,6 +44,11 @@ void checkGame(game g, uint i, uint j, char *text) {
   // checks if the game is not NULL
   if (g == NULL) {
     fprintf(stderr, "Game NULL in %s\n", text);
+    exit(EXIT_FAILURE);
+  }
+  // checks if queues are not NULL
+  if (g->queue == NULL || g->queue_saves==NULL) {
+    fprintf(stderr, "queue NULL\n");
     exit(EXIT_FAILURE);
   }
 }
@@ -192,8 +203,7 @@ game game_new(constraint *constraints, color *colors) {
   g->col=DEFAULT_SIZE;
   g->wrapping=false;
   g->neighbour=FULL;
-  //g->//queue=//queue_new();
-  //g->//queue_saves=//queue_new();
+  
   if (constraints == NULL) {
     exit(EXIT_FAILURE);
   }
@@ -223,8 +233,6 @@ game game_new_empty(void) {
   g->col=DEFAULT_SIZE;
   g->wrapping=false;
   g->neighbour=FULL;
-  //g->//queue=//queue_new();
-  //g->//queue_saves=//queue_new();
   // creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
   for (int i = 0; i < g->col*g->row; i++) {
     g->statut[i] = UNSATISFIED;
@@ -241,10 +249,6 @@ game game_copy(cgame g) {
   g2->wrapping=g->wrapping;
   g2->row=g->row;
   g2->col=g->col;
-  //g->//queue=//queue_new();
-  //g->//queue_saves=//queue_new();
-  //g->//queue=//g->//queue;
-  //g->//queue_saves=//g->//queue_saves;
   // copies the constraint, color and status from g to g2
   for (int i = 0; i < g2->col*g2->row; i++) {
     g2->contrainte[i] = g->contrainte[i];
@@ -273,10 +277,8 @@ void game_delete(game g) {
   free(g->couleur);
   free(g->contrainte);
   free(g->statut);
-  //queue_clear_full(//g->//queue, free);
-  //queue_free(//g->//queue);
-  //queue_clear_full(//g->//queue_saves, free);
-  //queue_free(//g->//queue_saves);
+  queue_free_full(g->queue, free);
+  queue_free_full(g->queue_saves, free);
   free(g);
 }
 
@@ -502,6 +504,8 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
 
 void game_play_move(game g, uint i, uint j, color c) {
   checkGame(g, i, j, "game_play_move");
+  queue_push_head(g->queue, game_copy(g));
+  queue_clear_full(g->queue_saves, free);
   // changes the color and status of the played square
   game_set_color(g, i, j, c);
   putStatus(g, i, j);
@@ -512,10 +516,9 @@ void game_play_move(game g, uint i, uint j, color c) {
     printf("%d", game_get_next_square(g, i, j, dir, &pi_next, &pj_next));
     if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
       putStatus(g, pi_next, pj_next);
-      ////queue_push_head(game_copy(g));
-      //queue_clear_full(//g->//queue_saves, free);
     }
   }
+  
 }
 
 bool game_won(cgame g) {
@@ -545,6 +548,7 @@ void game_restart(game g) {
       putStatus(g, i, j);
     }
   }
-  //queue_clear_full(//g->//queue, free);
-  //queue_clear_full(//g->//queue_saves, free);
+  
+  queue_clear_full(g->queue, free);
+  queue_clear_full(g->queue_saves, free);
 }
