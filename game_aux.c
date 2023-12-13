@@ -10,6 +10,7 @@
 game safeMalloc(uint row, uint col);
 void checkGame(game g, uint i, uint j, char *text);
 void putStatus(game g, uint i, uint j);
+void make_move(game g, uint i, uint j, color c);
 
 void game_print(cgame g) {
   checkGame((game)g, 0, 0, "game_print");

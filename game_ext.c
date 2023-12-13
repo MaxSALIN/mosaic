@@ -10,6 +10,7 @@
 game safeMalloc(uint row, uint col);
 void checkGame(game g, uint i, uint j, char *text);
 void putStatus(game g, uint i, uint j);
+void make_move(game g, uint i, uint j, color c);
 
 game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *colors, bool wrapping,
                   neighbourhood neigh){
@@ -81,18 +82,13 @@ neighbourhood game_get_neighbourhood(cgame g){
 void game_undo(game g){
 
   if (!queue_is_empty(g->queue)) {
-    game val=queue_peek_head(g->queue);
-    checkGame(val, 0, 0, "game_undo");
-    queue_push_head(g->queue_saves, game_copy(g));
-    queue_pop_head(g->queue);
-    for (int i = 0; i < g->row; i++) {
-      for (int j = 0; j < g->col; j++) {
-          g->statut[j + g->col* i]=val->statut[j + g->col* i];
-          g->contrainte[j + g->col* i]=val->contrainte[j + g->col* i];
-          g->couleur[j + g->col* i]=val->couleur[j + g->col* i];
-      }
-    }
+    move * m1=queue_pop_head(g->queue);
+    color color_game=m1->c;
+    m1->c=game_get_color(g, m1->i, m1->j);
+    make_move(g, m1->i, m1->j, color_game);
+    queue_push_head(g->queue_saves, m1);
     
+    printf("%d %d %d\n", m1->i, m1->j, m1->c);
   } else {
     printf("Error: no more undo");
   }
@@ -100,17 +96,12 @@ void game_undo(game g){
 
 void game_redo(game g){
   if (!queue_is_empty(g->queue_saves)) {
-    game val=queue_peek_head(g->queue_saves);
-    checkGame(val, 0, 0, "game_redo");
-    queue_push_head(g->queue, game_copy(g));
-    queue_pop_head(g->queue_saves);
-    for (int i = 0; i < g->row; i++) {
-      for (int j = 0; j < g->col; j++) {
-          g->statut[j + g->col* i]=val->statut[j + g->col* i];
-          g->contrainte[j + g->col* i]=val->contrainte[j + g->col* i];
-          g->couleur[j + g->col* i]=val->couleur[j + g->col* i];
-      }
-    }
+    move * m1=queue_pop_head(g->queue_saves);
+    color color_game=m1->c;
+    m1->c=game_get_color(g, m1->i, m1->j);
+    queue_push_head(g->queue, m1);
+    make_move(g, m1->i, m1->j, color_game);
+    printf("%d %d %d\n", m1->i, m1->j, m1->c);
     } else {
        printf("Error: no more redo");
     }

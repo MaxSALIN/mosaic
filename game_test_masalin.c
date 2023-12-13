@@ -307,7 +307,55 @@ bool test_undo_redo(void){
   return true;
 }
 
-//bool test_
+bool test_wrapping(void){
+  /*game g= game_new_empty_ext(6,6,true, FULL);
+  game_set_constraint(g, 5, 5, 0);
+  game_play_move(g, 0, 0, BLACK);
+  if(game_get_status(g, 5, 5)!=ERROR){
+    return false;
+  }
+  game_play_move(g, 0, 0, WHITE);
+  game_play_move(g, 0, 4, BLACK);
+  if(game_get_status(g, 5, 5)!=ERROR){
+    return false;
+  }*/
+  return true;
+}
+
+bool test_neigh(void){
+  uint pi_next=0;
+  uint pj_next=0;
+  //FULL
+  game g=game_new_empty_ext(5, 5, false, FULL);
+  game_set_constraint(g, 3, 3, 9);
+   for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+    printf("%d", dir);
+    if (game_get_next_square(g, 3, 3, dir, &pi_next, &pj_next) == true) {
+      game_play_move(g, pi_next, pj_next, BLACK);
+    }
+  }
+  if(game_get_status(g, 3, 3)!=SATISFIED){
+    printf("Error in FULL");
+    return false;
+  }
+  game_delete(g);
+  /*pi_next=0;
+  pj_next=0;
+  //FULL_EXCLUDE
+  game g2=game_new_empty_ext(5, 5, false, FULL_EXCLUDE);
+  game_set_constraint(g2, 3, 3, 8);
+   for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+    if (game_get_next_square(g2, 3, 3, dir, &pi_next, &pj_next) == true) {
+      game_play_move(g2, pi_next, pj_next, BLACK);
+    }
+  }
+  game_print(g);
+  if(game_get_status(g2, 3, 3)!=SATISFIED){
+    printf("Error in FULL_EXCLUDE");
+    return false;
+  }*/
+  return true;
+}
 
 int main(int argc, char *argv[]) {
   if (argc == 1) {
@@ -355,14 +403,24 @@ int main(int argc, char *argv[]) {
     result_test = test_new_empty_ext();
   }
 
-   // test new_ext
+  // test new_ext
   else if (strcmp("new_ext", argv[1]) == 0) {
     result_test = test_new_ext();
   }
 
-   // test undo_redo
+  // test undo_redo
   else if (strcmp("undo_redo", argv[1]) == 0) {
     result_test = test_undo_redo();
+  }
+
+  // test wrapping
+  else if (strcmp("wrapping", argv[1]) == 0) {
+    result_test = test_wrapping();
+  }
+
+  // test neigh
+  else if (strcmp("neigh", argv[1]) == 0) {
+    result_test = test_neigh();
   }
 
   else {

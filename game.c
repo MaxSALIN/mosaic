@@ -11,7 +11,7 @@
 
 game safeMalloc(uint row, uint col) {
   // allocation of the game g
-  game g = malloc(sizeof(game)*8);
+  game g = malloc(sizeof(game_s));
   // checks if it's correctly allocated
   if (g == NULL) {
     fprintf(stderr, "Game NULL\n");
@@ -128,8 +128,8 @@ void putStatus(game g, uint i, uint j) {
     uint empty=0;
     uint pi_next=0;
     uint pj_next=0;
-    for(int k =1; k<8;k++){
-      if(game_get_next_square(g, i, j, k, &pi_next, &pj_next)){
+    for(direction dir =UP; dir<DOWN_RIGHT;dir++){
+      if(game_get_next_square(g, i, j, dir, &pi_next, &pj_next)){
         if(game_get_color(g, pi_next, pj_next)==BLACK){
           black++;
         }
@@ -193,6 +193,20 @@ void putStatus(game g, uint i, uint j) {
       g->statut[j + g->col* i] = ERROR;
     } else {
       g->statut[j + g->col* i] = UNSATISFIED;
+    }
+  }
+}
+
+void make_move(game g, uint i, uint j, color c){
+  // changes the color and status of the played square
+  game_set_color(g, i, j, c);
+  putStatus(g, i, j);
+  uint pi_next = 0;
+  uint pj_next = 0;
+  // changes the status for the neighbor squares
+  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+    if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+      putStatus(g, pi_next, pj_next);
     }
   }
 }
@@ -506,20 +520,16 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
 
 void game_play_move(game g, uint i, uint j, color c) {
   checkGame(g, i, j, "game_play_move");
-  queue_push_head(g->queue, game_copy(g));
-  queue_clear_full(g->queue_saves, free);
-  // changes the color and status of the played square
-  game_set_color(g, i, j, c);
-  putStatus(g, i, j);
-  uint pi_next = 0;
-  uint pj_next = 0;
-  // changes the status for the neighbor squares
-  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-    printf("%d", game_get_next_square(g, i, j, dir, &pi_next, &pj_next));
-    if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
-      putStatus(g, pi_next, pj_next);
-    }
+  move * m=malloc(sizeof(move));
+  if(m==NULL){
+    exit(EXIT_FAILURE);
   }
+  m->i=i;
+  m->j=j;
+  m->c=game_get_color(g, i, j);
+  queue_push_head(g->queue, m);
+  queue_clear_full(g->queue_saves, free);
+  make_move(g, i, j, c);
   
 }
 

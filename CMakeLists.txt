@@ -37,6 +37,8 @@ add_test(test_masalin_default_solution ./game_test_masalin default_solution)
 add_test(test_masalin_new_empty_ext ./game_test_masalin new_empty_ext)
 add_test(test_masalin_new_ext ./game_test_masalin new_ext)
 add_test(test_masalin_undo_redo ./game_test_masalin undo_redo)
+add_test(test_masalin_wrapping ./game_test_masalin wrapping)
+add_test(test_masalin_neigh ./game_test_masalin neigh)
 
 add_test(test_mavigierlafo_dummy ./game_test_mavigierlafo dummy)
 add_test(test_mavigierlafo_won ./game_test_mavigierlafo test_won)
