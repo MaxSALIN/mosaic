@@ -1,10 +1,12 @@
+#include "game_ext.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "game.h"
 #include "game_struct.h"
-#include "game_ext.h"
 #include "queue.h"
 
 game safeMalloc(uint row, uint col);
@@ -13,18 +15,18 @@ void putStatus(game g, uint i, uint j);
 void make_move(game g, uint i, uint j, color c);
 
 game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *colors, bool wrapping,
-                  neighbourhood neigh){
+                  neighbourhood neigh) {
   game g = safeMalloc(nb_rows, nb_cols);
   if (constraints == NULL) {
     exit(EXIT_FAILURE);
   }
-  g->row=nb_rows;
-  g->col=nb_cols;
-  g->wrapping=wrapping;
-  g->neighbour=neigh;
-  //g->queue=queue_new();
-  //g->queue_saves=queue_new();
-  // puts the constraints and colors of the wanted game
+  g->row = nb_rows;
+  g->col = nb_cols;
+  g->wrapping = wrapping;
+  g->neighbour = neigh;
+  // g->queue=queue_new();
+  // g->queue_saves=queue_new();
+  //  puts the constraints and colors of the wanted game
   for (int i = 0; i < nb_rows; i++) {
     for (int j = 0; j < nb_cols; j++) {
       g->contrainte[j + nb_cols * i] = constraints[j + nb_cols * i];
@@ -44,65 +46,55 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
   return g;
 }
 
-game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping, neighbourhood neigh){
+game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping, neighbourhood neigh) {
+  game g = safeMalloc(nb_rows, nb_cols);
+  g->wrapping = wrapping;
+  g->row = nb_rows;
+  g->col = nb_cols;
+  g->neighbour = neigh;
+  // g->queue=queue_new();
+  // g->queue_saves=queue_new();
+  //  creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
+  for (int i = 0; i < (nb_cols * nb_rows); i++) {
+    g->statut[i] = UNSATISFIED;
+    g->couleur[i] = EMPTY;
+    g->contrainte[i] = UNCONSTRAINED;
+  }
 
-    game g = safeMalloc(nb_rows, nb_cols);
-    g->wrapping = wrapping;
-    g->row = nb_rows;
-    g->col = nb_cols;
-    g->neighbour=neigh;
-    //g->queue=queue_new();
-    //g->queue_saves=queue_new();
-    // creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
-    for (int i = 0; i < (nb_cols*nb_rows); i++) {
-        g->statut[i] = UNSATISFIED;
-        g->couleur[i] = EMPTY;
-        g->contrainte[i] = UNCONSTRAINED;
-    }
-    
   return g;
 }
 
-uint game_nb_rows(cgame g){
-    return g->row;
-}
+uint game_nb_rows(cgame g) { return g->row; }
 
-uint game_nb_cols(cgame g){
-    return g->col;
-}
+uint game_nb_cols(cgame g) { return g->col; }
 
-bool game_is_wrapping(cgame g){
-    return g->wrapping;
-}
+bool game_is_wrapping(cgame g) { return g->wrapping; }
 
-neighbourhood game_get_neighbourhood(cgame g){
-    return g->neighbour;
-}
+neighbourhood game_get_neighbourhood(cgame g) { return g->neighbour; }
 
-void game_undo(game g){
-
+void game_undo(game g) {
   if (!queue_is_empty(g->queue)) {
-    move * m1=queue_pop_head(g->queue);
-    color color_game=m1->c;
-    m1->c=game_get_color(g, m1->i, m1->j);
+    move *m1 = queue_pop_head(g->queue);
+    color color_game = m1->c;
+    m1->c = game_get_color(g, m1->i, m1->j);
     make_move(g, m1->i, m1->j, color_game);
     queue_push_head(g->queue_saves, m1);
-    
+
     printf("%d %d %d\n", m1->i, m1->j, m1->c);
   } else {
     printf("Error: no more undo");
   }
 }
 
-void game_redo(game g){
+void game_redo(game g) {
   if (!queue_is_empty(g->queue_saves)) {
-    move * m1=queue_pop_head(g->queue_saves);
-    color color_game=m1->c;
-    m1->c=game_get_color(g, m1->i, m1->j);
+    move *m1 = queue_pop_head(g->queue_saves);
+    color color_game = m1->c;
+    m1->c = game_get_color(g, m1->i, m1->j);
     queue_push_head(g->queue, m1);
     make_move(g, m1->i, m1->j, color_game);
     printf("%d %d %d\n", m1->i, m1->j, m1->c);
-    } else {
-       printf("Error: no more redo");
-    }
+  } else {
+    printf("Error: no more redo");
+  }
 }

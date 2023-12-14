@@ -7,7 +7,6 @@
 #include "game_aux.h"
 #include "game_ext.h"
 
-
 bool test_dummy();
 bool test_won();
 bool test_nb_neighbors();

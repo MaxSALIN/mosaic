@@ -7,13 +7,13 @@
 #include <string.h>
 
 #include "game.h"
-#include "game_ext.h"
 #include "game_aux.h"
+#include "game_ext.h"
 #include "queue.h"
 
 typedef struct game_s game_s;
 typedef struct move_s move;
-typedef game_s * game;
+typedef game_s *game;
 
 struct game_s {
   color *couleur;

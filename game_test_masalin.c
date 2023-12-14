@@ -10,7 +10,6 @@
 #include "game_ext.h"
 #include "queue.h"
 
-
 // functions
 bool test_dummy(void);
 bool test_new_empty(void);
@@ -179,9 +178,9 @@ bool test_default_solution(void) {
   return true;
 }
 
-bool test_new_empty_ext(void){
-  for(int row=1; row<=10; row++){
-    for(int col=1; col<=10; col++){
+bool test_new_empty_ext(void) {
+  for (int row = 1; row <= 10; row++) {
+    for (int col = 1; col <= 10; col++) {
       game g = game_new_empty_ext(row, col, false, FULL_EXCLUDE);
       if (g == NULL) {
         return false;
@@ -200,62 +199,61 @@ bool test_new_empty_ext(void){
   return true;
 }
 
-bool test_new_ext(void){
-  for(int row=1; row<=10; row++){ //problème de wrapping pour 1
-    for(int col=1; col<=10; col++){
+bool test_new_ext(void) {
+  for (int row = 1; row <= 10; row++) {  // problème de wrapping pour 1
+    for (int col = 1; col <= 10; col++) {
       constraint constraints1[row * col];
       for (int i = 0; i < row * col; i++) {
         constraints1[i] = -1;
       }
-      for(int neigh = FULL; neigh<=ORTHO_EXCLUDE; neigh++){
+      for (int neigh = FULL; neigh <= ORTHO_EXCLUDE; neigh++) {
         game g_Test = game_new_ext(row, col, constraints1, NULL, true, neigh);
         if (g_Test == NULL) {
           return false;
         }
         for (int i = 0; i < row; i++) {
-            for (int j = 0; j < col; j++) {
-              if ((game_get_color(g_Test, i, j) != EMPTY) || (game_get_constraint(g_Test, i, j) != -1)) {
-                return false;
-              }
+          for (int j = 0; j < col; j++) {
+            if ((game_get_color(g_Test, i, j) != EMPTY) || (game_get_constraint(g_Test, i, j) != -1)) {
+              return false;
             }
           }
+        }
         game_delete(g_Test);
       }
     }
   }
-  int row2=7;
-  int col2=6;
+  int row2 = 7;
+  int col2 = 6;
   constraint constraints1[row2 * col2];
   color colors1[row2 * col2];
   for (int i = 0; i < row2 * col2; i++) {
     constraints1[i] = 0;
-    colors1[i]=WHITE;
+    colors1[i] = WHITE;
   }
   game g = game_new_ext(row2, col2, constraints1, colors1, true, FULL);
-  
+
   for (int i = 0; i < row2; i++) {
     for (int j = 0; j < col2; j++) {
-      if ((game_get_color(g, i, j) != WHITE) || (game_get_constraint(g, i, j) != 0) || game_get_status(g, i, j)!=SATISFIED) {
+      if ((game_get_color(g, i, j) != WHITE) || (game_get_constraint(g, i, j) != 0) ||
+          game_get_status(g, i, j) != SATISFIED) {
         return false;
       }
     }
   }
-  game_play_move(g, row2-1, col2-1, BLACK);
+  game_play_move(g, row2 - 1, col2 - 1, BLACK);
   for (int i = 0; i < row2; i++) {
     for (int j = 0; j < col2; j++) {
-      if((i==0 && j==0) || (i==0 && j>3) || (i>4 && j==0)){
-        if(game_is_wrapping(g)==true){   
-          if(game_get_status(g, i, j)!=ERROR){
+      if ((i == 0 && j == 0) || (i == 0 && j > 3) || (i > 4 && j == 0)) {
+        if (game_is_wrapping(g) == true) {
+          if (game_get_status(g, i, j) != ERROR) {
             return false;
           }
         }
-      }
-      else if(i>4 && j>3){
-        if(game_get_status(g, i, j)!=ERROR){
+      } else if (i > 4 && j > 3) {
+        if (game_get_status(g, i, j) != ERROR) {
           return false;
         }
-      }
-      else if (game_get_status(g, i, j)!=SATISFIED){
+      } else if (game_get_status(g, i, j) != SATISFIED) {
         return false;
       }
     }
@@ -264,38 +262,38 @@ bool test_new_ext(void){
   return true;
 }
 
-bool test_undo_redo(void){
-  game g=game_default();
-  game g_copy1=game_copy(g);
+bool test_undo_redo(void) {
+  game g = game_default();
+  game g_copy1 = game_copy(g);
   game_play_move(g, 0, 0, BLACK);
-  game g_copy2=game_copy(g);
+  game g_copy2 = game_copy(g);
   game_play_move(g, 0, 1, WHITE);
-  game g_copy3=game_copy(g);
+  game g_copy3 = game_copy(g);
   game_undo(g);
-  if(!game_equal(g, g_copy2)){
+  if (!game_equal(g, g_copy2)) {
     printf("Erreur premier Undo");
     return false;
   }
   game_undo(g);
-  if(!game_equal(g, g_copy1)){
+  if (!game_equal(g, g_copy1)) {
     printf("Erreur deuxième Undo");
     return false;
   }
   game_redo(g);
-  if(!game_equal(g, g_copy2)){
+  if (!game_equal(g, g_copy2)) {
     printf("Erreur premier Redo");
     return false;
   }
   game_redo(g);
-  if(!game_equal(g, g_copy3)){
+  if (!game_equal(g, g_copy3)) {
     printf("Erreur deuxième Redo");
     return false;
   }
   game_undo(g);
   game_play_move(g, 4, 4, WHITE);
-  game g_copyF=game_copy(g);
+  game g_copyF = game_copy(g);
   game_redo(g);
-  if(!game_equal(g, g_copyF)){
+  if (!game_equal(g, g_copyF)) {
     printf("Erreur dernier Undo/Redo");
     return false;
   }
@@ -307,95 +305,131 @@ bool test_undo_redo(void){
   return true;
 }
 
-bool test_wrapping(void){
-  game g= game_new_empty_ext(6,6,true, FULL);
+bool test_wrapping(void) {
+  game g = game_new_empty_ext(6, 6, true, FULL);
   game_set_constraint(g, 5, 5, 0);
   game_play_move(g, 0, 0, BLACK);
-  if(game_get_status(g, 5, 5)!=ERROR){
+  if (game_get_status(g, 5, 5) != ERROR) {
     return false;
   }
   game_play_move(g, 0, 0, WHITE);
   game_play_move(g, 0, 4, BLACK);
-  if(game_get_status(g, 5, 5)!=ERROR){
+  if (game_get_status(g, 5, 5) != ERROR) {
     return false;
   }
   game_delete(g);
   return true;
 }
 
-bool test_neigh(void){
-  uint pi_next=0;
-  uint pj_next=0;
-  //FULL
-  game g=game_new_empty_ext(5, 5, false, FULL);
+bool test_neigh(void) {
+  uint pi_next = 0;
+  uint pj_next = 0;
+  // FULL
+  game g = game_new_empty_ext(5, 5, false, FULL);
   game_set_constraint(g, 3, 3, 9);
-   for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+  for (int i = 0; i < 5; i++) {
+    for (int j = 0; j < 5; j++) {
+      game_play_move(g, i, j, WHITE);
+    }
+  }
+  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
     if (game_get_next_square(g, 3, 3, dir, &pi_next, &pj_next) == true) {
       game_play_move(g, pi_next, pj_next, BLACK);
     }
   }
-  if(game_get_status(g, 3, 3)!=SATISFIED){
+  if (game_get_status(g, 3, 3) != SATISFIED) {
     printf("Error in FULL");
     return false;
   }
+  if (!game_won(g)) {
+    printf("Error in FULL (won)");
+    return false;
+  }
   game_delete(g);
-  //FULL_EXCLUDE
-  game g2=game_new_empty_ext(5, 5, false, FULL_EXCLUDE);
+  // FULL_EXCLUDE
+  game g2 = game_new_empty_ext(5, 5, false, FULL_EXCLUDE);
   game_set_constraint(g2, 3, 3, 8);
-   for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
+  for (int i = 0; i < 5; i++) {
+    for (int j = 0; j < 5; j++) {
+      game_play_move(g2, i, j, WHITE);
+    }
+  }
+  for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
     if (game_get_next_square(g2, 3, 3, dir, &pi_next, &pj_next) == true) {
       game_play_move(g2, pi_next, pj_next, BLACK);
     }
   }
-  if(game_get_status(g2, 3, 3)!=SATISFIED){
+  if (game_get_status(g2, 3, 3) != SATISFIED) {
+    printf("Error in FULL_EXCLUDE");
     return false;
   }
-  game_play_move(g2, 2,2, WHITE);
-  if(game_get_status(g2, 3, 3)!=ERROR){
+  if (!game_won(g2)) {
+    printf("Error in FULL_EXCLUDE (won)");
+    return false;
+  }
+  game_play_move(g2, 2, 2, WHITE);
+  if (game_get_status(g2, 3, 3) != ERROR) {
+    printf("Error in FULL_EXCLUDE");
     return false;
   }
   game_delete(g2);
 
-   //ORTHO
-  game g3=game_new_empty_ext(5, 5, false, ORTHO);
+  // ORTHO
+  game g3 = game_new_empty_ext(5, 5, false, ORTHO);
   game_set_constraint(g3, 3, 3, 5);
-   for (direction dir = HERE; dir < UP_LEFT; dir++) {
+  for (int i = 0; i < 5; i++) {
+    for (int j = 0; j < 5; j++) {
+      game_play_move(g3, i, j, WHITE);
+    }
+  }
+  for (direction dir = HERE; dir < UP_LEFT; dir++) {
     if (game_get_next_square(g3, 3, 3, dir, &pi_next, &pj_next) == true) {
       game_play_move(g3, pi_next, pj_next, BLACK);
     }
   }
-  game_play_move(g3, 2,2, WHITE);
-  if(game_get_status(g3, 3, 3)!=SATISFIED){
+  if (game_get_status(g3, 3, 3) != SATISFIED) {
+    printf("Error in ORTHO");
     return false;
   }
-  game_play_move(g3, 2,3, WHITE);
-  if(game_get_status(g3, 3, 3)!=ERROR){
+  if (!game_won(g3)) {
+    printf("Error in ORTHO (won)");
+    return false;
+  }
+  game_play_move(g3, 2, 3, WHITE);
+  if (game_get_status(g3, 3, 3) != ERROR) {
+    printf("Error in ORTHO");
     return false;
   }
   game_delete(g3);
 
-  //ORTHO_EXCLUDE
-  game g4=game_new_empty_ext(5, 5, false, ORTHO_EXCLUDE);
+  // ORTHO_EXCLUDE
+  game g4 = game_new_empty_ext(5, 5, false, ORTHO_EXCLUDE);
   game_set_constraint(g4, 3, 3, 4);
-   for (direction dir = UP; dir < UP_LEFT; dir++) {
+  for (int i = 0; i < 5; i++) {
+    for (int j = 0; j < 5; j++) {
+      game_play_move(g4, i, j, WHITE);
+    }
+  }
+  for (direction dir = UP; dir < UP_LEFT; dir++) {
     if (game_get_next_square(g4, 3, 3, dir, &pi_next, &pj_next) == true) {
       game_play_move(g4, pi_next, pj_next, BLACK);
     }
   }
-  game_play_move(g4, 2,2, WHITE);
-  game_play_move(g4, 3,3, WHITE);
-  if(game_get_status(g4, 3, 3)!=SATISFIED){
+  if (game_get_status(g4, 3, 3) != SATISFIED) {
+    printf("Error in ORTHO_EXCLUDE");
     return false;
   }
-  game_play_move(g4, 2,3, WHITE);
-  if(game_get_status(g4, 3, 3)!=ERROR){
+  if (!game_won(g4)) {
+    printf("Error in ORTHO_EXCLUDE(won)");
+    return false;
+  }
+  game_play_move(g4, 2, 3, WHITE);
+  if (game_get_status(g4, 3, 3) != ERROR) {
+    printf("Error in ORTHO_EXCLUDE");
     return false;
   }
   game_delete(g4);
   return true;
-
- 
-
 }
 
 int main(int argc, char *argv[]) {
