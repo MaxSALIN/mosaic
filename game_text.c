@@ -32,8 +32,8 @@ int main(void) {
       if (choice == 'h')  // Help
       {
         printf(
-            "\nPress 'w' <i> <j> to set square (i,j) white\nPress 'b' <i> <j> to set square (i,j) black\nPress 'e' <i> "
-            "<j> to set square (i,j) empty\nPress 'r' to restart\nPress 'q' to quit\n");
+            "\nPress 'w <i> <j>' to set the square (i,j) white\nPress 'b <i> <j>' to set the square (i,j) black\nPress 'e <i> "
+            "<j>' to set the square (i,j) empty\nPress 'z' to undo your move\nPress 'y' to redo your moven\nPress 'r' to restart\nPress 'q' to quit\n");
       }
       if (choice == 'r')  // Restart
       {
