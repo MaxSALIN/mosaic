@@ -24,8 +24,6 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
   g->col = nb_cols;
   g->wrapping = wrapping;
   g->neighbour = neigh;
-  // g->queue=queue_new();
-  // g->queue_saves=queue_new();
   //  puts the constraints and colors of the wanted game
   for (int i = 0; i < nb_rows; i++) {
     for (int j = 0; j < nb_cols; j++) {
@@ -52,8 +50,6 @@ game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping, neighbourhood
   g->row = nb_rows;
   g->col = nb_cols;
   g->neighbour = neigh;
-  // g->queue=queue_new();
-  // g->queue_saves=queue_new();
   //  creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
   for (int i = 0; i < (nb_cols * nb_rows); i++) {
     g->statut[i] = UNSATISFIED;
@@ -73,27 +69,30 @@ bool game_is_wrapping(cgame g) { return g->wrapping; }
 neighbourhood game_get_neighbourhood(cgame g) { return g->neighbour; }
 
 void game_undo(game g) {
+  // checks if the queue is empty
   if (!queue_is_empty(g->queue)) {
+    // if it's not, get the move stored inside and plays it
     move *m1 = queue_pop_head(g->queue);
     color color_game = m1->c;
     m1->c = game_get_color(g, m1->i, m1->j);
     make_move(g, m1->i, m1->j, color_game);
+    // put back the old move in the queue_saves
     queue_push_head(g->queue_saves, m1);
-
-    printf("%d %d %d\n", m1->i, m1->j, m1->c);
   } else {
     printf("Error: no more undo");
   }
 }
 
 void game_redo(game g) {
+  // checks if the queue_saves is empty
   if (!queue_is_empty(g->queue_saves)) {
+    // if it's not, get the move stored inside and plays it
     move *m1 = queue_pop_head(g->queue_saves);
     color color_game = m1->c;
     m1->c = game_get_color(g, m1->i, m1->j);
-    queue_push_head(g->queue, m1);
     make_move(g, m1->i, m1->j, color_game);
-    printf("%d %d %d\n", m1->i, m1->j, m1->c);
+    // put back the old move in the queue
+    queue_push_head(g->queue, m1);
   } else {
     printf("Error: no more redo");
   }

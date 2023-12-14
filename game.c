@@ -10,6 +10,9 @@
 #include "game_struct.h"
 #include "queue.h"
 
+//#################################   Aux_functions   #################################//
+
+// Allocate safely a game
 game safeMalloc(uint row, uint col) {
   // allocation of the game g
   game g = malloc(sizeof(game_s));
@@ -18,8 +21,10 @@ game safeMalloc(uint row, uint col) {
     fprintf(stderr, "Game NULL\n");
     exit(EXIT_FAILURE);
   }
+  // allocation of the queues
   g->queue = queue_new();
   g->queue_saves = queue_new();
+  // checks if they're correctly allocated
   if (g->queue == NULL || g->queue_saves == NULL) {
     fprintf(stderr, "queue NULL\n");
     exit(EXIT_FAILURE);
@@ -56,13 +61,15 @@ void checkGame(game g, uint i, uint j, char *text) {
   }
 }
 
+// puts the status of a square, depending on the neigh
 void putStatus(game g, uint i, uint j) {
-  // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
   // case of FULL
   if (g->neighbour == FULL) {
+    // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
     if (game_get_constraint(g, i, j) == -1) {
       g->statut[j + g->col * i] = SATISFIED;
     }
+
     // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
     else if (game_get_constraint(g, i, j) != -1) {
       if ((game_nb_neighbors(g, i, j, BLACK) == game_get_constraint(g, i, j) &&
@@ -86,8 +93,10 @@ void putStatus(game g, uint i, uint j) {
       }
     }
   }
+
   // case of ORTHO
   if (g->neighbour == ORTHO) {
+    // initialisation of colors for the neighbours
     uint black = 0;
     uint white = 0;
     uint empty = 0;
@@ -104,8 +113,12 @@ void putStatus(game g, uint i, uint j) {
         }
       }
     }
+
+    // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
     if (game_get_constraint(g, i, j) == -1) {
       g->statut[j + g->col * i] = SATISFIED;
+
+      // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
     } else if (black == game_get_constraint(g, i, j) && white == black + white - game_get_constraint(g, i, j) &&
                empty == 0) {
       g->statut[j + g->col * i] = SATISFIED;
@@ -117,6 +130,7 @@ void putStatus(game g, uint i, uint j) {
   }
   // case of FULL_EXCLUDE
   if (g->neighbour == FULL_EXCLUDE) {
+    // initialisation of colors for the neighbours
     uint black = 0;
     uint white = 0;
     uint empty = 0;
@@ -133,8 +147,12 @@ void putStatus(game g, uint i, uint j) {
         }
       }
     }
+
+    // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
     if (game_get_constraint(g, i, j) == -1) {
       g->statut[j + g->col * i] = SATISFIED;
+
+      // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
     } else if (black == game_get_constraint(g, i, j) && white == black + white - game_get_constraint(g, i, j) &&
                empty == 0) {
       g->statut[j + g->col * i] = SATISFIED;
@@ -144,8 +162,10 @@ void putStatus(game g, uint i, uint j) {
       g->statut[j + g->col * i] = UNSATISFIED;
     }
   }
+
   // case of ORTHO_EXCLUDE
   if (g->neighbour == ORTHO_EXCLUDE) {
+    // initialisation of colors for the neighbours
     uint black = 0;
     uint white = 0;
     uint empty = 0;
@@ -162,8 +182,12 @@ void putStatus(game g, uint i, uint j) {
         }
       }
     }
+
+    // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
     if (game_get_constraint(g, i, j) == -1) {
       g->statut[j + g->col * i] = SATISFIED;
+
+      // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
     } else if (black == game_get_constraint(g, i, j) && white == black + white - game_get_constraint(g, i, j) &&
                empty == 0) {
       g->statut[j + g->col * i] = SATISFIED;
@@ -175,6 +199,7 @@ void putStatus(game g, uint i, uint j) {
   }
 }
 
+// changes the color of the square and the status of the square and its neighbours
 void make_move(game g, uint i, uint j, color c) {
   // changes the color and status of the played square
   game_set_color(g, i, j, c);
@@ -188,6 +213,8 @@ void make_move(game g, uint i, uint j, color c) {
     }
   }
 }
+
+//#################################   End   #################################//
 
 game game_new(constraint *constraints, color *colors) {
   game g = safeMalloc(5, 5);
@@ -252,8 +279,8 @@ game game_copy(cgame g) {
 }
 
 bool game_equal(cgame g1, cgame g2) {
-  checkGame((game)g2, 0, 0, "game_equal");
   checkGame((game)g1, 0, 0, "game_equal");
+  checkGame((game)g2, 0, 0, "game_equal");
   // checks if the constraint, color and status are the same between g1 and g2 for all squares
   for (int i = 0; i < g1->col * g1->row; i++) {
     if (g2->contrainte[i] != g1->contrainte[i] || g2->statut[i] != g1->statut[i] || g2->couleur[i] != g1->couleur[i] ||
@@ -270,10 +297,8 @@ void game_delete(game g) {
   free(g->couleur);
   free(g->contrainte);
   free(g->statut);
-  queue_clear_full(g->queue, free);
-  queue_clear_full(g->queue_saves, free);
-  free(g->queue);
-  free(g->queue_saves);
+  queue_free_full(g->queue, free);
+  queue_free_full(g->queue_saves, free);
   free(g);
 }
 
@@ -530,7 +555,6 @@ void game_restart(game g) {
       putStatus(g, i, j);
     }
   }
-
   queue_clear_full(g->queue, free);
   queue_clear_full(g->queue_saves, free);
 }

@@ -18,8 +18,12 @@ bool test_get_constraint(void);
 bool test_delete(void);
 bool test_new(void);
 bool test_default_solution(void);
-bool new_empty_ext(void);
-bool new_ext(void);
+bool test_new_empty_ext(void);
+bool test_new_ext(void);
+bool test_undo_redo(void);
+bool test_wrapping(void);
+bool test_neigh(void);
+bool test_row_col(void);
 void usage(int argc, char *argv[]);
 
 // coding of functions
@@ -33,11 +37,13 @@ bool test_dummy(void) { return true; }
 bool test_new_empty(void) {
   game g = game_new_empty();
   if (g == NULL) {
+    game_delete(g);
     return false;
   }
   for (int i = 0; i < DEFAULT_SIZE; i++) {
     for (int j = 0; j < DEFAULT_SIZE; j++) {
       if ((game_get_color(g, i, j) != EMPTY) || (game_get_constraint(g, i, j) != -1)) {
+        game_delete(g);
         return false;
       }
     }
@@ -49,19 +55,23 @@ bool test_new_empty(void) {
 bool test_get_color(void) {
   game g = game_default();
   if (game_get_color(g, 0, 0) != EMPTY && game_get_color(g, 0, 0) != BLACK && game_get_color(g, 0, 0) != WHITE) {
+    game_delete(g);
     return false;
   }
 
   game_set_color(g, 1, 1, BLACK);
   if (game_get_color(g, 1, 1) != BLACK) {
+    game_delete(g);
     return false;
   }
   game_set_color(g, 2, 2, WHITE);
   if (game_get_color(g, 2, 2) != WHITE) {
+    game_delete(g);
     return false;
   }
   game_set_color(g, 3, 3, EMPTY);
   if (game_get_color(g, 3, 3) != EMPTY) {
+    game_delete(g);
     return false;
   }
   game_delete(g);
@@ -71,15 +81,18 @@ bool test_get_color(void) {
 bool test_get_constraint(void) {
   game g = game_default();
   if (game_get_constraint(g, 0, 0) > 9 || game_get_constraint(g, 0, 0) < -1) {
+    game_delete(g);
     return false;
   }
   game_set_constraint(g, 1, 1, UNCONSTRAINED);
   if (game_get_constraint(g, 1, 1) != UNCONSTRAINED) {
+    game_delete(g);
     return false;
   }
   for (int i = 0; i <= 9; i++) {
     game_set_constraint(g, 2, 2, i);
     if (game_get_constraint(g, 2, 2) != i) {
+      game_delete(g);
       return false;
     }
   }
@@ -101,12 +114,14 @@ bool test_new(void) {
   }
   game g_Test = game_new(constraints1, NULL);
   if (g_Test == NULL) {
+    game_delete(g_Test);
     return false;
   }
 
   for (int i = 0; i < DEFAULT_SIZE; i++) {
     for (int j = 0; j < DEFAULT_SIZE; j++) {
       if ((game_get_color(g_Test, i, j) != EMPTY) || (game_get_constraint(g_Test, i, j) != -1)) {
+        game_delete(g_Test);
         return false;
       }
     }
@@ -135,6 +150,9 @@ bool test_new(void) {
 
   game g_Test2 = game_new(constraints2, colors);
   if (g_Test2 == NULL) {
+    game_delete(g_Test);
+    game_delete(g_Test2);
+    game_delete(g_sol);
     return false;
   }
 
@@ -144,6 +162,9 @@ bool test_new(void) {
           (game_get_constraint(g_sol, i, j) != (game_get_constraint(g_Test2, i, j)))) {
         printf("x=%d, y=%d, %d %d %d %d", i, j, game_get_color(g_Test2, i, j), game_get_constraint(g_Test2, i, j),
                game_get_color(g_sol, i, j), game_get_constraint(g_sol, i, j));
+        game_delete(g_Test);
+        game_delete(g_Test2);
+        game_delete(g_sol);
         return false;
       }
     }
@@ -158,10 +179,12 @@ bool test_new(void) {
 bool test_default_solution(void) {
   game g = game_default_solution();
   if (g == NULL) {
+    game_delete(g);
     return false;
   }
 
   if (!game_won(g)) {
+    game_delete(g);
     return false;
   }
   game g_ref = game_default();
@@ -169,6 +192,8 @@ bool test_default_solution(void) {
     for (int j = 0; j < DEFAULT_SIZE; j++) {
       if ((game_get_constraint(g, i, j) != game_get_constraint(g_ref, i, j)) || game_get_status(g, i, j) != SATISFIED ||
           game_get_color(g, i, j) == EMPTY) {
+        game_delete(g);
+        game_delete(g_ref);
         return false;
       }
     }
@@ -183,16 +208,17 @@ bool test_new_empty_ext(void) {
     for (int col = 1; col <= 10; col++) {
       game g = game_new_empty_ext(row, col, false, FULL_EXCLUDE);
       if (g == NULL) {
+        game_delete(g);
         return false;
       }
       for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
           if ((game_get_color(g, i, j) != EMPTY) || (game_get_constraint(g, i, j) != -1)) {
+            game_delete(g);
             return false;
           }
         }
       }
-      game_print(g);
       game_delete(g);
     }
   }
@@ -209,11 +235,13 @@ bool test_new_ext(void) {
       for (int neigh = FULL; neigh <= ORTHO_EXCLUDE; neigh++) {
         game g_Test = game_new_ext(row, col, constraints1, NULL, true, neigh);
         if (g_Test == NULL) {
+          game_delete(g_Test);
           return false;
         }
         for (int i = 0; i < row; i++) {
           for (int j = 0; j < col; j++) {
             if ((game_get_color(g_Test, i, j) != EMPTY) || (game_get_constraint(g_Test, i, j) != -1)) {
+              game_delete(g_Test);
               return false;
             }
           }
@@ -236,6 +264,7 @@ bool test_new_ext(void) {
     for (int j = 0; j < col2; j++) {
       if ((game_get_color(g, i, j) != WHITE) || (game_get_constraint(g, i, j) != 0) ||
           game_get_status(g, i, j) != SATISFIED) {
+        game_delete(g);
         return false;
       }
     }
@@ -246,14 +275,17 @@ bool test_new_ext(void) {
       if ((i == 0 && j == 0) || (i == 0 && j > 3) || (i > 4 && j == 0)) {
         if (game_is_wrapping(g) == true) {
           if (game_get_status(g, i, j) != ERROR) {
+            game_delete(g);
             return false;
           }
         }
       } else if (i > 4 && j > 3) {
         if (game_get_status(g, i, j) != ERROR) {
+          game_delete(g);
           return false;
         }
       } else if (game_get_status(g, i, j) != SATISFIED) {
+        game_delete(g);
         return false;
       }
     }
@@ -272,21 +304,37 @@ bool test_undo_redo(void) {
   game_undo(g);
   if (!game_equal(g, g_copy2)) {
     printf("Erreur premier Undo");
+    game_delete(g);
+    game_delete(g_copy1);
+    game_delete(g_copy2);
+    game_delete(g_copy3);
     return false;
   }
   game_undo(g);
   if (!game_equal(g, g_copy1)) {
     printf("Erreur deuxième Undo");
+    game_delete(g);
+    game_delete(g_copy1);
+    game_delete(g_copy2);
+    game_delete(g_copy3);
     return false;
   }
   game_redo(g);
   if (!game_equal(g, g_copy2)) {
     printf("Erreur premier Redo");
+    game_delete(g);
+    game_delete(g_copy1);
+    game_delete(g_copy2);
+    game_delete(g_copy3);
     return false;
   }
   game_redo(g);
   if (!game_equal(g, g_copy3)) {
     printf("Erreur deuxième Redo");
+    game_delete(g);
+    game_delete(g_copy1);
+    game_delete(g_copy2);
+    game_delete(g_copy3);
     return false;
   }
   game_undo(g);
@@ -295,6 +343,11 @@ bool test_undo_redo(void) {
   game_redo(g);
   if (!game_equal(g, g_copyF)) {
     printf("Erreur dernier Undo/Redo");
+    game_delete(g);
+    game_delete(g_copy1);
+    game_delete(g_copy2);
+    game_delete(g_copy3);
+    game_delete(g_copyF);
     return false;
   }
   game_delete(g);
@@ -310,11 +363,13 @@ bool test_wrapping(void) {
   game_set_constraint(g, 5, 5, 0);
   game_play_move(g, 0, 0, BLACK);
   if (game_get_status(g, 5, 5) != ERROR) {
+    game_delete(g);
     return false;
   }
   game_play_move(g, 0, 0, WHITE);
   game_play_move(g, 0, 4, BLACK);
   if (game_get_status(g, 5, 5) != ERROR) {
+    game_delete(g);
     return false;
   }
   game_delete(g);
@@ -339,10 +394,12 @@ bool test_neigh(void) {
   }
   if (game_get_status(g, 3, 3) != SATISFIED) {
     printf("Error in FULL");
+    game_delete(g);
     return false;
   }
   if (!game_won(g)) {
     printf("Error in FULL (won)");
+    game_delete(g);
     return false;
   }
   game_delete(g);
@@ -361,15 +418,18 @@ bool test_neigh(void) {
   }
   if (game_get_status(g2, 3, 3) != SATISFIED) {
     printf("Error in FULL_EXCLUDE");
+    game_delete(g2);
     return false;
   }
   if (!game_won(g2)) {
     printf("Error in FULL_EXCLUDE (won)");
+    game_delete(g2);
     return false;
   }
   game_play_move(g2, 2, 2, WHITE);
   if (game_get_status(g2, 3, 3) != ERROR) {
     printf("Error in FULL_EXCLUDE");
+    game_delete(g2);
     return false;
   }
   game_delete(g2);
@@ -389,15 +449,18 @@ bool test_neigh(void) {
   }
   if (game_get_status(g3, 3, 3) != SATISFIED) {
     printf("Error in ORTHO");
+    game_delete(g3);
     return false;
   }
   if (!game_won(g3)) {
     printf("Error in ORTHO (won)");
+    game_delete(g3);
     return false;
   }
   game_play_move(g3, 2, 3, WHITE);
   if (game_get_status(g3, 3, 3) != ERROR) {
     printf("Error in ORTHO");
+    game_delete(g3);
     return false;
   }
   game_delete(g3);
@@ -405,6 +468,7 @@ bool test_neigh(void) {
   // ORTHO_EXCLUDE
   game g4 = game_new_empty_ext(5, 5, false, ORTHO_EXCLUDE);
   game_set_constraint(g4, 3, 3, 4);
+  // plays white in every square the game
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       game_play_move(g4, i, j, WHITE);
@@ -417,18 +481,35 @@ bool test_neigh(void) {
   }
   if (game_get_status(g4, 3, 3) != SATISFIED) {
     printf("Error in ORTHO_EXCLUDE");
+    game_delete(g4);
     return false;
   }
   if (!game_won(g4)) {
     printf("Error in ORTHO_EXCLUDE(won)");
+    game_delete(g4);
     return false;
   }
   game_play_move(g4, 2, 3, WHITE);
   if (game_get_status(g4, 3, 3) != ERROR) {
     printf("Error in ORTHO_EXCLUDE");
+    game_delete(g4);
     return false;
   }
   game_delete(g4);
+  return true;
+}
+
+bool test_row_col(void) {
+  game g = game_new_empty_ext(7, 7, false, FULL);
+  if (game_nb_rows(g) != 7 || game_nb_cols(g) != 7) {
+    return false;
+  }
+  game g2 = game_default();
+  if (game_nb_rows(g2) != 5 || game_nb_cols(g2) != 5) {
+    return false;
+  }
+  game_delete(g);
+  game_delete(g2);
   return true;
 }
 
@@ -498,16 +579,22 @@ int main(int argc, char *argv[]) {
     result_test = test_neigh();
   }
 
+  // test row_col
+  else if (strcmp("row_col", argv[1]) == 0) {
+    result_test = test_row_col();
+  }
+
   else {
+    fprintf(stderr, "Error: test \"%s\" not found!\n", argv[1]);
     exit(EXIT_FAILURE);
   }
 
   // all tests works
   if (result_test) {
-    fprintf(stderr, "0\n");
+    fprintf(stderr, "Test \"%s\" finished: SUCCESS\n", argv[1]);
     return EXIT_SUCCESS;
   } else {
-    fprintf(stderr, "1\n");
+    fprintf(stderr, "Test \"%s\" finished: FAILURE\n", argv[1]);
     return EXIT_FAILURE;
   }
 }

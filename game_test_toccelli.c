@@ -17,6 +17,7 @@ bool test_set_color() {
   game_set_color(g, 3, 3, BLACK);
   game_set_color(g, 3, 3, EMPTY);
   if (game_get_color(g, 1, 1) != BLACK || game_get_color(g, 2, 2) != WHITE || game_get_color(g, 3, 3) != EMPTY) {
+    game_delete(g);
     return false;
   }
   game_delete(g);
@@ -39,10 +40,12 @@ bool test_play_move() {
     for (int j = 0; j < 3; j++) {
       if (i == 1 && j == 1) {
         if (game_get_color(g, i, j) != BLACK || game_get_status(g, i, j) != SATISFIED) {
+          game_delete(g);
           return false;
         }
       } else {
         if (game_get_color(g, i, j) != WHITE) {
+          game_delete(g);
           return false;
         }
       }
@@ -57,11 +60,13 @@ bool test_restart() {
   game_play_move(g, 1, 1, BLACK);
   game_restart(g);
   if (game_get_color(g, 1, 1) == BLACK) {
+    game_delete(g);
     return false;
   }
   game_play_move(g, 2, 2, WHITE);
   game_restart(g);
   if (game_get_color(g, 2, 2) == WHITE) {
+    game_delete(g);
     return false;
   }
   game_delete(g);
@@ -74,10 +79,14 @@ bool test_equal() {
   game_play_move(g1, 1, 1, BLACK);
   game_play_move(g2, 1, 1, BLACK);
   if (!game_equal(g1, g2)) {
+    game_delete(g1);
+    game_delete(g2);
     return false;
   }
   game_play_move(g2, 1, 1, WHITE);
   if (game_equal(g1, g2)) {
+    game_delete(g1);
+    game_delete(g2);
     return false;
   }
   game_delete(g1);
@@ -90,6 +99,8 @@ bool test_copy() {
   game_play_move(g1, 1, 1, BLACK);
   game g2 = game_copy(g1);
   if (!game_equal(g1, g2)) {
+    game_delete(g1);
+    game_delete(g2);
     return false;
   }
   game_delete(g1);
@@ -108,7 +119,7 @@ bool test_set_constraint() {
   for (int y = 0; y < DEFAULT_SIZE; y++) {
     for (int x = 0; x < DEFAULT_SIZE; x++) {
       if (game_get_status(g, x, y) != SATISFIED) {
-        game_print(g);
+        game_delete(g);
         return false;
       }
     }
@@ -122,6 +133,8 @@ bool test_set_constraint() {
   }
   game_set_constraint(g2, 3, 3, 0);
   if (game_get_status(g2, 3, 3) == SATISFIED) {
+    game_delete(g);
+    game_delete(g2);
     return false;
   }
 
@@ -139,6 +152,9 @@ bool test_set_constraint() {
   for (int x = 0; x < DEFAULT_SIZE; x++) {
     for (int y = 0; y < DEFAULT_SIZE; y++) {
       if (game_get_constraint(g3, x, y) != -1 || game_get_status(g3, x, y) != SATISFIED) {
+        game_delete(g);
+        game_delete(g2);
+        game_delete(g3);
         return false;
       }
     }
@@ -151,6 +167,9 @@ bool test_set_constraint() {
   for (int x = 0; x < DEFAULT_SIZE; x++) {
     for (int y = 0; y < DEFAULT_SIZE; y++) {
       if (game_get_constraint(g3, x, y) != -1 || game_get_status(g3, x, y) != SATISFIED) {
+        game_delete(g);
+        game_delete(g2);
+        game_delete(g3);
         return false;
       }
     }
@@ -163,6 +182,9 @@ bool test_set_constraint() {
   for (int x = 0; x < DEFAULT_SIZE; x = x + 2) {
     for (int y = 0; y < DEFAULT_SIZE; y++) {
       if (game_get_constraint(g3, x, y) != -1 || game_get_status(g3, x, y) != SATISFIED) {
+        game_delete(g);
+        game_delete(g2);
+        game_delete(g3);
         return false;
       }
     }

@@ -43,6 +43,7 @@ bool test_won(void) {
 
   // si c'est le cas ET que la fct renvoie truc -> won fonctionne
   if (game_won(g) != result) {
+    game_delete(g);
     return false;
   }
 
@@ -55,6 +56,8 @@ bool test_won(void) {
     }
   }
   if (game_won(g2) == true) {
+    game_delete(g);
+    game_delete(g2);
     return false;
   }
 
@@ -67,6 +70,9 @@ bool test_won(void) {
     }
   }
   if (game_won(g3) == false) {
+    game_delete(g);
+    game_delete(g2);
+    game_delete(g3);
     return false;
   }
 
@@ -82,6 +88,10 @@ bool test_won(void) {
   for (int x = 0; x < DEFAULT_SIZE; x++) {
     for (int y = 0; y < DEFAULT_SIZE; y++) {
       if (game_won(g4) != true || game_get_color(g4, x, y) == EMPTY || game_get_status(g4, x, y) != SATISFIED) {
+        game_delete(g);
+        game_delete(g2);
+        game_delete(g3);
+        game_delete(g4);
         return false;
       }
     }
@@ -90,18 +100,33 @@ bool test_won(void) {
   // cas d'une game qui a restart
   game_restart(g4);
   if (game_won(g4) == true) {
+    game_delete(g);
+    game_delete(g2);
+    game_delete(g3);
+    game_delete(g4);
     return false;
   }
 
   // cas d'une game qui est une copie
   game g5 = game_copy(g3);
   if (game_won(g5) == false) {
+    game_delete(g);
+    game_delete(g2);
+    game_delete(g3);
+    game_delete(g4);
+    game_delete(g5);
     return false;
   }
 
   // cas d'une game juste créer
   game g6 = game_default();
   if (game_won(g6) == true) {
+    game_delete(g);
+    game_delete(g2);
+    game_delete(g3);
+    game_delete(g4);
+    game_delete(g5);
+    game_delete(g6);
     return false;
   }
 
@@ -109,6 +134,14 @@ bool test_won(void) {
   game g7 = game_copy(g);
   game_play_move(g7, 0, 0, BLACK);
   if (game_won(g7) == true) {
+    game_delete(g);
+    game_delete(g2);
+    game_delete(g3);
+    game_delete(g4);
+    game_delete(g5);
+    game_delete(g6);
+    game_delete(g7);
+    game_delete(g_compare);
     return false;
   }
   game_delete(g);
@@ -190,8 +223,12 @@ bool test_get_status(void) {
         if ((game_nb_neighbors(g, i, j, BLACK) == k) &&
             (game_nb_neighbors(g, i, j, WHITE) == k - game_nb_neighbors(g, i, j, BLACK)) &&
             game_get_status(g, i, j) != SATISFIED && game_nb_neighbors(g, i, j, EMPTY) == 0) {
+          game_delete(g);
+          game_delete(g_dummy);
           return false;
         } else if ((game_nb_neighbors(g, i, j, BLACK) > k && game_get_status(g, i, j) != ERROR)) {
+          game_delete(g);
+          game_delete(g_dummy);
           return false;
         }
         game_play_move(g, x, y, BLACK);
@@ -208,6 +245,8 @@ bool test_get_status(void) {
     for (int y = i - 1; y <= i + 1; y++) {
       for (int x = j - 1; x <= j + 1; x++) {
         if ((game_nb_neighbors(g, i, j, BLACK) >= k && game_get_status(g, i, j) == UNSATISFIED)) {
+          game_delete(g);
+          game_delete(g_dummy);
           return false;
         }
         game_play_move(g, x, y, BLACK);
@@ -229,30 +268,39 @@ bool test_get_next_square(void) {
   for (uint x = 1; x < DEFAULT_SIZE - 1; x++) {
     for (uint y = 1; y < DEFAULT_SIZE - 1; y++) {
       if (game_get_next_square(g, x, y, HERE, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
       if (game_get_next_square(g, x, y, UP, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
       if (game_get_next_square(g, x, y, DOWN, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
       if (game_get_next_square(g, x, y, LEFT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
       if (game_get_next_square(g, x, y, RIGHT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
       if (game_get_next_square(g, x, y, DOWN_LEFT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
       if (game_get_next_square(g, x, y, DOWN_RIGHT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
       if (game_get_next_square(g, x, y, UP_LEFT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
       if (game_get_next_square(g, x, y, UP_RIGHT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
     }
@@ -260,176 +308,220 @@ bool test_get_next_square(void) {
   // ligne du haut
   for (uint x = 0; x < DEFAULT_SIZE; x++) {
     if (game_get_next_square(g, 0, x, HERE, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, 0, x, UP, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, 0, x, DOWN, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (x == 0) {
       if (game_get_next_square(g, 0, x, LEFT, px_next, py_next) == true) {
+        game_delete(g);
         return false;
       }
     }
     if (x != 0) {
       if (game_get_next_square(g, 0, x, LEFT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
     }
     if (x == DEFAULT_SIZE - 1) {
       if (game_get_next_square(g, 0, x, RIGHT, px_next, py_next) == true) {
+        game_delete(g);
         return false;
       }
     }
     if (x != DEFAULT_SIZE - 1) {
       if (game_get_next_square(g, 0, x, RIGHT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
     }
     if (x == 0) {
       if (game_get_next_square(g, 0, x, DOWN_LEFT, px_next, py_next) == true) {
+        game_delete(g);
         return false;
       }
     }
     if (x != 0) {
       if (game_get_next_square(g, 0, x, DOWN_LEFT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
     }
     if (x == DEFAULT_SIZE - 1) {
       if (game_get_next_square(g, 0, x, DOWN_RIGHT, px_next, py_next) == true) {
+        game_delete(g);
         return false;
       }
     }
     if (x != DEFAULT_SIZE - 1) {
       if (game_get_next_square(g, 0, x, DOWN_RIGHT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
     }
     if (game_get_next_square(g, 0, x, UP_LEFT, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, 0, x, UP_RIGHT, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
   }
   // ligne du bas
   for (uint x = 0; x < DEFAULT_SIZE; x++) {
     if (game_get_next_square(g, 4, x, HERE, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, 4, x, UP, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, 4, x, DOWN, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
     if (x == 0) {
       if (game_get_next_square(g, 4, x, LEFT, px_next, py_next) == true) {
+        game_delete(g);
         return false;
       }
     }
     if (x != 0) {
       if (game_get_next_square(g, 4, x, LEFT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
     }
     if (x == DEFAULT_SIZE - 1) {
       if (game_get_next_square(g, 4, x, RIGHT, px_next, py_next) == true) {
+        game_delete(g);
         return false;
       }
     }
     if (x != DEFAULT_SIZE - 1) {
       if (game_get_next_square(g, 4, x, RIGHT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
     }
     if (x == 0) {
       if (game_get_next_square(g, 4, x, UP_LEFT, px_next, py_next) == true) {
+        game_delete(g);
         return false;
       }
     }
     if (x != 0) {
       if (game_get_next_square(g, 4, x, UP_LEFT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
     }
     if (x == DEFAULT_SIZE - 1) {
       if (game_get_next_square(g, 4, x, UP_RIGHT, px_next, py_next) == true) {
+        game_delete(g);
         return false;
       }
     }
     if (x != DEFAULT_SIZE - 1) {
       if (game_get_next_square(g, 4, x, UP_RIGHT, px_next, py_next) == false) {
+        game_delete(g);
         return false;
       }
     }
     if (game_get_next_square(g, 4, x, DOWN_LEFT, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, 4, x, DOWN_RIGHT, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
   }
   // ligne gauche
   for (uint x = 1; x < DEFAULT_SIZE - 1; x++) {
     if (game_get_next_square(g, x, 0, HERE, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 0, UP, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 0, DOWN, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 0, LEFT, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 0, RIGHT, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 0, DOWN_LEFT, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 0, DOWN_RIGHT, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 0, UP_LEFT, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 0, UP_RIGHT, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
   }
   // ligne droite
   for (uint x = 1; x < DEFAULT_SIZE - 1; x++) {
     if (game_get_next_square(g, x, 4, HERE, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 4, UP, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 4, DOWN, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 4, LEFT, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 4, RIGHT, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 4, DOWN_LEFT, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 4, DOWN_RIGHT, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 4, UP_LEFT, px_next, py_next) == false) {
+      game_delete(g);
       return false;
     }
     if (game_get_next_square(g, x, 4, UP_RIGHT, px_next, py_next) == true) {
+      game_delete(g);
       return false;
     }
   }
@@ -461,6 +553,7 @@ bool test_default(void) {
         } else if (game_get_constraint(g, x, y) == 1 && x == 2 && y == 4) {
           count_noempty++;
         } else if (game_get_constraint(g, x, y) != -1) {
+          game_delete(g);
           return false;
         }
       }
