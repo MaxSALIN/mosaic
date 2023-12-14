@@ -89,8 +89,8 @@ void putStatus(game g, uint i, uint j) {
     uint empty=0;
     uint pi_next=0;
     uint pj_next=0;
-    for(int k =0; k<5;k++){
-      if(game_get_next_square(g, i, j, k, &pi_next, &pj_next)){
+    for(direction dir =HERE; dir<UP_LEFT;dir++){
+      if(game_get_next_square(g, i, j, dir, &pi_next, &pj_next)){
         if(game_get_color(g, pi_next, pj_next)==BLACK){
           black++;
         }
@@ -128,7 +128,7 @@ void putStatus(game g, uint i, uint j) {
     uint empty=0;
     uint pi_next=0;
     uint pj_next=0;
-    for(direction dir =UP; dir<DOWN_RIGHT;dir++){
+    for(direction dir =UP; dir<=DOWN_RIGHT;dir++){
       if(game_get_next_square(g, i, j, dir, &pi_next, &pj_next)){
         if(game_get_color(g, pi_next, pj_next)==BLACK){
           black++;
@@ -167,8 +167,8 @@ void putStatus(game g, uint i, uint j) {
     uint empty=0;
     uint pi_next=0;
     uint pj_next=0;
-    for(int k =1; k<5;k++){
-      if(game_get_next_square(g, i, j, k, &pi_next, &pj_next)){
+    for(direction dir =UP; dir<UP_LEFT;dir++){
+      if(game_get_next_square(g, i, j, dir, &pi_next, &pj_next)){
         if(game_get_color(g, pi_next, pj_next)==BLACK){
           black++;
         }
@@ -520,7 +520,7 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
 
 void game_play_move(game g, uint i, uint j, color c) {
   checkGame(g, i, j, "game_play_move");
-  move * m=malloc(sizeof(move));
+  move * m=malloc(sizeof(move)); //penser à free move
   if(m==NULL){
     exit(EXIT_FAILURE);
   }
