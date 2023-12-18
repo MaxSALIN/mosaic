@@ -67,7 +67,11 @@ void putStatus(game g, uint i, uint j) {
   if (g->neighbour == FULL) {
     // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
     if (game_get_constraint(g, i, j) == -1) {
-      g->statut[j + g->col * i] = SATISFIED;
+      if (game_nb_neighbors(g, i, j, EMPTY) == 0) {
+        g->statut[j + g->col * i] = SATISFIED;
+      } else {
+        g->statut[j + g->col * i] = UNSATISFIED;
+      }
     }
 
     // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
@@ -116,8 +120,11 @@ void putStatus(game g, uint i, uint j) {
 
     // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
     if (game_get_constraint(g, i, j) == -1) {
-      g->statut[j + g->col * i] = SATISFIED;
-
+      if (empty == 0) {
+        g->statut[j + g->col * i] = SATISFIED;
+      } else {
+        g->statut[j + g->col * i] = UNSATISFIED;
+      }
       // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
     } else if (black == game_get_constraint(g, i, j) && white == black + white - game_get_constraint(g, i, j) &&
                empty == 0) {
@@ -150,8 +157,11 @@ void putStatus(game g, uint i, uint j) {
 
     // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
     if (game_get_constraint(g, i, j) == -1) {
-      g->statut[j + g->col * i] = SATISFIED;
-
+      if (empty == 0) {
+        g->statut[j + g->col * i] = SATISFIED;
+      } else {
+        g->statut[j + g->col * i] = UNSATISFIED;
+      }
       // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
     } else if (black == game_get_constraint(g, i, j) && white == black + white - game_get_constraint(g, i, j) &&
                empty == 0) {
@@ -185,8 +195,11 @@ void putStatus(game g, uint i, uint j) {
 
     // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
     if (game_get_constraint(g, i, j) == -1) {
-      g->statut[j + g->col * i] = SATISFIED;
-
+      if (empty == 0) {
+        g->statut[j + g->col * i] = SATISFIED;
+      } else {
+        g->statut[j + g->col * i] = UNSATISFIED;
+      }
       // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
     } else if (black == game_get_constraint(g, i, j) && white == black + white - game_get_constraint(g, i, j) &&
                empty == 0) {
