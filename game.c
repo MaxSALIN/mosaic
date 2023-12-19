@@ -63,150 +63,33 @@ void checkGame(game g, uint i, uint j, char *text) {
 
 // puts the status of a square, depending on the neigh
 void putStatus(game g, uint i, uint j) {
-  // case of FULL
-  if (g->neighbour == FULL) {
-    // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
-    if (game_get_constraint(g, i, j) == -1) {
-      if (game_nb_neighbors(g, i, j, EMPTY) == 0) {
-        g->statut[j + g->col * i] = SATISFIED;
-      } else {
-        g->statut[j + g->col * i] = UNSATISFIED;
-      }
-    }
-
-    // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
-    else if (game_get_constraint(g, i, j) != -1) {
-      if ((game_nb_neighbors(g, i, j, BLACK) == game_get_constraint(g, i, j) &&
-           game_nb_neighbors(g, i, j, WHITE) ==
-               (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE)) -
-                   game_get_constraint(g, i, j)) &&
-          game_nb_neighbors(g, i, j, EMPTY) == 0) {
-        g->statut[j + g->col * i] = SATISFIED;
-      } else if ((game_nb_neighbors(g, i, j, BLACK) > game_get_constraint(g, i, j) ||
-                  game_nb_neighbors(g, i, j, WHITE) >
-                      (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE) +
-                       game_nb_neighbors(g, i, j, EMPTY)) -
-                          game_get_constraint(g, i, j))) {
-        g->statut[j + g->col * i] = ERROR;
-      } else if ((game_nb_neighbors(g, i, j, BLACK) < game_get_constraint(g, i, j) ||
-                  game_nb_neighbors(g, i, j, WHITE) <
-                      (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE) +
-                       game_nb_neighbors(g, i, j, EMPTY)) -
-                          game_get_constraint(g, i, j))) {
-        g->statut[j + g->col * i] = UNSATISFIED;
-      }
-    }
-  }
-
-  // case of ORTHO
-  if (g->neighbour == ORTHO) {
-    // initialisation of colors for the neighbours
-    uint black = 0;
-    uint white = 0;
-    uint empty = 0;
-    uint pi_next = 0;
-    uint pj_next = 0;
-    for (direction dir = HERE; dir < UP_LEFT; dir++) {
-      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next)) {
-        if (game_get_color(g, pi_next, pj_next) == BLACK) {
-          black++;
-        } else if (game_get_color(g, pi_next, pj_next) == WHITE) {
-          white++;
-        } else {
-          empty++;
-        }
-      }
-    }
-
-    // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
-    if (game_get_constraint(g, i, j) == -1) {
-      if (empty == 0) {
-        g->statut[j + g->col * i] = SATISFIED;
-      } else {
-        g->statut[j + g->col * i] = UNSATISFIED;
-      }
-      // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
-    } else if (black == game_get_constraint(g, i, j) && white == black + white - game_get_constraint(g, i, j) &&
-               empty == 0) {
+  // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
+  if (game_get_constraint(g, i, j) == -1) {
+    if (game_nb_neighbors(g, i, j, EMPTY) == 0) {
       g->statut[j + g->col * i] = SATISFIED;
-    } else if (black > game_get_constraint(g, i, j) || white > black + white + empty - game_get_constraint(g, i, j)) {
-      g->statut[j + g->col * i] = ERROR;
-    } else if (black < game_get_constraint(g, i, j) || white < black + white + empty - game_get_constraint(g, i, j)) {
-      g->statut[j + g->col * i] = UNSATISFIED;
-    }
-  }
-  // case of FULL_EXCLUDE
-  if (g->neighbour == FULL_EXCLUDE) {
-    // initialisation of colors for the neighbours
-    uint black = 0;
-    uint white = 0;
-    uint empty = 0;
-    uint pi_next = 0;
-    uint pj_next = 0;
-    for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
-      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next)) {
-        if (game_get_color(g, pi_next, pj_next) == BLACK) {
-          black++;
-        } else if (game_get_color(g, pi_next, pj_next) == WHITE) {
-          white++;
-        } else {
-          empty++;
-        }
-      }
-    }
-
-    // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
-    if (game_get_constraint(g, i, j) == -1) {
-      if (empty == 0) {
-        g->statut[j + g->col * i] = SATISFIED;
-      } else {
-        g->statut[j + g->col * i] = UNSATISFIED;
-      }
-      // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
-    } else if (black == game_get_constraint(g, i, j) && white == black + white - game_get_constraint(g, i, j) &&
-               empty == 0) {
-      g->statut[j + g->col * i] = SATISFIED;
-    } else if (black > game_get_constraint(g, i, j) || white > black + white + empty - game_get_constraint(g, i, j)) {
-      g->statut[j + g->col * i] = ERROR;
-    } else if (black < game_get_constraint(g, i, j) || white < black + white + empty - game_get_constraint(g, i, j)) {
-      g->statut[j + g->col * i] = UNSATISFIED;
-    }
-  }
-
-  // case of ORTHO_EXCLUDE
-  if (g->neighbour == ORTHO_EXCLUDE) {
-    // initialisation of colors for the neighbours
-    uint black = 0;
-    uint white = 0;
-    uint empty = 0;
-    uint pi_next = 0;
-    uint pj_next = 0;
-    for (direction dir = UP; dir < UP_LEFT; dir++) {
-      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next)) {
-        if (game_get_color(g, pi_next, pj_next) == BLACK) {
-          black++;
-        } else if (game_get_color(g, pi_next, pj_next) == WHITE) {
-          white++;
-        } else {
-          empty++;
-        }
-      }
-    }
-
-    // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
-    if (game_get_constraint(g, i, j) == -1) {
-      if (empty == 0) {
-        g->statut[j + g->col * i] = SATISFIED;
-      } else {
-        g->statut[j + g->col * i] = UNSATISFIED;
-      }
-      // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
-    } else if (black == game_get_constraint(g, i, j) && white == black + white - game_get_constraint(g, i, j) &&
-               empty == 0) {
-      g->statut[j + g->col * i] = SATISFIED;
-    } else if (black > game_get_constraint(g, i, j) || white > black + white + empty - game_get_constraint(g, i, j)) {
-      g->statut[j + g->col * i] = ERROR;
     } else {
+      g->statut[j + g->col * i] = UNSATISFIED;
+    }
+  }
+
+  // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
+  else if (game_get_constraint(g, i, j) != -1) {
+    if ((game_nb_neighbors(g, i, j, BLACK) == game_get_constraint(g, i, j) &&
+         game_nb_neighbors(g, i, j, WHITE) ==
+             (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE)) - game_get_constraint(g, i, j)) &&
+        game_nb_neighbors(g, i, j, EMPTY) == 0) {
+      g->statut[j + g->col * i] = SATISFIED;
+    } else if ((game_nb_neighbors(g, i, j, BLACK) > game_get_constraint(g, i, j) ||
+                game_nb_neighbors(g, i, j, WHITE) >
+                    (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE) +
+                     game_nb_neighbors(g, i, j, EMPTY)) -
+                        game_get_constraint(g, i, j))) {
+      g->statut[j + g->col * i] = ERROR;
+    } else if ((game_nb_neighbors(g, i, j, BLACK) < game_get_constraint(g, i, j) ||
+                game_nb_neighbors(g, i, j, WHITE) <
+                    (game_nb_neighbors(g, i, j, BLACK) + game_nb_neighbors(g, i, j, WHITE) +
+                     game_nb_neighbors(g, i, j, EMPTY)) -
+                        game_get_constraint(g, i, j))) {
       g->statut[j + g->col * i] = UNSATISFIED;
     }
   }
@@ -517,13 +400,51 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
   uint pi_next = 0;
   uint pj_next = 0;
   // checks all around the square chosen the number of neighbors with the same color as c
-  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-    if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
-      if (game_get_color(g, pi_next, pj_next) == c) {
-        count++;
+
+  // case of FULL
+  if (g->neighbour == FULL) {
+    for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+      if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+        if (game_get_color(g, pi_next, pj_next) == c) {
+          count++;
+        }
       }
     }
   }
+
+  // case of FULL_EXCLUDE
+  if (g->neighbour == FULL_EXCLUDE) {
+    for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
+      if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+        if (game_get_color(g, pi_next, pj_next) == c) {
+          count++;
+        }
+      }
+    }
+  }
+
+  // case of ORTHO
+  if (g->neighbour == ORTHO) {
+    for (direction dir = HERE; dir <= RIGHT; dir++) {
+      if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+        if (game_get_color(g, pi_next, pj_next) == c) {
+          count++;
+        }
+      }
+    }
+  }
+
+  // cases of ORTHO_EXCLUDE
+  if (g->neighbour == ORTHO_EXCLUDE) {
+    for (direction dir = UP; dir <= RIGHT; dir++) {
+      if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+        if (game_get_color(g, pi_next, pj_next) == c) {
+          count++;
+        }
+      }
+    }
+  }
+
   return count;
 }
 
