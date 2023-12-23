@@ -160,8 +160,7 @@ bool test_new(void) {
     for (int i = 0; i < DEFAULT_SIZE; i++) {
       if ((game_get_color(g_sol, i, j) != (game_get_color(g_Test2, i, j))) ||
           (game_get_constraint(g_sol, i, j) != (game_get_constraint(g_Test2, i, j)))) {
-        printf("x=%d, y=%d, %d %d %d %d", i, j, game_get_color(g_Test2, i, j), game_get_constraint(g_Test2, i, j),
-               game_get_color(g_sol, i, j), game_get_constraint(g_sol, i, j));
+      
         game_delete(g_Test);
         game_delete(g_Test2);
         game_delete(g_sol);
@@ -206,7 +205,7 @@ bool test_default_solution(void) {
 bool test_new_empty_ext(void) {
   for (int row = 1; row <= 10; row++) {
     for (int col = 1; col <= 10; col++) {
-      game g = game_new_empty_ext(row, col, false, FULL_EXCLUDE);
+      game g = game_new_empty_ext(row, col, false, FULL);
       if (g == NULL) {
         game_delete(g);
         return false;
@@ -222,19 +221,52 @@ bool test_new_empty_ext(void) {
       game_delete(g);
     }
   }
+
+  game g =game_new_empty_ext(8, 8, false, FULL);
+  game_play_move(g, 4, 4, WHITE);
+  game_play_move(g, 7, 4, BLACK);
+  game g_copy=game_copy(g);
+  if(game_get_color(g_copy, 4,4)!=WHITE){
+    game_delete(g_copy);
+    game_delete(g);
+    return false;
+  }
+  if(game_get_color(g_copy, 7,4)!=BLACK){
+    game_delete(g_copy);
+    game_delete(g);
+    return false;
+  }
+  for(int i=0; i<8; i++){
+    for(int j=0; j<8; j++){
+      if((i!=4 &&j!=4) || (i!=7 && j!=4)){
+        if(game_get_color(g_copy, i,j)!=EMPTY){
+          game_delete(g_copy);
+          game_delete(g);
+          return false;
+        }
+      }
+    }
+  }
+  if(!game_equal(g, g_copy)){
+    game_delete(g_copy);
+    game_delete(g);
+    return false;
+  }
+  game_delete(g_copy);
+  game_delete(g);
   return true;
 }
 
 bool test_new_ext(void) {
-  for (int row = 1; row <= 10; row++) {  // problème de wrapping pour 1
+  for (int row = 1; row <= 10; row++) { 
     for (int col = 1; col <= 10; col++) {
       constraint constraints1[row * col];
       for (int i = 0; i < row * col; i++) {
         constraints1[i] = -1;
       }
       for (int neigh = FULL; neigh <= ORTHO_EXCLUDE; neigh++) {
-        game g_Test = game_new_ext(row, col, constraints1, NULL, true, neigh);
-        if (g_Test == NULL) {
+        game g_Test=game_new_ext(row, col, constraints1, NULL, true, neigh);
+        if (g_Test == NULL){
           game_delete(g_Test);
           return false;
         }
@@ -350,10 +382,27 @@ bool test_undo_redo(void) {
     game_delete(g_copyF);
     return false;
   }
+  game_restart(g);
+  game g_copy4=game_copy(g);
+  game_play_move(g, 4, 4, WHITE);
+  game_play_move(g, 4, 3, WHITE);
+  game_restart(g);
+  game_undo(g);
+  if (!game_equal(g, g_copy4)) {
+    printf("Erreur restart");
+    game_delete(g);
+    game_delete(g_copy1);
+    game_delete(g_copy2);
+    game_delete(g_copy3);
+    game_delete(g_copy4);
+    game_delete(g_copyF);
+    return false;
+  }
   game_delete(g);
   game_delete(g_copy1);
   game_delete(g_copy2);
   game_delete(g_copy3);
+  game_delete(g_copy4);
   game_delete(g_copyF);
   return true;
 }
