@@ -161,7 +161,6 @@ bool test_new(void) {
     for (int i = 0; i < DEFAULT_SIZE; i++) {
       if ((game_get_color(g_sol, i, j) != (game_get_color(g_Test2, i, j))) ||
           (game_get_constraint(g_sol, i, j) != (game_get_constraint(g_Test2, i, j)))) {
-      
         game_delete(g_Test);
         game_delete(g_Test2);
         game_delete(g_sol);
@@ -223,24 +222,24 @@ bool test_new_empty_ext(void) {
     }
   }
 
-  game g =game_new_empty_ext(8, 8, false, FULL);
+  game g = game_new_empty_ext(8, 8, false, FULL);
   game_play_move(g, 4, 4, WHITE);
   game_play_move(g, 7, 4, BLACK);
-  game g_copy=game_copy(g);
-  if(game_get_color(g_copy, 4,4)!=WHITE){
+  game g_copy = game_copy(g);
+  if (game_get_color(g_copy, 4, 4) != WHITE) {
     game_delete(g_copy);
     game_delete(g);
     return false;
   }
-  if(game_get_color(g_copy, 7,4)!=BLACK){
+  if (game_get_color(g_copy, 7, 4) != BLACK) {
     game_delete(g_copy);
     game_delete(g);
     return false;
   }
-  for(int i=0; i<8; i++){
-    for(int j=0; j<8; j++){
-      if((i!=4 &&j!=4) || (i!=7 && j!=4)){
-        if(game_get_color(g_copy, i,j)!=EMPTY){
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      if ((i != 4 && j != 4) || (i != 7 && j != 4)) {
+        if (game_get_color(g_copy, i, j) != EMPTY) {
           game_delete(g_copy);
           game_delete(g);
           return false;
@@ -248,7 +247,7 @@ bool test_new_empty_ext(void) {
       }
     }
   }
-  if(!game_equal(g, g_copy)){
+  if (!game_equal(g, g_copy)) {
     game_delete(g_copy);
     game_delete(g);
     return false;
@@ -259,15 +258,15 @@ bool test_new_empty_ext(void) {
 }
 
 bool test_new_ext(void) {
-  for (int row = 1; row <= 10; row++) { 
+  for (int row = 1; row <= 10; row++) {
     for (int col = 1; col <= 10; col++) {
       constraint constraints1[row * col];
       for (int i = 0; i < row * col; i++) {
         constraints1[i] = -1;
       }
       for (int neigh = FULL; neigh <= ORTHO_EXCLUDE; neigh++) {
-        game g_Test=game_new_ext(row, col, constraints1, NULL, true, neigh);
-        if (g_Test == NULL){
+        game g_Test = game_new_ext(row, col, constraints1, NULL, true, neigh);
+        if (g_Test == NULL) {
           game_delete(g_Test);
           return false;
         }
@@ -384,7 +383,7 @@ bool test_undo_redo(void) {
     return false;
   }
   game_restart(g);
-  game g_copy4=game_copy(g);
+  game g_copy4 = game_copy(g);
   game_play_move(g, 4, 4, WHITE);
   game_play_move(g, 4, 3, WHITE);
   game_restart(g);
@@ -432,7 +431,7 @@ bool test_neigh(void) {
   // FULL
   game g = game_new_empty_ext(5, 5, false, FULL);
   game_set_constraint(g, 3, 3, 9);
-  if(game_get_status(g, 0, 0)!=UNSATISFIED){
+  if (game_get_status(g, 0, 0) != UNSATISFIED) {
     game_delete(g);
     return false;
   }
@@ -441,7 +440,7 @@ bool test_neigh(void) {
       game_play_move(g, i, j, WHITE);
     }
   }
-  if(game_get_status(g, 0, 0)!=SATISFIED){
+  if (game_get_status(g, 0, 0) != SATISFIED) {
     game_delete(g);
     return false;
   }
@@ -464,7 +463,7 @@ bool test_neigh(void) {
   // FULL_EXCLUDE
   game g2 = game_new_empty_ext(5, 5, false, FULL_EXCLUDE);
   game_set_constraint(g2, 3, 3, 8);
-  if(game_get_status(g, 0, 0)!=UNSATISFIED){
+  if (game_get_status(g, 0, 0) != UNSATISFIED) {
     game_delete(g);
     return false;
   }
@@ -473,7 +472,7 @@ bool test_neigh(void) {
       game_play_move(g2, i, j, WHITE);
     }
   }
-  if(game_get_status(g, 0, 0)!=SATISFIED){
+  if (game_get_status(g, 0, 0) != SATISFIED) {
     game_delete(g);
     return false;
   }
@@ -503,7 +502,7 @@ bool test_neigh(void) {
   // ORTHO
   game g3 = game_new_empty_ext(5, 5, false, ORTHO);
   game_set_constraint(g3, 3, 3, 5);
-  if(game_get_status(g, 0, 0)!=UNSATISFIED){
+  if (game_get_status(g, 0, 0) != UNSATISFIED) {
     game_delete(g);
     return false;
   }
@@ -512,7 +511,7 @@ bool test_neigh(void) {
       game_play_move(g3, i, j, WHITE);
     }
   }
-  if(game_get_status(g, 0, 0)!=SATISFIED){
+  if (game_get_status(g, 0, 0) != SATISFIED) {
     game_delete(g);
     return false;
   }
@@ -542,7 +541,7 @@ bool test_neigh(void) {
   // ORTHO_EXCLUDE
   game g4 = game_new_empty_ext(5, 5, false, ORTHO_EXCLUDE);
   game_set_constraint(g4, 3, 3, 4);
-  if(game_get_status(g, 0, 0)!=UNSATISFIED){
+  if (game_get_status(g, 0, 0) != UNSATISFIED) {
     game_delete(g);
     return false;
   }
@@ -552,7 +551,7 @@ bool test_neigh(void) {
       game_play_move(g4, i, j, WHITE);
     }
   }
-  if(game_get_status(g, 0, 0)!=SATISFIED){
+  if (game_get_status(g, 0, 0) != SATISFIED) {
     game_delete(g);
     return false;
   }
@@ -595,74 +594,78 @@ bool test_row_col(void) {
   return true;
 }
 
-bool test_nb_neigh_new(void){
-  //For FULL
-  game g= game_new_empty_ext(8,7, true, FULL);
-  game_set_constraint(g,  2, 6, 4);
-  game_play_move(g, 1 ,6, BLACK);
-  game_play_move(g, 3 ,6, BLACK);
-  game_play_move(g, 2 ,5, BLACK);
-  game_play_move(g, 2 ,0, BLACK);
+bool test_nb_neigh_new(void) {
+  // For FULL
+  game g = game_new_empty_ext(8, 7, true, FULL);
+  game_set_constraint(g, 2, 6, 4);
+  game_play_move(g, 1, 6, BLACK);
+  game_play_move(g, 3, 6, BLACK);
+  game_play_move(g, 2, 5, BLACK);
+  game_play_move(g, 2, 0, BLACK);
   game_play_move(g, 1, 5, WHITE);
-  if(game_nb_neighbors(g,2,6, BLACK)!=4 || game_nb_neighbors(g, 2, 6, WHITE)!=1 ||  game_nb_neighbors(g, 2, 6, EMPTY)!=4){
+  if (game_nb_neighbors(g, 2, 6, BLACK) != 4 || game_nb_neighbors(g, 2, 6, WHITE) != 1 ||
+      game_nb_neighbors(g, 2, 6, EMPTY) != 4) {
     game_delete(g);
     return false;
   }
-  if(game_get_status(g,2,6)!=UNSATISFIED){
+  if (game_get_status(g, 2, 6) != UNSATISFIED) {
     game_delete(g);
     return false;
   }
   game_delete(g);
 
-  //For FULL_EXCLUDE
-  g= game_new_empty_ext(8,7, true, FULL_EXCLUDE);
-  game_set_constraint(g,  2, 6, 4);
-  game_play_move(g, 1 ,6, BLACK);
-  game_play_move(g, 3 ,6, BLACK);
-  game_play_move(g, 2 ,5, BLACK);
-  game_play_move(g, 2 ,0, BLACK);
+  // For FULL_EXCLUDE
+  g = game_new_empty_ext(8, 7, true, FULL_EXCLUDE);
+  game_set_constraint(g, 2, 6, 4);
+  game_play_move(g, 1, 6, BLACK);
+  game_play_move(g, 3, 6, BLACK);
+  game_play_move(g, 2, 5, BLACK);
+  game_play_move(g, 2, 0, BLACK);
   game_play_move(g, 1, 5, WHITE);
-  if(game_nb_neighbors(g,2,6, BLACK)!=4 || game_nb_neighbors(g, 2, 6, WHITE)!=1 ||  game_nb_neighbors(g, 2, 6, EMPTY)!=3){
+  if (game_nb_neighbors(g, 2, 6, BLACK) != 4 || game_nb_neighbors(g, 2, 6, WHITE) != 1 ||
+      game_nb_neighbors(g, 2, 6, EMPTY) != 3) {
     game_delete(g);
     return false;
   }
-  if(game_get_status(g,2,6)!=UNSATISFIED){
+  if (game_get_status(g, 2, 6) != UNSATISFIED) {
     game_delete(g);
     return false;
   }
   game_delete(g);
 
-  //For ORTHO
-  g= game_new_empty_ext(8,7, true, ORTHO);
-  game_set_constraint(g,  2, 6, 4);
-  game_play_move(g, 1 ,6, BLACK);
-  game_play_move(g, 3 ,6, BLACK);
-  game_play_move(g, 2 ,5, BLACK);
-  game_play_move(g, 2 ,0, BLACK);
+  // For ORTHO
+  g = game_new_empty_ext(8, 7, true, ORTHO);
+  game_set_constraint(g, 2, 6, 4);
+  game_play_move(g, 1, 6, BLACK);
+  game_play_move(g, 3, 6, BLACK);
+  game_play_move(g, 2, 5, BLACK);
+  game_play_move(g, 2, 0, BLACK);
   game_play_move(g, 1, 5, WHITE);
-  if(game_nb_neighbors(g,2,6, BLACK)!=4 || game_nb_neighbors(g, 2, 6, WHITE)!=0 ||  game_nb_neighbors(g, 2, 6, EMPTY)!=1){
+  if (game_nb_neighbors(g, 2, 6, BLACK) != 4 || game_nb_neighbors(g, 2, 6, WHITE) != 0 ||
+      game_nb_neighbors(g, 2, 6, EMPTY) != 1) {
     game_delete(g);
     return false;
   }
-  if(game_get_status(g,2,6)!=UNSATISFIED){
+  if (game_get_status(g, 2, 6) != UNSATISFIED) {
     game_delete(g);
     return false;
   }
   game_delete(g);
 
-  //For ORTHO_EXCLUDE
-  g= game_new_empty_ext(8,7, true, ORTHO_EXCLUDE);
-  game_set_constraint(g,  2, 6, 4);
-  game_play_move(g, 1 ,6, BLACK);
-  game_play_move(g, 3 ,6, BLACK);
-  game_play_move(g, 2 ,5, BLACK);
-  game_play_move(g, 2 ,0, BLACK);
+  // For ORTHO_EXCLUDE
+  g = game_new_empty_ext(8, 7, true, ORTHO_EXCLUDE);
+  game_set_constraint(g, 2, 6, 4);
+  game_play_move(g, 1, 6, BLACK);
+  game_play_move(g, 3, 6, BLACK);
+  game_play_move(g, 2, 5, BLACK);
+  game_play_move(g, 2, 0, BLACK);
   game_play_move(g, 1, 5, WHITE);
-  if(game_nb_neighbors(g,2,6, BLACK)!=4 || game_nb_neighbors(g, 2, 6, WHITE)!=0 ||  game_nb_neighbors(g, 2, 6, EMPTY)!=0){
+  if (game_nb_neighbors(g, 2, 6, BLACK) != 4 || game_nb_neighbors(g, 2, 6, WHITE) != 0 ||
+      game_nb_neighbors(g, 2, 6, EMPTY) != 0) {
     game_delete(g);
     return false;
   }
-  if(game_get_status(g,2,6)!=SATISFIED){
+  if (game_get_status(g, 2, 6) != SATISFIED) {
     game_delete(g);
     return false;
   }

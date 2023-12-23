@@ -17,7 +17,7 @@ void make_move(game g, uint i, uint j, color c);
 game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *colors, bool wrapping,
                   neighbourhood neigh) {
   game g = safeMalloc(nb_rows, nb_cols);
-  if (constraints == NULL || nb_cols>10 ||  nb_rows>10) {
+  if (constraints == NULL || nb_cols > 10 || nb_rows > 10) {
     fprintf(stderr, "Error in the parameters");
     exit(EXIT_FAILURE);
   }
@@ -46,7 +46,7 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
 }
 
 game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping, neighbourhood neigh) {
-  if (nb_cols>10 ||  nb_rows>10) {
+  if (nb_cols > 10 || nb_rows > 10) {
     fprintf(stderr, "Error in the parameters");
     exit(EXIT_FAILURE);
   }
