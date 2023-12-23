@@ -24,6 +24,7 @@ bool test_undo_redo(void);
 bool test_wrapping(void);
 bool test_neigh(void);
 bool test_row_col(void);
+bool test_nb_neigh_new(void);
 void usage(int argc, char *argv[]);
 
 // coding of functions
@@ -431,10 +432,18 @@ bool test_neigh(void) {
   // FULL
   game g = game_new_empty_ext(5, 5, false, FULL);
   game_set_constraint(g, 3, 3, 9);
+  if(game_get_status(g, 0, 0)!=UNSATISFIED){
+    game_delete(g);
+    return false;
+  }
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       game_play_move(g, i, j, WHITE);
     }
+  }
+  if(game_get_status(g, 0, 0)!=SATISFIED){
+    game_delete(g);
+    return false;
   }
   for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
     if (game_get_next_square(g, 3, 3, dir, &pi_next, &pj_next) == true) {
@@ -455,10 +464,18 @@ bool test_neigh(void) {
   // FULL_EXCLUDE
   game g2 = game_new_empty_ext(5, 5, false, FULL_EXCLUDE);
   game_set_constraint(g2, 3, 3, 8);
+  if(game_get_status(g, 0, 0)!=UNSATISFIED){
+    game_delete(g);
+    return false;
+  }
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       game_play_move(g2, i, j, WHITE);
     }
+  }
+  if(game_get_status(g, 0, 0)!=SATISFIED){
+    game_delete(g);
+    return false;
   }
   for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
     if (game_get_next_square(g2, 3, 3, dir, &pi_next, &pj_next) == true) {
@@ -486,10 +503,18 @@ bool test_neigh(void) {
   // ORTHO
   game g3 = game_new_empty_ext(5, 5, false, ORTHO);
   game_set_constraint(g3, 3, 3, 5);
+  if(game_get_status(g, 0, 0)!=UNSATISFIED){
+    game_delete(g);
+    return false;
+  }
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       game_play_move(g3, i, j, WHITE);
     }
+  }
+  if(game_get_status(g, 0, 0)!=SATISFIED){
+    game_delete(g);
+    return false;
   }
   for (direction dir = HERE; dir < UP_LEFT; dir++) {
     if (game_get_next_square(g3, 3, 3, dir, &pi_next, &pj_next) == true) {
@@ -517,11 +542,19 @@ bool test_neigh(void) {
   // ORTHO_EXCLUDE
   game g4 = game_new_empty_ext(5, 5, false, ORTHO_EXCLUDE);
   game_set_constraint(g4, 3, 3, 4);
+  if(game_get_status(g, 0, 0)!=UNSATISFIED){
+    game_delete(g);
+    return false;
+  }
   // plays white in every square the game
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       game_play_move(g4, i, j, WHITE);
     }
+  }
+  if(game_get_status(g, 0, 0)!=SATISFIED){
+    game_delete(g);
+    return false;
   }
   for (direction dir = UP; dir < UP_LEFT; dir++) {
     if (game_get_next_square(g4, 3, 3, dir, &pi_next, &pj_next) == true) {
@@ -559,6 +592,81 @@ bool test_row_col(void) {
   }
   game_delete(g);
   game_delete(g2);
+  return true;
+}
+
+bool test_nb_neigh_new(void){
+  //For FULL
+  game g= game_new_empty_ext(8,7, true, FULL);
+  game_set_constraint(g,  2, 6, 4);
+  game_play_move(g, 1 ,6, BLACK);
+  game_play_move(g, 3 ,6, BLACK);
+  game_play_move(g, 2 ,5, BLACK);
+  game_play_move(g, 2 ,0, BLACK);
+  game_play_move(g, 1, 5, WHITE);
+  if(game_nb_neighbors(g,2,6, BLACK)!=4 || game_nb_neighbors(g, 2, 6, WHITE)!=1 ||  game_nb_neighbors(g, 2, 6, EMPTY)!=4){
+    game_delete(g);
+    return false;
+  }
+  if(game_get_status(g,2,6)!=UNSATISFIED){
+    game_delete(g);
+    return false;
+  }
+  game_delete(g);
+
+  //For FULL_EXCLUDE
+  g= game_new_empty_ext(8,7, true, FULL_EXCLUDE);
+  game_set_constraint(g,  2, 6, 4);
+  game_play_move(g, 1 ,6, BLACK);
+  game_play_move(g, 3 ,6, BLACK);
+  game_play_move(g, 2 ,5, BLACK);
+  game_play_move(g, 2 ,0, BLACK);
+  game_play_move(g, 1, 5, WHITE);
+  if(game_nb_neighbors(g,2,6, BLACK)!=4 || game_nb_neighbors(g, 2, 6, WHITE)!=1 ||  game_nb_neighbors(g, 2, 6, EMPTY)!=3){
+    game_delete(g);
+    return false;
+  }
+  if(game_get_status(g,2,6)!=UNSATISFIED){
+    game_delete(g);
+    return false;
+  }
+  game_delete(g);
+
+  //For ORTHO
+  g= game_new_empty_ext(8,7, true, ORTHO);
+  game_set_constraint(g,  2, 6, 4);
+  game_play_move(g, 1 ,6, BLACK);
+  game_play_move(g, 3 ,6, BLACK);
+  game_play_move(g, 2 ,5, BLACK);
+  game_play_move(g, 2 ,0, BLACK);
+  game_play_move(g, 1, 5, WHITE);
+  if(game_nb_neighbors(g,2,6, BLACK)!=4 || game_nb_neighbors(g, 2, 6, WHITE)!=0 ||  game_nb_neighbors(g, 2, 6, EMPTY)!=1){
+    game_delete(g);
+    return false;
+  }
+  if(game_get_status(g,2,6)!=UNSATISFIED){
+    game_delete(g);
+    return false;
+  }
+  game_delete(g);
+
+  //For ORTHO_EXCLUDE
+  g= game_new_empty_ext(8,7, true, ORTHO_EXCLUDE);
+  game_set_constraint(g,  2, 6, 4);
+  game_play_move(g, 1 ,6, BLACK);
+  game_play_move(g, 3 ,6, BLACK);
+  game_play_move(g, 2 ,5, BLACK);
+  game_play_move(g, 2 ,0, BLACK);
+  game_play_move(g, 1, 5, WHITE);
+  if(game_nb_neighbors(g,2,6, BLACK)!=4 || game_nb_neighbors(g, 2, 6, WHITE)!=0 ||  game_nb_neighbors(g, 2, 6, EMPTY)!=0){
+    game_delete(g);
+    return false;
+  }
+  if(game_get_status(g,2,6)!=SATISFIED){
+    game_delete(g);
+    return false;
+  }
+  game_delete(g);
   return true;
 }
 
@@ -631,6 +739,10 @@ int main(int argc, char *argv[]) {
   // test row_col
   else if (strcmp("row_col", argv[1]) == 0) {
     result_test = test_row_col();
+  }
+  // test nb_neigh_new
+  else if (strcmp("nb_neigh_new", argv[1]) == 0) {
+    result_test = test_nb_neigh_new();
   }
 
   else {
