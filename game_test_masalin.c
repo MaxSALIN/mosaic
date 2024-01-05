@@ -463,7 +463,7 @@ bool test_neigh(void) {
   // FULL_EXCLUDE
   game g2 = game_new_empty_ext(5, 5, false, FULL_EXCLUDE);
   game_set_constraint(g2, 3, 3, 8);
-  if (game_get_status(g, 0, 0) != UNSATISFIED) {
+  if (game_get_status(g2, 0, 0) != UNSATISFIED) {
     game_delete(g);
     return false;
   }
@@ -472,7 +472,7 @@ bool test_neigh(void) {
       game_play_move(g2, i, j, WHITE);
     }
   }
-  if (game_get_status(g, 0, 0) != SATISFIED) {
+  if (game_get_status(g2, 0, 0) != SATISFIED) {
     game_delete(g);
     return false;
   }
@@ -502,7 +502,7 @@ bool test_neigh(void) {
   // ORTHO
   game g3 = game_new_empty_ext(5, 5, false, ORTHO);
   game_set_constraint(g3, 3, 3, 5);
-  if (game_get_status(g, 0, 0) != UNSATISFIED) {
+  if (game_get_status(g3, 0, 0) != UNSATISFIED) {
     game_delete(g);
     return false;
   }
@@ -511,7 +511,7 @@ bool test_neigh(void) {
       game_play_move(g3, i, j, WHITE);
     }
   }
-  if (game_get_status(g, 0, 0) != SATISFIED) {
+  if (game_get_status(g3, 0, 0) != SATISFIED) {
     game_delete(g);
     return false;
   }
@@ -541,7 +541,7 @@ bool test_neigh(void) {
   // ORTHO_EXCLUDE
   game g4 = game_new_empty_ext(5, 5, false, ORTHO_EXCLUDE);
   game_set_constraint(g4, 3, 3, 4);
-  if (game_get_status(g, 0, 0) != UNSATISFIED) {
+  if (game_get_status(g4, 0, 0) != UNSATISFIED) {
     game_delete(g);
     return false;
   }
@@ -551,7 +551,7 @@ bool test_neigh(void) {
       game_play_move(g4, i, j, WHITE);
     }
   }
-  if (game_get_status(g, 0, 0) != SATISFIED) {
+  if (game_get_status(g4, 0, 0) != SATISFIED) {
     game_delete(g);
     return false;
   }
