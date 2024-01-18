@@ -267,39 +267,8 @@ bool test_get_next_square(void) {
   // centre 3x3
   for (uint x = 1; x < DEFAULT_SIZE - 1; x++) {
     for (uint y = 1; y < DEFAULT_SIZE - 1; y++) {
-      if (game_get_next_square(g, x, y, HERE, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-      if (game_get_next_square(g, x, y, UP, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-      if (game_get_next_square(g, x, y, DOWN, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-      if (game_get_next_square(g, x, y, LEFT, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-      if (game_get_next_square(g, x, y, RIGHT, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-      if (game_get_next_square(g, x, y, DOWN_LEFT, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-      if (game_get_next_square(g, x, y, DOWN_RIGHT, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-      if (game_get_next_square(g, x, y, UP_LEFT, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-      if (game_get_next_square(g, x, y, UP_RIGHT, px_next, py_next) == false) {
+
+      if (game_get_next_square(g, x, y, HERE, px_next, py_next) == false || game_get_next_square(g, x, y, UP, px_next, py_next) == false || game_get_next_square(g, x, y, DOWN, px_next, py_next) == false || game_get_next_square(g, x, y, LEFT, px_next, py_next) == false || game_get_next_square(g, x, y, RIGHT, px_next, py_next) == false || game_get_next_square(g, x, y, DOWN_LEFT, px_next, py_next) == false || game_get_next_square(g, x, y, DOWN_RIGHT, px_next, py_next) == false || game_get_next_square(g, x, y, UP_LEFT, px_next, py_next) == false || game_get_next_square(g, x, y, UP_RIGHT, px_next, py_next) == false) {
         game_delete(g);
         return false;
       }
@@ -307,220 +276,81 @@ bool test_get_next_square(void) {
   }
   // ligne du haut
   for (uint x = 0; x < DEFAULT_SIZE; x++) {
-    if (game_get_next_square(g, 0, x, HERE, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, 0, x, UP, px_next, py_next) == true) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, 0, x, DOWN, px_next, py_next) == false) {
+    if (game_get_next_square(g, 0, x, HERE, px_next, py_next) == false || game_get_next_square(g, 0, x, UP, px_next, py_next) == true || game_get_next_square(g, 0, x, DOWN, px_next, py_next) == false || game_get_next_square(g, 0, x, UP_LEFT, px_next, py_next) == true || game_get_next_square(g, 0, x, UP_RIGHT, px_next, py_next) == true) {
       game_delete(g);
       return false;
     }
     if (x == 0) {
-      if (game_get_next_square(g, 0, x, LEFT, px_next, py_next) == true) {
+      if (game_get_next_square(g, 0, x, LEFT, px_next, py_next) == true || game_get_next_square(g, 0, x, DOWN_LEFT, px_next, py_next) == true) {
         game_delete(g);
         return false;
       }
     }
     if (x != 0) {
-      if (game_get_next_square(g, 0, x, LEFT, px_next, py_next) == false) {
+      if (game_get_next_square(g, 0, x, LEFT, px_next, py_next) == false || game_get_next_square(g, 0, x, DOWN_LEFT, px_next, py_next) == false) {
         game_delete(g);
         return false;
       }
     }
     if (x == DEFAULT_SIZE - 1) {
-      if (game_get_next_square(g, 0, x, RIGHT, px_next, py_next) == true) {
+      if (game_get_next_square(g, 0, x, RIGHT, px_next, py_next) == true || game_get_next_square(g, 0, x, DOWN_RIGHT, px_next, py_next) == true) {
         game_delete(g);
         return false;
       }
     }
     if (x != DEFAULT_SIZE - 1) {
-      if (game_get_next_square(g, 0, x, RIGHT, px_next, py_next) == false) {
+      if (game_get_next_square(g, 0, x, RIGHT, px_next, py_next) == false || game_get_next_square(g, 0, x, DOWN_RIGHT, px_next, py_next) == false) {
         game_delete(g);
         return false;
       }
-    }
-    if (x == 0) {
-      if (game_get_next_square(g, 0, x, DOWN_LEFT, px_next, py_next) == true) {
-        game_delete(g);
-        return false;
-      }
-    }
-    if (x != 0) {
-      if (game_get_next_square(g, 0, x, DOWN_LEFT, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-    }
-    if (x == DEFAULT_SIZE - 1) {
-      if (game_get_next_square(g, 0, x, DOWN_RIGHT, px_next, py_next) == true) {
-        game_delete(g);
-        return false;
-      }
-    }
-    if (x != DEFAULT_SIZE - 1) {
-      if (game_get_next_square(g, 0, x, DOWN_RIGHT, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-    }
-    if (game_get_next_square(g, 0, x, UP_LEFT, px_next, py_next) == true) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, 0, x, UP_RIGHT, px_next, py_next) == true) {
-      game_delete(g);
-      return false;
     }
   }
   // ligne du bas
   for (uint x = 0; x < DEFAULT_SIZE; x++) {
-    if (game_get_next_square(g, 4, x, HERE, px_next, py_next) == false) {
+    if (game_get_next_square(g, 4, x, HERE, px_next, py_next) == false || game_get_next_square(g, 4, x, UP, px_next, py_next) == false || game_get_next_square(g, 4, x, DOWN, px_next, py_next) == true) {
       game_delete(g);
       return false;
     }
-    if (game_get_next_square(g, 4, x, UP, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, 4, x, DOWN, px_next, py_next) == true) {
-      game_delete(g);
-      return false;
-    }
+
     if (x == 0) {
-      if (game_get_next_square(g, 4, x, LEFT, px_next, py_next) == true) {
+      if (game_get_next_square(g, 4, x, LEFT, px_next, py_next) == true || game_get_next_square(g, 4, x, UP_LEFT, px_next, py_next) == true) {
         game_delete(g);
         return false;
       }
     }
     if (x != 0) {
-      if (game_get_next_square(g, 4, x, LEFT, px_next, py_next) == false) {
+      if (game_get_next_square(g, 4, x, LEFT, px_next, py_next) == false || game_get_next_square(g, 4, x, UP_LEFT, px_next, py_next) == false) {
         game_delete(g);
         return false;
       }
     }
     if (x == DEFAULT_SIZE - 1) {
-      if (game_get_next_square(g, 4, x, RIGHT, px_next, py_next) == true) {
+      if (game_get_next_square(g, 4, x, RIGHT, px_next, py_next) == true || game_get_next_square(g, 4, x, UP_RIGHT, px_next, py_next) == true) {
         game_delete(g);
         return false;
       }
     }
     if (x != DEFAULT_SIZE - 1) {
-      if (game_get_next_square(g, 4, x, RIGHT, px_next, py_next) == false) {
+      if (game_get_next_square(g, 4, x, RIGHT, px_next, py_next) == false || game_get_next_square(g, 4, x, UP_RIGHT, px_next, py_next) == false) {
         game_delete(g);
         return false;
       }
     }
-    if (x == 0) {
-      if (game_get_next_square(g, 4, x, UP_LEFT, px_next, py_next) == true) {
-        game_delete(g);
-        return false;
-      }
-    }
-    if (x != 0) {
-      if (game_get_next_square(g, 4, x, UP_LEFT, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-    }
-    if (x == DEFAULT_SIZE - 1) {
-      if (game_get_next_square(g, 4, x, UP_RIGHT, px_next, py_next) == true) {
-        game_delete(g);
-        return false;
-      }
-    }
-    if (x != DEFAULT_SIZE - 1) {
-      if (game_get_next_square(g, 4, x, UP_RIGHT, px_next, py_next) == false) {
-        game_delete(g);
-        return false;
-      }
-    }
-    if (game_get_next_square(g, 4, x, DOWN_LEFT, px_next, py_next) == true) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, 4, x, DOWN_RIGHT, px_next, py_next) == true) {
+    if (game_get_next_square(g, 4, x, DOWN_LEFT, px_next, py_next) == true || game_get_next_square(g, 4, x, DOWN_RIGHT, px_next, py_next) == true) {
       game_delete(g);
       return false;
     }
   }
   // ligne gauche
   for (uint x = 1; x < DEFAULT_SIZE - 1; x++) {
-    if (game_get_next_square(g, x, 0, HERE, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 0, UP, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 0, DOWN, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 0, LEFT, px_next, py_next) == true) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 0, RIGHT, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 0, DOWN_LEFT, px_next, py_next) == true) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 0, DOWN_RIGHT, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 0, UP_LEFT, px_next, py_next) == true) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 0, UP_RIGHT, px_next, py_next) == false) {
+    if (game_get_next_square(g, x, 0, HERE, px_next, py_next) == false || game_get_next_square(g, x, 0, UP, px_next, py_next) == false || game_get_next_square(g, x, 0, DOWN, px_next, py_next) == false || game_get_next_square(g, x, 0, LEFT, px_next, py_next) == true || game_get_next_square(g, x, 0, RIGHT, px_next, py_next) == false || game_get_next_square(g, x, 0, DOWN_LEFT, px_next, py_next) == true || game_get_next_square(g, x, 0, DOWN_RIGHT, px_next, py_next) == false || game_get_next_square(g, x, 0, UP_LEFT, px_next, py_next) == true || game_get_next_square(g, x, 0, UP_RIGHT, px_next, py_next) == false) {
       game_delete(g);
       return false;
     }
   }
   // ligne droite
   for (uint x = 1; x < DEFAULT_SIZE - 1; x++) {
-    if (game_get_next_square(g, x, 4, HERE, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 4, UP, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 4, DOWN, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 4, LEFT, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 4, RIGHT, px_next, py_next) == true) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 4, DOWN_LEFT, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 4, DOWN_RIGHT, px_next, py_next) == true) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 4, UP_LEFT, px_next, py_next) == false) {
-      game_delete(g);
-      return false;
-    }
-    if (game_get_next_square(g, x, 4, UP_RIGHT, px_next, py_next) == true) {
+    if (game_get_next_square(g, x, 4, HERE, px_next, py_next) == false || game_get_next_square(g, x, 4, UP, px_next, py_next) == false  || game_get_next_square(g, x, 4, DOWN, px_next, py_next) == false || game_get_next_square(g, x, 4, LEFT, px_next, py_next) == false || game_get_next_square(g, x, 4, RIGHT, px_next, py_next) == true || game_get_next_square(g, x, 4, DOWN_LEFT, px_next, py_next) == false || game_get_next_square(g, x, 4, DOWN_RIGHT, px_next, py_next) == true || game_get_next_square(g, x, 4, UP_LEFT, px_next, py_next) == false || game_get_next_square(g, x, 4, UP_RIGHT, px_next, py_next) == true) {
       game_delete(g);
       return false;
     }

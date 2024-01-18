@@ -436,6 +436,15 @@ status game_get_status(cgame g, uint i, uint j) {
   return g->statut[j + g->col * i];
 }
 
+// check the game next square 
+void check_game_nb_neighbors_aux(cgame g, uint i, uint j, direction dir, uint *pi_next, uint *pj_next, color c, uint count) {
+    if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+      if (game_get_color(g, pi_next, pj_next) == c) {
+        count++;
+      }
+    }
+}
+
 int game_nb_neighbors(cgame g, uint i, uint j, color c) {
   checkGame((game)g, i, j, "game_nb_neighbors");
   uint count = 0;
@@ -443,48 +452,35 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
   uint pj_next = 0;
   // checks all around the square chosen the number of neighbors with the same color as c
 
-  // case of FULL
-  if (g->neighbour == FULL) {
-    for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
-        if (game_get_color(g, pi_next, pj_next) == c) {
-          count++;
-        }
+  switch (g->neighbor) {
+    
+    case FULL:
+      for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+        check_game_nb_neighbors_aux((game)g, i, j, dir, &pi_next, &pj_next, c, count);
       }
-    }
-  }
+    break;
 
-  // case of FULL_EXCLUDE
-  if (g->neighbour == FULL_EXCLUDE) {
-    for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
-      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
-        if (game_get_color(g, pi_next, pj_next) == c) {
-          count++;
-        }
+    case FULL_EXCLUDE:
+      for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
+        check_game_nb_neighbors_aux((game)g, i, j, dir, &pi_next, &pj_next, c, count);
       }
-    }
-  }
+    break;
 
-  // case of ORTHO
-  if (g->neighbour == ORTHO) {
-    for (direction dir = HERE; dir <= RIGHT; dir++) {
-      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
-        if (game_get_color(g, pi_next, pj_next) == c) {
-          count++;
-        }
+    case ORTHO:
+      for (direction dir = HERE; dir <= RIGHT; dir++) {
+        check_game_nb_neighbors_aux((game)g, i, j, dir, &pi_next, &pj_next, c, count);
       }
-    }
-  }
+    break;
 
-  // cases of ORTHO_EXCLUDE
-  if (g->neighbour == ORTHO_EXCLUDE) {
-    for (direction dir = UP; dir <= RIGHT; dir++) {
-      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
-        if (game_get_color(g, pi_next, pj_next) == c) {
-          count++;
-        }
+    case ORTHO_EXCLUDE:
+      for (direction dir = UP; dir <= RIGHT; dir++) {
+        check_game_nb_neighbors_aux((game)g, i, j, dir, &pi_next, &pj_next, c, count);
       }
-    }
+    break;
+
+    default:
+      break;
+
   }
 
   return count;
