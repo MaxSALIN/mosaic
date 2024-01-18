@@ -62,7 +62,7 @@ void checkGame(game g, uint i, uint j, char *text) {
 }
 
 // puts the status of a square, depending on the neigh
-void putStatus(game g, uint i, uint j) {
+void putStatus(game g, uint i, uint j) {  //vérifier les cas des autres neigh
   // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
   if (game_get_constraint(g, i, j) == -1) {
     if (game_nb_neighbors(g, i, j, EMPTY) == 0) {
@@ -95,7 +95,7 @@ void putStatus(game g, uint i, uint j) {
   }
 }
 
-// changes the color of the square and the status of the square and its neighbours
+// changes the color and the status of the square and its neighbours
 void make_move(game g, uint i, uint j, color c) {
   // changes the color and status of the played square
   game_set_color(g, i, j, c);
@@ -103,7 +103,7 @@ void make_move(game g, uint i, uint j, color c) {
   uint pi_next = 0;
   uint pj_next = 0;
   // changes the status for the neighbor squares
-  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) { //à changer
     if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
       putStatus(g, pi_next, pj_next);
     }
@@ -125,7 +125,7 @@ game game_new(constraint *constraints, color *colors) {
   // puts the constraints and colors of the wanted game
   for (int i = 0; i < g->row; i++) {
     for (int j = 0; j < g->col; j++) {
-      g->contrainte[j + g->col * i] = constraints[j + g->col * i];
+      g->contrainte[j + g->col * i]= constraints[j + g->col * i];
       if (colors == NULL) {
         g->couleur[j + g->col * i] = EMPTY;
       } else {
@@ -199,13 +199,55 @@ void game_delete(game g) {
 }
 
 void game_set_constraint(game g, uint i, uint j, constraint n) {
-  checkGame(g, i, j, "game_get_constraint");
+  checkGame(g, i, j, "game_set_constraint");
   g->contrainte[j + g->col * i] = n;
+  uint pi_next = 0;
+  uint pj_next = 0;
+  putStatus(g, pi_next, pj_next);
+  
+  /*for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) { //à changer
+    if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+      putStatus(g, pi_next, pj_next);
+    }
+  }*/
 }
 
 void game_set_color(game g, uint i, uint j, color c) {
   checkGame(g, i, j, "game_set_color");
   g->couleur[j + g->col * i] = c;
+  uint pi_next = 0;
+  uint pj_next = 0;
+  putStatus(g, pi_next, pj_next);
+  /*uint pi_next = 0;
+  uint pj_next = 0;
+  if(game_get_neighbourhood(g)==FULL){
+    for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) { //à changer
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+        putStatus(g, pi_next, pj_next);
+      }
+    }
+  }
+  if(game_get_neighbourhood(g)==FULL_EXCLUDE){
+    for (direction dir = UP; dir <= DOWN_RIGHT; dir++) { //à changer
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+        putStatus(g, pi_next, pj_next);
+      }
+    }
+  }
+  if(game_get_neighbourhood(g)==ORTHO){
+    for (direction dir = HERE; dir <= RIGHT; dir++) { //à changer
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+        putStatus(g, pi_next, pj_next);
+      }
+    }
+  }
+  if(game_get_neighbourhood(g)==ORTHO_EXCLUDE){
+    for (direction dir = UP; dir <= RIGHT; dir++) { //à changer
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+        putStatus(g, pi_next, pj_next);
+      }
+    }
+  }*/
 }
 
 constraint game_get_constraint(cgame g, uint i, uint j) {
@@ -404,7 +446,7 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
   // case of FULL
   if (g->neighbour == FULL) {
     for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-      if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
         if (game_get_color(g, pi_next, pj_next) == c) {
           count++;
         }
@@ -415,7 +457,7 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
   // case of FULL_EXCLUDE
   if (g->neighbour == FULL_EXCLUDE) {
     for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
-      if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
         if (game_get_color(g, pi_next, pj_next) == c) {
           count++;
         }
@@ -426,7 +468,7 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
   // case of ORTHO
   if (g->neighbour == ORTHO) {
     for (direction dir = HERE; dir <= RIGHT; dir++) {
-      if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
         if (game_get_color(g, pi_next, pj_next) == c) {
           count++;
         }
@@ -437,7 +479,7 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
   // cases of ORTHO_EXCLUDE
   if (g->neighbour == ORTHO_EXCLUDE) {
     for (direction dir = UP; dir <= RIGHT; dir++) {
-      if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
         if (game_get_color(g, pi_next, pj_next) == c) {
           count++;
         }

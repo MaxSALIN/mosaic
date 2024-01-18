@@ -28,11 +28,11 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
   //  puts the constraints and colors of the wanted game
   for (int i = 0; i < nb_rows; i++) {
     for (int j = 0; j < nb_cols; j++) {
-      g->contrainte[j + nb_cols * i] = constraints[j + nb_cols * i];
+      g->contrainte[j+  nb_cols*i]= constraints[j + nb_cols * i];
       if (colors == NULL) {
-        g->couleur[j + nb_cols * i] = EMPTY;
+        g->couleur[j+  nb_cols*i]= EMPTY;
       } else {
-        g->couleur[j + nb_cols * i] = colors[j + nb_cols * i];
+        g->couleur[j+  nb_cols*i]= colors[j + nb_cols * i];
       }
     }
   }
@@ -56,10 +56,12 @@ game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping, neighbourhood
   g->col = nb_cols;
   g->neighbour = neigh;
   //  creates a game where all squares are UNSATISFIED, EMPTY and UNCONSTRAINED
-  for (int i = 0; i < (nb_cols * nb_rows); i++) {
-    g->statut[i] = UNSATISFIED;
-    g->couleur[i] = EMPTY;
-    g->contrainte[i] = UNCONSTRAINED;
+  for (int i = 0; i < nb_rows; i++) {
+    for (int j = 0; j < nb_cols; j++) {
+      g->statut[j+  nb_cols*i] = UNSATISFIED;
+      g->couleur[j+  nb_cols*i]= EMPTY;
+      g->contrainte[j+  nb_cols*i]=UNCONSTRAINED;
+    }
   }
 
   return g;

@@ -4,7 +4,7 @@ include(CTest)
 enable_testing()
 
 set(CMAKE_VERBOSE_MAKEFILE on)
-set(CMAKE_C_FLAGS "-std=c99 -g -Wall")
+set(CMAKE_C_FLAGS "-std=c99 -g -Wall --coverage")
 link_directories(${CMAKE_SOURCE_DIR})
 
 add_executable(game_text game_text.c)

@@ -296,7 +296,9 @@ bool test_new_ext(void) {
     for (int j = 0; j < col2; j++) {
       if ((game_get_color(g, i, j) != WHITE) || (game_get_constraint(g, i, j) != 0) ||
           game_get_status(g, i, j) != SATISFIED) {
+        game_print(g);
         game_delete(g);
+        printf("test %d %d %d",i,j, game_get_status(g,0,0));
         return false;
       }
     }
@@ -464,7 +466,7 @@ bool test_neigh(void) {
   game g2 = game_new_empty_ext(5, 5, false, FULL_EXCLUDE);
   game_set_constraint(g2, 3, 3, 8);
   if (game_get_status(g2, 0, 0) != UNSATISFIED) {
-    game_delete(g);
+    game_delete(g2);
     return false;
   }
   for (int i = 0; i < 5; i++) {
@@ -473,7 +475,7 @@ bool test_neigh(void) {
     }
   }
   if (game_get_status(g2, 0, 0) != SATISFIED) {
-    game_delete(g);
+    game_delete(g2);
     return false;
   }
   for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
@@ -503,7 +505,7 @@ bool test_neigh(void) {
   game g3 = game_new_empty_ext(5, 5, false, ORTHO);
   game_set_constraint(g3, 3, 3, 5);
   if (game_get_status(g3, 0, 0) != UNSATISFIED) {
-    game_delete(g);
+    game_delete(g3);
     return false;
   }
   for (int i = 0; i < 5; i++) {
@@ -512,7 +514,7 @@ bool test_neigh(void) {
     }
   }
   if (game_get_status(g3, 0, 0) != SATISFIED) {
-    game_delete(g);
+    game_delete(g3);
     return false;
   }
   for (direction dir = HERE; dir < UP_LEFT; dir++) {
@@ -545,7 +547,7 @@ bool test_neigh(void) {
     game_delete(g);
     return false;
   }
-  // plays white in every square the game
+  // plays white in every square of the game
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       game_play_move(g4, i, j, WHITE);
