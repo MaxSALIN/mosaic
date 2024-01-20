@@ -331,6 +331,12 @@ bool test_new_ext(void) {
 bool test_undo_redo(void) {
   game g = game_default();
   game g_copy1 = game_copy(g);
+  if(game_get_neighbourhood(g)!=game_get_neighbourhood(g_copy1) || game_is_wrapping(g)!=game_is_wrapping(g_copy1))
+  {
+    game_delete(g);
+    game_delete(g_copy1);
+    return false;
+  }
   game_play_move(g, 0, 0, BLACK);
   game g_copy2 = game_copy(g);
   game_play_move(g, 0, 1, WHITE);
@@ -599,6 +605,10 @@ bool test_row_col(void) {
 bool test_nb_neigh_new(void) {
   // For FULL
   game g = game_new_empty_ext(8, 7, true, FULL);
+  if(game_get_neighbourhood(g)!=FULL){
+    game_delete(g);
+    return false;
+  }
   game_set_constraint(g, 2, 6, 4);
   game_play_move(g, 1, 6, BLACK);
   game_play_move(g, 3, 6, BLACK);
@@ -618,6 +628,10 @@ bool test_nb_neigh_new(void) {
 
   // For FULL_EXCLUDE
   g = game_new_empty_ext(8, 7, true, FULL_EXCLUDE);
+  if(game_get_neighbourhood(g)!=FULL_EXCLUDE){
+    game_delete(g);
+    return false;
+  }
   game_set_constraint(g, 2, 6, 4);
   game_play_move(g, 1, 6, BLACK);
   game_play_move(g, 3, 6, BLACK);
@@ -637,6 +651,10 @@ bool test_nb_neigh_new(void) {
 
   // For ORTHO
   g = game_new_empty_ext(8, 7, true, ORTHO);
+  if(game_get_neighbourhood(g)!=ORTHO){
+    game_delete(g);
+    return false;
+  }
   game_set_constraint(g, 2, 6, 4);
   game_play_move(g, 1, 6, BLACK);
   game_play_move(g, 3, 6, BLACK);
@@ -656,6 +674,10 @@ bool test_nb_neigh_new(void) {
 
   // For ORTHO_EXCLUDE
   g = game_new_empty_ext(8, 7, true, ORTHO_EXCLUDE);
+  if(game_get_neighbourhood(g)!=ORTHO_EXCLUDE){
+    game_delete(g);
+    return false;
+  }
   game_set_constraint(g, 2, 6, 4);
   game_play_move(g, 1, 6, BLACK);
   game_play_move(g, 3, 6, BLACK);
