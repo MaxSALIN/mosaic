@@ -342,7 +342,7 @@ bool test_undo_redo(void) {
   game_play_move(g, 0, 1, WHITE);
   game g_copy3 = game_copy(g);
   game_undo(g);
-  if (!game_equal(g, g_copy2)) {
+  if (!game_equal(g, g_copy2) || game_get_color(g,0,0)!=BLACK) {
     printf("Erreur premier Undo");
     game_delete(g);
     game_delete(g_copy1);
