@@ -6,6 +6,7 @@
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
+#include "game_struct.h"
 #include "queue.h"
 
 bool test_dummy() { return true; }
@@ -98,10 +99,13 @@ bool test_copy() {
   game g1 = game_default();
   game_play_move(g1, 1, 1, BLACK);
   game g2 = game_copy(g1);
-  if (!game_equal(g1, g2)) {
-    game_delete(g1);
-    game_delete(g2);
-    return false;
+  for (int i = 0; i < g1->col * g1->row; i++) {
+    if (g2->contrainte[i] != g1->contrainte[i] || g2->statut[i] != g1->statut[i] || g2->couleur[i] != g1->couleur[i] ||
+        g1->row != g2->row || g1->col != g2->col || g1->neighbour != g2->neighbour || g1->wrapping != g2->wrapping) {
+      game_delete(g1);
+      game_delete(g2);
+      return false;
+    }
   }
 
   game_delete(g1);
