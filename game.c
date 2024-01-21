@@ -12,7 +12,14 @@
 
 //#################################   Aux_functions   #################################//
 
-// Allocate safely a game
+/**
+ * @brief Allocate safely a game.
+ * @details Allocate the game safely and checks if it's correctly allocated.
+ * @param row the number of rows.
+ * @param col the number of columns.
+ * @pre @p g must be a valid pointer toward a game structure.
+ * @return a pointer toward a new game structure.
+ **/
 game safeMalloc(uint row, uint col) {
   // allocation of the game g
   game g = malloc(sizeof(game_s));
@@ -41,6 +48,16 @@ game safeMalloc(uint row, uint col) {
   return g;
 }
 
+/**
+ * @brief Checks if the game is correctly allocated
+ * @details Checks the different settings of the game to see if it's correctly allocated. Will print a message of the error and the name of the function.
+ * @param g a pointer to a game.
+ * @param i a coordinate to a designed row.
+ * @param j a coordinate to a designed column.
+ * @param text the name of the function.
+ * @pre @p g must be a valid pointer toward a game structure.
+ * @pre @p i and j must be correct coordinates in the game size.
+ **/
 void checkGame(game g, uint i, uint j, char *text) {
   // checks if i and j are between 0 and g->row-1 or g->col-1
   if (i >= g->row || j >= g->col) {
@@ -56,13 +73,22 @@ void checkGame(game g, uint i, uint j, char *text) {
   }
   // checks if queues are not NULL
   if (g->queue == NULL || g->queue_saves == NULL) {
-    fprintf(stderr, "queue NULL\n");
+    fprintf(stderr, "queue NULL in %s\n", text);
     exit(EXIT_FAILURE);
   }
 }
 
-// puts the status of a square, depending on the neigh
-void putStatus(game g, uint i, uint j) {  //vérifier les cas des autres neigh
+/**
+ * @brief Change the status of a square and its neighbours, depending on their neighbours's colors
+ * @details Checks the constraint of the current square, and colors of the nearby squares to change its status. Does the same for nearby squares defined by its neigh
+ * @param g a pointer to a game.
+ * @param i a coordinate to a designed row.
+ * @param j a coordinate to a designed column.
+ * @pre @p g must be a valid pointer toward a game structure.
+ * @pre @p i and j must be correct coordinates in the game size.
+ **/
+void putStatus(game g, uint i, uint j) {
+  checkGame((game)g, 0, 0, "putStatus");
   // changes the status for the squares with a constraint of -1 (UNCONSTRAINT)
   if (game_get_constraint(g, i, j) == -1) {
     if (game_nb_neighbors(g, i, j, EMPTY) == 0) {
@@ -95,15 +121,22 @@ void putStatus(game g, uint i, uint j) {  //vérifier les cas des autres neigh
   }
 }
 
-// changes the color and the status of the square and its neighbours
-void make_move(game g, uint i, uint j, color c) {
-  // changes the color and status of the played square
-  game_set_color(g, i, j, c);
-  putStatus(g, i, j);
+/**
+ * @brief Changes the color and the status of the square and its neighbours
+ * @details Checks the constraint of the current square, and colors of the nearby squares to change its status. Does the same for nearby squares defined by its neigh
+ * @param g a pointer to a game.
+ * @param i a coordinate to a designed row.
+ * @param j a coordinate to a designed column.
+ * @pre @p g must be a valid pointer toward a game structure.
+ * @pre @p i and j must be correct coordinates in the game size.
+ **/
+
+void putAllStatus(game g, uint i, uint j){
+  checkGame((game)g, 0, 0, "putAllStatus");
   uint pi_next = 0;
   uint pj_next = 0;
   // changes the status for the neighbor squares
-  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) { //à changer
+  for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
     if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
       putStatus(g, pi_next, pj_next);
     }
@@ -112,6 +145,7 @@ void make_move(game g, uint i, uint j, color c) {
 
 // check the game next square 
 bool check_game_nb_neighbors_aux(cgame g, uint i, uint j, direction dir, uint pi_next, uint pj_next, color c) {
+    checkGame((game)g, 0, 0, "check_game_bv_neighbors_aux");
     if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
       if (game_get_color(g, pi_next, pj_next) == c) {
         return true;
@@ -211,17 +245,13 @@ void game_delete(game g) {
 void game_set_constraint(game g, uint i, uint j, constraint n) {
   checkGame(g, i, j, "game_set_constraint");
   g->contrainte[j + g->col * i] = n;
-  uint pi_next = 0;
-  uint pj_next = 0;
-  putStatus(g, pi_next, pj_next);
+  putAllStatus(g, i, j);
 }
 
 void game_set_color(game g, uint i, uint j, color c) {
   checkGame(g, i, j, "game_set_color");
   g->couleur[j + g->col * i] = c;
-  uint pi_next = 0;
-  uint pj_next = 0;
-  putStatus(g, pi_next, pj_next);
+  putAllStatus(g, i, j);
 }
 
 constraint game_get_constraint(cgame g, uint i, uint j) {
@@ -359,7 +389,7 @@ void game_play_move(game g, uint i, uint j, color c) {
   m->c = game_get_color(g, i, j);
   queue_push_head(g->queue, m);
   queue_clear_full(g->queue_saves, free);
-  make_move(g, i, j, c);
+  game_set_color(g, i, j, c);
 }
 
 bool game_won(cgame g) {

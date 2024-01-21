@@ -82,7 +82,7 @@ void game_undo(game g) {
     move *m1 = queue_pop_head(g->queue);
     color color_game = m1->c;
     m1->c = game_get_color(g, m1->i, m1->j);
-    make_move(g, m1->i, m1->j, color_game);
+    game_set_color(g, m1->i, m1->j, color_game);
     // put back the old move in the queue_saves
     queue_push_head(g->queue_saves, m1);
   } else {
@@ -97,7 +97,7 @@ void game_redo(game g) {
     move *m1 = queue_pop_head(g->queue_saves);
     color color_game = m1->c;
     m1->c = game_get_color(g, m1->i, m1->j);
-    make_move(g, m1->i, m1->j, color_game);
+    game_set_color(g, m1->i, m1->j, color_game);
     // put back the old move in the queue
     queue_push_head(g->queue, m1);
   } else {
