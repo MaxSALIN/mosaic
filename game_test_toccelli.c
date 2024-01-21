@@ -6,7 +6,6 @@
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
-#include "game_struct.h"
 #include "queue.h"
 
 bool test_dummy() { return true; }
@@ -99,12 +98,14 @@ bool test_copy() {
   game g1 = game_default();
   game_play_move(g1, 1, 1, BLACK);
   game g2 = game_copy(g1);
-  for (int i = 0; i < g1->col * g1->row; i++) {
-    if (g2->contrainte[i] != g1->contrainte[i] || g2->statut[i] != g1->statut[i] || g2->couleur[i] != g1->couleur[i] ||
-        g1->row != g2->row || g1->col != g2->col || g1->neighbour != g2->neighbour || g1->wrapping != g2->wrapping) {
-      game_delete(g1);
-      game_delete(g2);
-      return false;
+  for (int i = 0; i < game_nb_rows(g1); i++) {
+    for(int j=0; j < game_nb_cols(g2);j++){
+      if (game_get_constraint(g1, i,j) != game_get_constraint(g2, i,j) || game_get_status(g1, i,j) != game_get_status(g2, i,j) || game_get_color(g1, i,j) != game_get_color(g2, i,j) ||
+          game_nb_cols(g1) != game_nb_cols(g2) || game_nb_rows(g1) != game_nb_rows(g2) || game_is_wrapping(g1) != game_is_wrapping(g2) || game_get_neighbourhood(g1) != game_get_neighbourhood(g2)) {
+        game_delete(g1);
+        game_delete(g2);
+        return false;
+      }
     }
   }
 
