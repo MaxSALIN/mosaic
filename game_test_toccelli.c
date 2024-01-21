@@ -14,9 +14,13 @@ bool test_set_color() {
   game g = game_default();
   game_set_color(g, 1, 1, BLACK);
   game_set_color(g, 2, 2, WHITE);
-  game_set_color(g, 3, 3, BLACK);
-  game_set_color(g, 3, 3, EMPTY);
-  if (game_get_color(g, 1, 1) != BLACK || game_get_color(g, 2, 2) != WHITE || game_get_color(g, 3, 3) != EMPTY) {
+  game_set_color(g, 0, 3, BLACK);
+  if(game_get_color(g, 0, 3) != BLACK || game_get_constraint(g,0,3)!=3){
+    game_delete(g);
+    return false;
+  }
+  game_set_color(g, 0, 3, EMPTY);
+  if (game_get_color(g, 1, 1) != BLACK || game_get_color(g, 2, 2) != WHITE || game_get_color(g, 0, 3) != EMPTY)  {
     game_delete(g);
     return false;
   }
@@ -115,6 +119,18 @@ bool test_copy() {
 }
 
 bool test_set_constraint() {
+  game g_default= game_default();
+  game_set_color(g_default, 0, 3, BLACK);
+  if(game_get_color(g_default, 0, 3) != BLACK || game_get_constraint(g_default,0,3)!=3){
+    game_delete(g_default);
+    return false;
+  }
+  game_set_constraint(g_default, 0, 3, 8);
+  if(game_get_color(g_default, 0, 3) != BLACK || game_get_constraint(g_default,0,3)!=8){
+    game_delete(g_default);
+    return false;
+  }
+  game_delete(g_default);
   game g = game_new_empty();
   for (int y = 0; y < DEFAULT_SIZE; y++) {
     for (int x = 0; x < DEFAULT_SIZE; x++) {
