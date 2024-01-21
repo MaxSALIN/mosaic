@@ -99,7 +99,7 @@ bool test_equal() {
 }
 
 bool test_copy() {
-  game g1 = game_default();
+  game g1 = game_new_empty_ext(7,6, true, ORTHO_EXCLUDE);
   game_play_move(g1, 1, 1, BLACK);
   game g2 = game_copy(g1);
   for (int i = 0; i < game_nb_rows(g1); i++) {
