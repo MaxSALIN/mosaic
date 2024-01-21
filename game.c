@@ -50,7 +50,8 @@ game safeMalloc(uint row, uint col) {
 
 /**
  * @brief Checks if the game is correctly allocated
- * @details Checks the different settings of the game to see if it's correctly allocated. Will print a message of the error and the name of the function.
+ * @details Checks the different settings of the game to see if it's correctly allocated. Will print a message of the
+ *error and the name of the function.
  * @param g a pointer to a game.
  * @param i a coordinate to a designed row.
  * @param j a coordinate to a designed column.
@@ -79,11 +80,11 @@ void checkGame(game g, uint i, uint j, char *text) {
 }
 
 /**
- * @brief Change the status of a square and its neighbours, depending on their neighbours's colors
- * @details Checks the constraint of the current square, and colors of the nearby squares to change its status. Does the same for nearby squares defined by its neigh
- * @param g a pointer to a game.
- * @param i a coordinate to a designed row.
- * @param j a coordinate to a designed column.
+ * @brief Change the status of a square, depending on their neighbours's colors
+ * @details Checks the constraint of the current square, and colors of the nearby squares to change its status.
+ * @param g A pointer to a game.
+ * @param i A coordinate to a designed row.
+ * @param j A coordinate to a designed column.
  * @pre @p g must be a valid pointer toward a game structure.
  * @pre @p i and j must be correct coordinates in the game size.
  **/
@@ -122,16 +123,17 @@ void putStatus(game g, uint i, uint j) {
 }
 
 /**
- * @brief Changes the color and the status of the square and its neighbours
- * @details Checks the constraint of the current square, and colors of the nearby squares to change its status. Does the same for nearby squares defined by its neigh
- * @param g a pointer to a game.
- * @param i a coordinate to a designed row.
- * @param j a coordinate to a designed column.
+ * @brief Applies to all of the neighbor squares the function putStatus, chaging their status.
+ * @details Checks the constraint of all of the neighbor squares, and colors of their nearby squares to change their
+ *status.
+ * @param g A pointer to a game.
+ * @param i A coordinate to a designed row.
+ * @param j A coordinate to a designed column.
  * @pre @p g must be a valid pointer toward a game structure.
  * @pre @p i and j must be correct coordinates in the game size.
  **/
 
-void putAllStatus(game g, uint i, uint j){
+void putAllStatus(game g, uint i, uint j) {
   checkGame((game)g, 0, 0, "putAllStatus");
   uint pi_next = 0;
   uint pj_next = 0;
@@ -141,17 +143,6 @@ void putAllStatus(game g, uint i, uint j){
       putStatus(g, pi_next, pj_next);
     }
   }
-}
-
-// check the game next square 
-bool check_game_nb_neighbors_aux(cgame g, uint i, uint j, direction dir, uint pi_next, uint pj_next, color c) {
-    checkGame((game)g, 0, 0, "check_game_bv_neighbors_aux");
-    if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
-      if (game_get_color(g, pi_next, pj_next) == c) {
-        return true;
-      }
-    }
-    return false;
 }
 
 //#################################   End   #################################//
@@ -169,7 +160,7 @@ game game_new(constraint *constraints, color *colors) {
   // puts the constraints and colors of the wanted game
   for (int i = 0; i < g->row; i++) {
     for (int j = 0; j < g->col; j++) {
-      g->contrainte[j + g->col * i]= constraints[j + g->col * i];
+      g->contrainte[j + g->col * i] = constraints[j + g->col * i];
       if (colors == NULL) {
         g->couleur[j + g->col * i] = EMPTY;
       } else {
@@ -204,6 +195,7 @@ game game_new_empty(void) {
 game game_copy(cgame g) {
   checkGame((game)g, 0, 0, "game_copy");
   game g2 = safeMalloc(g->row, g->col);
+  // copies the different options
   g2->row = g->row;
   g2->col = g->col;
   g2->neighbour = g->neighbour;
@@ -221,10 +213,10 @@ game game_copy(cgame g) {
 bool game_equal(cgame g1, cgame g2) {
   checkGame((game)g1, 0, 0, "game_equal");
   checkGame((game)g2, 0, 0, "game_equal");
-  if(g1->row != g2->row || g1->col != g2->col || g1->neighbour != g2->neighbour || g1->wrapping != g2->wrapping){
+  if (g1->row != g2->row || g1->col != g2->col || g1->neighbour != g2->neighbour || g1->wrapping != g2->wrapping) {
     return false;
   }
-  // checks if the constraint, color and status are the same between g1 and g2 for all squares
+  // checks if constraints, colors and status are the same between g1 and g2 for all squares
   for (int i = 0; i < g1->col * g1->row; i++) {
     if (g2->contrainte[i] != g1->contrainte[i] || g2->statut[i] != g1->statut[i] || g2->couleur[i] != g1->couleur[i]) {
       return false;
@@ -281,49 +273,49 @@ bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next,
   }
 
   // changes the output values of pi_next and pj_next to match the direction
-    switch (dir) {
-      case UP:
-        *pi_next = (i+game_nb_rows(g) - 1)%game_nb_rows(g);
-        *pj_next = j;
-        break;
-      case DOWN:
-        *pi_next = (i+  game_nb_rows(g) + 1)%game_nb_rows(g);
-        *pj_next = j;
-        break;
-      case LEFT:
-        *pi_next = i;
-        *pj_next = (j+game_nb_cols(g) - 1)%game_nb_cols(g);
-        break;
-      case RIGHT:
-        *pi_next = i;
-        *pj_next = (j +game_nb_cols(g)+ 1)%game_nb_cols(g);
-        break;
-      case UP_LEFT:
-        *pi_next = (i +game_nb_rows(g) - 1)%game_nb_rows(g);
-        *pj_next = (j +game_nb_cols(g) - 1)%game_nb_cols(g);
-        break;
-      case UP_RIGHT:
-        *pi_next = (i+game_nb_rows(g) - 1)%game_nb_rows(g);
-        *pj_next = (j +game_nb_cols(g)+ 1)%game_nb_cols(g);
-        break;
-      case DOWN_LEFT:
-        *pi_next = (i+game_nb_rows(g) + 1)%game_nb_rows(g);
-        *pj_next = (j +game_nb_cols(g)- 1)%game_nb_cols(g);
-        break;
-      case DOWN_RIGHT:
-        *pi_next = (i+ game_nb_rows(g) + 1)%game_nb_rows(g);
-        *pj_next = (j+game_nb_cols(g) + 1)%game_nb_cols(g);
-        break;
-      case HERE:
-        *pi_next = i;
-        *pj_next = j;
-        break;
-      default:
-        fprintf(stderr, "Error in game_get_next_square");
-        exit(EXIT_FAILURE);
-        break;
-    }
-    return true;
+  switch (dir) {
+    case UP:
+      *pi_next = (i + game_nb_rows(g) - 1) % game_nb_rows(g);
+      *pj_next = j;
+      break;
+    case DOWN:
+      *pi_next = (i + game_nb_rows(g) + 1) % game_nb_rows(g);
+      *pj_next = j;
+      break;
+    case LEFT:
+      *pi_next = i;
+      *pj_next = (j + game_nb_cols(g) - 1) % game_nb_cols(g);
+      break;
+    case RIGHT:
+      *pi_next = i;
+      *pj_next = (j + game_nb_cols(g) + 1) % game_nb_cols(g);
+      break;
+    case UP_LEFT:
+      *pi_next = (i + game_nb_rows(g) - 1) % game_nb_rows(g);
+      *pj_next = (j + game_nb_cols(g) - 1) % game_nb_cols(g);
+      break;
+    case UP_RIGHT:
+      *pi_next = (i + game_nb_rows(g) - 1) % game_nb_rows(g);
+      *pj_next = (j + game_nb_cols(g) + 1) % game_nb_cols(g);
+      break;
+    case DOWN_LEFT:
+      *pi_next = (i + game_nb_rows(g) + 1) % game_nb_rows(g);
+      *pj_next = (j + game_nb_cols(g) - 1) % game_nb_cols(g);
+      break;
+    case DOWN_RIGHT:
+      *pi_next = (i + game_nb_rows(g) + 1) % game_nb_rows(g);
+      *pj_next = (j + game_nb_cols(g) + 1) % game_nb_cols(g);
+      break;
+    case HERE:
+      *pi_next = i;
+      *pj_next = j;
+      break;
+    default:
+      fprintf(stderr, "Error in game_get_next_square");
+      exit(EXIT_FAILURE);
+      break;
+  }
+  return true;
 }
 
 status game_get_status(cgame g, uint i, uint j) {
@@ -339,42 +331,44 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
   // checks all around the square chosen the number of neighbors with the same color as c
 
   switch (g->neighbour) {
-    
     case FULL:
       for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-        if(check_game_nb_neighbors_aux((game)g, i, j, dir, pi_next, pj_next, c)){
+        if ((game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) &&
+            (game_get_color(g, pi_next, pj_next) == c)) {
           count++;
         }
       }
-    break;
+      break;
 
     case FULL_EXCLUDE:
       for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
-        if(check_game_nb_neighbors_aux((game)g, i, j, dir, pi_next, pj_next, c)){
+        if ((game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) &&
+            (game_get_color(g, pi_next, pj_next) == c)) {
           count++;
         }
       }
-    break;
+      break;
 
     case ORTHO:
       for (direction dir = HERE; dir <= RIGHT; dir++) {
-        if(check_game_nb_neighbors_aux((game)g, i, j, dir, pi_next, pj_next, c)){
+        if ((game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) &&
+            (game_get_color(g, pi_next, pj_next) == c)) {
           count++;
         }
       }
-    break;
+      break;
 
     case ORTHO_EXCLUDE:
       for (direction dir = UP; dir <= RIGHT; dir++) {
-        if(check_game_nb_neighbors_aux((game)g, i, j, dir, pi_next, pj_next, c)){
+        if ((game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) &&
+            (game_get_color(g, pi_next, pj_next) == c)) {
           count++;
         }
       }
-    break;
+      break;
 
     default:
       break;
-
   }
 
   return count;
@@ -382,7 +376,7 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
 
 void game_play_move(game g, uint i, uint j, color c) {
   checkGame(g, i, j, "game_play_move");
-  move *m = malloc(sizeof(move));  // penser à free move
+  move *m = malloc(sizeof(move));
   if (m == NULL) {
     exit(EXIT_FAILURE);
   }

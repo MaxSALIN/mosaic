@@ -15,12 +15,12 @@ bool test_set_color() {
   game_set_color(g, 1, 1, BLACK);
   game_set_color(g, 2, 2, WHITE);
   game_set_color(g, 0, 3, BLACK);
-  if(game_get_color(g, 0, 3) != BLACK || game_get_constraint(g,0,3)!=3){
+  if (game_get_color(g, 0, 3) != BLACK || game_get_constraint(g, 0, 3) != 3) {
     game_delete(g);
     return false;
   }
   game_set_color(g, 0, 3, EMPTY);
-  if (game_get_color(g, 1, 1) != BLACK || game_get_color(g, 2, 2) != WHITE || game_get_color(g, 0, 3) != EMPTY)  {
+  if (game_get_color(g, 1, 1) != BLACK || game_get_color(g, 2, 2) != WHITE || game_get_color(g, 0, 3) != EMPTY) {
     game_delete(g);
     return false;
   }
@@ -99,13 +99,16 @@ bool test_equal() {
 }
 
 bool test_copy() {
-  game g1 = game_new_empty_ext(7,6, true, ORTHO_EXCLUDE);
+  game g1 = game_new_empty_ext(7, 6, true, ORTHO_EXCLUDE);
   game_play_move(g1, 1, 1, BLACK);
   game g2 = game_copy(g1);
   for (int i = 0; i < game_nb_rows(g1); i++) {
-    for(int j=0; j < game_nb_cols(g2);j++){
-      if (game_get_constraint(g1, i,j) != game_get_constraint(g2, i,j) || game_get_status(g1, i,j) != game_get_status(g2, i,j) || game_get_color(g1, i,j) != game_get_color(g2, i,j) ||
-          game_nb_cols(g1) != game_nb_cols(g2) || game_nb_rows(g1) != game_nb_rows(g2) || game_is_wrapping(g1) != game_is_wrapping(g2) || game_get_neighbourhood(g1) != game_get_neighbourhood(g2)) {
+    for (int j = 0; j < game_nb_cols(g2); j++) {
+      if (game_get_constraint(g1, i, j) != game_get_constraint(g2, i, j) ||
+          game_get_status(g1, i, j) != game_get_status(g2, i, j) ||
+          game_get_color(g1, i, j) != game_get_color(g2, i, j) || game_nb_cols(g1) != game_nb_cols(g2) ||
+          game_nb_rows(g1) != game_nb_rows(g2) || game_is_wrapping(g1) != game_is_wrapping(g2) ||
+          game_get_neighbourhood(g1) != game_get_neighbourhood(g2)) {
         game_delete(g1);
         game_delete(g2);
         return false;
@@ -119,14 +122,14 @@ bool test_copy() {
 }
 
 bool test_set_constraint() {
-  game g_default= game_default();
+  game g_default = game_default();
   game_set_color(g_default, 0, 3, BLACK);
-  if(game_get_color(g_default, 0, 3) != BLACK || game_get_constraint(g_default,0,3)!=3){
+  if (game_get_color(g_default, 0, 3) != BLACK || game_get_constraint(g_default, 0, 3) != 3) {
     game_delete(g_default);
     return false;
   }
   game_set_constraint(g_default, 0, 3, 8);
-  if(game_get_color(g_default, 0, 3) != BLACK || game_get_constraint(g_default,0,3)!=8){
+  if (game_get_color(g_default, 0, 3) != BLACK || game_get_constraint(g_default, 0, 3) != 8) {
     game_delete(g_default);
     return false;
   }

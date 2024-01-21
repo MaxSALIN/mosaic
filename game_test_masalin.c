@@ -298,7 +298,7 @@ bool test_new_ext(void) {
           game_get_status(g, i, j) != SATISFIED) {
         game_print(g);
         game_delete(g);
-        printf("test %d %d %d",i,j, game_get_status(g,0,0));
+        printf("test %d %d %d", i, j, game_get_status(g, 0, 0));
         return false;
       }
     }
@@ -336,7 +336,7 @@ bool test_undo_redo(void) {
   game_play_move(g, 0, 0, WHITE);
   game g_copy3 = game_copy(g);
   game_undo(g);
-  if (!game_equal(g, g_copy2) || game_get_color(g,0,0)!=BLACK) {
+  if (!game_equal(g, g_copy2) || game_get_color(g, 0, 0) != BLACK) {
     printf("Erreur premier Undo");
     game_delete(g);
     game_delete(g_copy1);
@@ -416,7 +416,7 @@ bool test_wrapping(void) {
   if (game_get_status(g, 5, 5) != ERROR) {
     game_delete(g);
     printf("test");
-    printf("tEST 2 %d", (-1)%6);
+    printf("tEST 2 %d", (-1) % 6);
     return false;
   }
   game_play_move(g, 0, 0, WHITE);
@@ -601,7 +601,7 @@ bool test_row_col(void) {
 bool test_nb_neigh_new(void) {
   // For FULL
   game g = game_new_empty_ext(8, 7, true, FULL);
-  if(game_get_neighbourhood(g)!=FULL){
+  if (game_get_neighbourhood(g) != FULL) {
     game_delete(g);
     return false;
   }
@@ -624,7 +624,7 @@ bool test_nb_neigh_new(void) {
 
   // For FULL_EXCLUDE
   g = game_new_empty_ext(8, 7, true, FULL_EXCLUDE);
-  if(game_get_neighbourhood(g)!=FULL_EXCLUDE){
+  if (game_get_neighbourhood(g) != FULL_EXCLUDE) {
     game_delete(g);
     return false;
   }
@@ -647,7 +647,7 @@ bool test_nb_neigh_new(void) {
 
   // For ORTHO
   g = game_new_empty_ext(8, 7, true, ORTHO);
-  if(game_get_neighbourhood(g)!=ORTHO){
+  if (game_get_neighbourhood(g) != ORTHO) {
     game_delete(g);
     return false;
   }
@@ -670,7 +670,7 @@ bool test_nb_neigh_new(void) {
 
   // For ORTHO_EXCLUDE
   g = game_new_empty_ext(8, 7, true, ORTHO_EXCLUDE);
-  if(game_get_neighbourhood(g)!=ORTHO_EXCLUDE){
+  if (game_get_neighbourhood(g) != ORTHO_EXCLUDE) {
     game_delete(g);
     return false;
   }
