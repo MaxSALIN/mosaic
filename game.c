@@ -110,6 +110,16 @@ void make_move(game g, uint i, uint j, color c) {
   }
 }
 
+// check the game next square 
+bool check_game_nb_neighbors_aux(cgame g, uint i, uint j, direction dir, uint pi_next, uint pj_next, color c) {
+    if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
+      if (game_get_color(g, pi_next, pj_next) == c) {
+        return true;
+      }
+    }
+    return false;
+}
+
 //#################################   End   #################################//
 
 game game_new(constraint *constraints, color *colors) {
@@ -236,40 +246,41 @@ bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next,
         (i == 0 && ((dir == UP) || (dir == UP_RIGHT) || (dir == UP_LEFT)))) {
       return false;
     }
+  }
 
-    // changes the output values of pi_next and pj_next to match the direction
+  // changes the output values of pi_next and pj_next to match the direction
     switch (dir) {
       case UP:
-        *pi_next = i - 1;
+        *pi_next = (i+game_nb_rows(g) - 1)%game_nb_rows(g);
         *pj_next = j;
         break;
       case DOWN:
-        *pi_next = i + 1;
+        *pi_next = (i+  game_nb_rows(g) + 1)%game_nb_rows(g);
         *pj_next = j;
         break;
       case LEFT:
         *pi_next = i;
-        *pj_next = j - 1;
+        *pj_next = (j+game_nb_cols(g) - 1)%game_nb_cols(g);
         break;
       case RIGHT:
         *pi_next = i;
-        *pj_next = j + 1;
+        *pj_next = (j +game_nb_cols(g)+ 1)%game_nb_cols(g);
         break;
       case UP_LEFT:
-        *pi_next = i - 1;
-        *pj_next = j - 1;
+        *pi_next = (i +game_nb_rows(g) - 1)%game_nb_rows(g);
+        *pj_next = (j +game_nb_cols(g) - 1)%game_nb_cols(g);
         break;
       case UP_RIGHT:
-        *pi_next = i - 1;
-        *pj_next = j + 1;
+        *pi_next = (i+game_nb_rows(g) - 1)%game_nb_rows(g);
+        *pj_next = (j +game_nb_cols(g)+ 1)%game_nb_cols(g);
         break;
       case DOWN_LEFT:
-        *pi_next = i + 1;
-        *pj_next = j - 1;
+        *pi_next = (i+game_nb_rows(g) + 1)%game_nb_rows(g);
+        *pj_next = (j +game_nb_cols(g)- 1)%game_nb_cols(g);
         break;
       case DOWN_RIGHT:
-        *pi_next = i + 1;
-        *pj_next = j + 1;
+        *pi_next = (i+ game_nb_rows(g) + 1)%game_nb_rows(g);
+        *pj_next = (j+game_nb_cols(g) + 1)%game_nb_cols(g);
         break;
       case HERE:
         *pi_next = i;
@@ -281,133 +292,11 @@ bool game_get_next_square(cgame g, uint i, uint j, direction dir, uint *pi_next,
         break;
     }
     return true;
-  }
-  // case of wrapping
-  else {
-    // changes the output values of pi_next and pj_next to match the direction
-    switch (dir) {
-      case UP:
-        if (i == 0) {  // wrapping from up to down
-          *pi_next = g->row - 1;
-          *pj_next = j;
-        } else {
-          *pi_next = i - 1;
-          *pj_next = j;
-        }
-        break;
-      case DOWN:
-        if (i == g->row - 1) {
-          *pi_next = 0;
-          *pj_next = j;
-        } else {
-          *pi_next = i + 1;
-          *pj_next = j;
-        }
-        break;
-      case LEFT:
-        if (j == 0) {
-          *pi_next = i;
-          *pj_next = g->col - 1;
-        } else {
-          *pi_next = i;
-          *pj_next = j - 1;
-        }
-        break;
-      case RIGHT:
-        if (j == g->col - 1) {  // wrapping from right to left
-          *pi_next = i;
-          *pj_next = 0;
-        } else {
-          *pi_next = i;
-          *pj_next = j + 1;
-        }
-        break;
-      case UP_LEFT:
-        if (i == 0 && j == 0) {
-          *pi_next = g->row - 1;
-          *pj_next = g->col - 1;
-        } else if (i == 0) {  // wrapping from up to down
-          *pi_next = g->row - 1;
-          *pj_next = j - 1;
-        } else if (j == 0) {
-          *pi_next = i - 1;
-          *pj_next = g->col - 1;
-        } else {
-          *pi_next = i - 1;
-          *pj_next = j - 1;
-        }
-        break;
-      case UP_RIGHT:
-        if (i == 0 && j == g->col - 1) {
-          *pi_next = g->row - 1;
-          *pj_next = 0;
-        } else if (j == g->col - 1) {  // wrapping from right to left
-          *pi_next = i - 1;
-          *pj_next = 0;
-        } else if (i == 0) {  // wrapping from up to down
-          *pi_next = g->row - 1;
-          *pj_next = j + 1;
-        } else {
-          *pi_next = i - 1;
-          *pj_next = j + 1;
-        }
-        break;
-      case DOWN_LEFT:
-        if (i == g->row - 1 && j == 0) {
-          *pi_next = 0;
-          *pj_next = g->col - 1;
-        } else if (i == g->row - 1) {
-          *pi_next = 0;
-          *pj_next = j - 1;
-        } else if (j == 0) {
-          *pi_next = i + 1;
-          *pj_next = g->col - 1;
-        } else {
-          *pi_next = i + 1;
-          *pj_next = j - 1;
-        }
-        break;
-      case DOWN_RIGHT:
-        if (i == g->row - 1 && j == g->col - 1) {
-          *pi_next = 0;
-          *pj_next = 0;
-        } else if (j == g->col - 1) {  // wrapping from right to left
-          *pi_next = i + 1;
-          *pj_next = 0;
-        } else if (i == g->row - 1) {
-          *pi_next = 0;
-          *pj_next = j + 1;
-        } else {
-          *pi_next = i + 1;
-          *pj_next = j + 1;
-        }
-        break;
-      case HERE:
-        *pi_next = i;
-        *pj_next = j;
-        break;
-      default:
-        fprintf(stderr, "Error in game_get_next_square");
-        exit(EXIT_FAILURE);
-        break;
-    }
-    return true;
-  }
 }
 
 status game_get_status(cgame g, uint i, uint j) {
   checkGame((game)g, i, j, "game_get_status");
   return g->statut[j + g->col * i];
-}
-
-// check the game next square 
-bool check_game_nb_neighbors_aux(cgame g, uint i, uint j, direction dir, uint pi_next, uint pj_next, color c) {
-    if (game_get_next_square((game)g, i, j, dir, &pi_next, &pj_next) == true) {
-      if (game_get_color(g, pi_next, pj_next) == c) {
-        return true;
-      }
-    }
-    return false;
 }
 
 int game_nb_neighbors(cgame g, uint i, uint j, color c) {

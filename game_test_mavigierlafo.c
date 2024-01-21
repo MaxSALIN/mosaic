@@ -257,6 +257,38 @@ bool test_get_status(void) {
   game_delete(g);
   game_delete(g_dummy);
   return true;
+  /*game g = game_new_empty();
+
+  // test UNCONSTRAINED
+  game_set_constraint(g, 2, 2, UNCONSTRAINED);
+  game_set_color(g, 2, 2, WHITE);
+  bool test1a = (game_get_status(g, 2, 2) == UNSATISFIED);
+  game_set_color(g, 1, 1, BLACK);
+  game_set_color(g, 1, 2, BLACK);
+  game_set_color(g, 1, 3, BLACK);
+  game_set_color(g, 2, 1, BLACK);
+  game_set_color(g, 2, 3, BLACK);
+  game_set_color(g, 3, 1, BLACK);
+  game_set_color(g, 3, 2, BLACK);
+  bool test1b = (game_get_status(g, 2, 2) == UNSATISFIED);
+  game_set_color(g, 3, 3, BLACK);
+  bool test1c = (game_get_status(g, 2, 2) == SATISFIED);
+
+  // test constraint MAX
+  game_set_constraint(g, 2, 2, 9);
+  game_set_color(g, 2, 2, EMPTY);
+  bool test2a = (game_get_status(g, 2, 2) == UNSATISFIED);
+  game_set_color(g, 2, 2, BLACK);
+  bool test2b = (game_get_status(g, 2, 2) == SATISFIED);
+  game_set_color(g, 2, 2, WHITE);
+  bool test2c = (game_get_status(g, 2, 2) == ERROR);
+
+  game_delete(g);
+
+  if (test1a && test1b && test1c && test2a && test2b && test2c)
+    return EXIT_SUCCESS;
+
+  return EXIT_FAILURE;*/
 }
 
 bool test_get_next_square(void) {

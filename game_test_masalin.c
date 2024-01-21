@@ -331,7 +331,7 @@ bool test_new_ext(void) {
 bool test_undo_redo(void) {
   game g = game_default();
   game g_copy1 = game_copy(g);
-  if(game_get_neighbourhood(g)!=game_get_neighbourhood(g_copy1) || game_is_wrapping(g)!=game_is_wrapping(g_copy1))
+  if(game_get_neighbourhood(g)!=game_get_neighbourhood(g_copy1) || game_is_wrapping(g)!=game_is_wrapping(g_copy1) || game_nb_cols(g)!=game_nb_cols(g_copy1) ||game_nb_rows(g)!=(game_nb_rows(g_copy1)))
   {
     game_delete(g);
     game_delete(g_copy1);
@@ -421,6 +421,8 @@ bool test_wrapping(void) {
   game_play_move(g, 0, 0, BLACK);
   if (game_get_status(g, 5, 5) != ERROR) {
     game_delete(g);
+    printf("test");
+    printf("tEST 2 %d", (-1)%6);
     return false;
   }
   game_play_move(g, 0, 0, WHITE);
