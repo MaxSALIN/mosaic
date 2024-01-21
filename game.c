@@ -221,10 +221,12 @@ game game_copy(cgame g) {
 bool game_equal(cgame g1, cgame g2) {
   checkGame((game)g1, 0, 0, "game_equal");
   checkGame((game)g2, 0, 0, "game_equal");
+  if(g1->row != g2->row || g1->col != g2->col || g1->neighbour != g2->neighbour || g1->wrapping != g2->wrapping){
+    return false;
+  }
   // checks if the constraint, color and status are the same between g1 and g2 for all squares
   for (int i = 0; i < g1->col * g1->row; i++) {
-    if (g2->contrainte[i] != g1->contrainte[i] || g2->statut[i] != g1->statut[i] || g2->couleur[i] != g1->couleur[i] ||
-        g1->row != g2->row || g1->col != g2->col || g1->neighbour != g2->neighbour || g1->wrapping != g2->wrapping) {
+    if (g2->contrainte[i] != g1->contrainte[i] || g2->statut[i] != g1->statut[i] || g2->couleur[i] != g1->couleur[i]) {
       return false;
     }
   }

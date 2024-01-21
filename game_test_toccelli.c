@@ -103,6 +103,7 @@ bool test_copy() {
     game_delete(g2);
     return false;
   }
+
   game_delete(g1);
   game_delete(g2);
   return true;

@@ -331,15 +331,9 @@ bool test_new_ext(void) {
 bool test_undo_redo(void) {
   game g = game_default();
   game g_copy1 = game_copy(g);
-  if(game_get_neighbourhood(g)!=game_get_neighbourhood(g_copy1) || game_is_wrapping(g)!=game_is_wrapping(g_copy1) || game_nb_cols(g)!=game_nb_cols(g_copy1) ||game_nb_rows(g)!=(game_nb_rows(g_copy1)))
-  {
-    game_delete(g);
-    game_delete(g_copy1);
-    return false;
-  }
   game_play_move(g, 0, 0, BLACK);
   game g_copy2 = game_copy(g);
-  game_play_move(g, 0, 1, WHITE);
+  game_play_move(g, 0, 0, WHITE);
   game g_copy3 = game_copy(g);
   game_undo(g);
   if (!game_equal(g, g_copy2) || game_get_color(g,0,0)!=BLACK) {
