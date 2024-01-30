@@ -8,52 +8,60 @@
 #include "game_ext.h"
 #include "game_struct.h"
 
-game game_load(char *filename){
+game game_load(char *filename) {
+
     FILE* save = fopen(filename, "r");
     if (save == NULL) {
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
-    game g;
-    int rows, cols = 0;
+    uint row = 0;
+    uint col = 0;
+    uint wrapping = 0;
+    uint neighbour = 0;
+     
 
     // we haven't reach the end of the file yet.
     while (!feof(save)) {
 
         // first line of the file.
         
-        g->row = fgets("<nb_rows>", 10, save);
-        rows = fgets("<nb_rows>", 10, save);
-        g->col = fgetst("<nb_cols>", 10, save);
-        cols = fgetst("<nb_cols>", 10, save);
+        row = fgetc(save);
+        col = fgetc(save);
 
-        g->wrapping = fgets("<wrapping>", 1, save);
-        g->neighbour = fgets("<neigh>", 1, save);
+        wrapping = fgetc(save);
+        neighbour = fgetc(save);
+        
+    }
+    constraint constraints1[row * col];
+    color colors1[row * col];
+    while (!feof(save)) {
+
+        
 
         // second line of the file.
 
-        for (int x = 0; x <= rows; x++) {
-            for (int y = 0; y <= cols; y++) {
-                
-                // particular situation where the constraint is none.
-                if (strstr(fgets("<squares[" + x + "][" + y + "]", 1, save), "-") != NULL) {
-                    g->contrainte[x][y] = UNCONSTRAINED;
-                } else if (fgets("<squares[" + x + "][" + y + "]", 1, save) >= 0 && fgets("<squares[" + x + "][" + y + "]", 1, save) <= 9) {
-                    g->contrainte[x][y] = (int) fgets("<squares[" + x + "][" + y + "]", 1, save);
+        for (int x = 0; x < row; x++) {
+            for (int y = 0; y < col; y++) {
+
+                if (fgetc(save) == '-') {
+                    constraints1[y+col*x]=UNCONSTRAINED;
+                } else {
+                    constraints1[y+col*x]=fgetc(save);
                 }
-                
-                if (strstr(fgets("<squares[" + x + "][" + y + "]", 1, save), "e") != NULL) {
-                     g->couleur[x][y] = EMPTY;
-                } else if (strstr(fgets("<squares[" + x + "][" + y + "]", 1, save), "w") != NULL) {
-                     g->couleur[x][y] = WHITE;
-                } else if (strstr(fgets("<squares[" + x + "][" + y + "]", 1, save), "b") != NULL) {
-                     g->couleur[x][y] = BLACK;
+
+                if (fgetc(save) == 'e') {
+                    colors1[y+col*x]=EMPTY;
+                } else if (fgetc(save) == 'w') {
+                    colors1[y+col*x]=WHITE;
+                } else if (fgetc(save) == 'b') {
+                    colors1[y+col*x]=BLACK;
                 }
             }
         }     
     }
     fclose(save);
     
-    return g;
+    return game_new_ext(row, col, constraints1, colors1, wrapping, neighbour);
 }
 
 void game_save(cgame g, char *filename){
