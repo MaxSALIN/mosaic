@@ -4,11 +4,16 @@
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
+#include "game_tools.h"
 
-int main(void) {
+int main(int argc, char** argv) {
   // Initialising game
   game g;
-  g = game_default();
+  if (argc == 1) {
+    g = game_default();
+  } else {
+    g = game_load(argv[1]);
+  }
   while (game_won(g) == false) {
     int i, j = 0;
     printf("\n");
@@ -26,16 +31,20 @@ int main(void) {
 
     // First scanf between help, restart, quit and the move
     char choice = 0;
+    char* filename = NULL;
     printf("\nPress 'h' for help\n");
     int r = scanf(" %c", &choice);
     if (r == 1) {
       if (choice == 'h')  // Help
       {
         printf(
-            "\nPress 'w <i> <j>' to set the square (i,j) white\nPress 'b <i> <j>' to set the square (i,j) black\nPress "
+            "\nPress 'w <i> <j>' to set the square (i,j) white\nPress 'b <i> <j>' to set the square (i,j) "
+            "black\nPress "
             "'e <i> "
-            "<j>' to set the square (i,j) empty\nPress 'z' to undo your move\nPress 'y' to redo your moven\nPress 'r' "
-            "to restart\nPress 'q' to quit\n");
+            "<j>' to set the square (i,j) empty\nPress 'z' to undo your move\nPress 'y' to redo your moven\nPress "
+            "'r' "
+            "to restart\nPress 'q' to quit\nPress 's filename' to save your game in a filename.txt (filename can be "
+            "any one word name)\n");
       }
       if (choice == 'r')  // Restart
       {
@@ -57,6 +66,14 @@ int main(void) {
       {
         printf("\nMove Redo\n");
         game_redo(g);
+      }
+      if (choice == 's') {
+        int r = scanf(" %s", filename);
+        if (r == 1) {
+          game_save(g, filename);
+        } else {
+          printf("\nIncorrect file name arguments\n");
+        }
       }
       if (choice == 'w' || choice == 'b' || choice == 'e')  // Move
       {
