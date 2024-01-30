@@ -13,7 +13,6 @@ game game_load(char *filename){
 }
 
 void game_save(cgame g, char *filename){
-    printf("%s",filename);
     FILE* file = fopen(filename, "w");
     fprintf(file, "%d %d %d %d\n",g->row,g->col,g->wrapping,g->neighbour);
     for (int i = 0; i < g->row; i++)
