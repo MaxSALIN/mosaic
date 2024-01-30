@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     char choice = 0;
     char* filename = NULL;
     printf("\nPress 'h' for help\n");
-    int r = scanf(" %c", &choice);
+    int r = scanf("%c", &choice);
     if (r == 1) {
       if (choice == 'h')  // Help
       {
@@ -45,37 +45,31 @@ int main(int argc, char** argv) {
             "'r' "
             "to restart\nPress 'q' to quit\nPress 's filename' to save your game in a filename.txt (filename can be "
             "any one word name)\n");
-      }
-      if (choice == 'r')  // Restart
+      } else if (choice == 'r')  // Restart
       {
         printf("\nGame restarted\n");
         game_restart(g);
-      }
-      if (choice == 'q')  // Quit
+      } else if (choice == 'q')  // Quit
       {
         printf("\nToo bad, you were so close, what a shame..\n");
         game_delete(g);
         return EXIT_SUCCESS;
-      }
-      if (choice == 'z')  // Undo
+      } else if (choice == 'z')  // Undo
       {
         printf("\nMove Undo\n");
         game_undo(g);
-      }
-      if (choice == 'y')  // Redo
+      } else if (choice == 'y')  // Redo
       {
         printf("\nMove Redo\n");
         game_redo(g);
-      }
-      if (choice == 's') {
+      } else if (choice == 's') {
         int r = scanf(" %s", filename);
         if (r == 1) {
           game_save(g, filename);
         } else {
           printf("\nIncorrect file name arguments\n");
         }
-      }
-      if (choice == 'w' || choice == 'b' || choice == 'e')  // Move
+      } else if (choice == 'w' || choice == 'b' || choice == 'e')  // Move
       {
         int r = scanf(" %d %d", &i, &j);  // Scanf for the position of the move
         if (r == 2) {
