@@ -6,6 +6,7 @@
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
+#include "game_tools.h"
 #include "queue.h"
 
 bool test_dummy() { return true; }
@@ -220,6 +221,33 @@ bool test_set_constraint() {
   return true;
 }
 
+bool test_game_load(){
+  game g_default = game_default();
+  game_play_move(g_default, 2, 2, BLACK);
+  game_save(g_default, "default.txt");
+  game g_load = game_load("default.txt");
+  if(game_get_neighbourhood(g_default) != game_get_neighbourhood(g_load)
+  || game_is_wrapping(g_default) != game_is_wrapping(g_load)){
+    game_delete(g_default);
+    game_delete(g_load);
+    printf("Erreur dans options");
+    return false;
+  }
+  for (int x = 0; x < DEFAULT_SIZE; x++) {
+    for (int y = 0; y < DEFAULT_SIZE; y++) {
+      if(game_get_color(g_default,x,y) != game_get_color(g_load,x,y)
+      || game_get_constraint(g_default,x,y) != game_get_constraint(g_load,x,y)
+      || game_get_status(g_default,x,y) != game_get_status(g_load,x,y)){
+        game_delete(g_default);
+        game_delete(g_load);
+        printf("Erreur %d %d",x,y);
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 int test_toccelli(char *argv[]) {
   bool ok = false;
   if (!(strcmp("dummy", argv[1]))) {
@@ -236,6 +264,8 @@ int test_toccelli(char *argv[]) {
     ok = test_copy();
   } else if (!(strcmp("set_constraint", argv[1]))) {
     ok = test_set_constraint();
+  } else if (!(strcmp("game_load", argv[1]))) {
+    ok = test_game_load();
   } else {
     fprintf(stderr, "Error: test \"%s\" not found!\n", argv[1]);
     exit(EXIT_FAILURE);
