@@ -26,7 +26,7 @@ add_test(test_toccelli_restart ./game_test_toccelli restart)
 add_test(test_toccelli_equal ./game_test_toccelli equal)
 add_test(test_toccelli_copy ./game_test_toccelli copy)
 add_test(test_toccelli_set_constraint ./game_test_toccelli set_constraint)
-add_test(test_toccelli_game_load ./game_test_toccelli game_load)
+add_test(test_toccelli_game_load_save ./game_test_toccelli game_load_save)
 
 add_test(test_masalin_dummy ./game_test_masalin dummy)
 add_test(test_masalin_new_empty ./game_test_masalin new_empty)
