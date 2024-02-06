@@ -1,5 +1,6 @@
 *.h
 *.a
+*.txt
 Makefile
 build/
 CMakeFiles/
