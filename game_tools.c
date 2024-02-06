@@ -21,43 +21,42 @@ game game_load(char *filename) {
      
 
     // we haven't reach the end of the file yet.
-    while (!feof(save)) {
 
         // first line of the file.
         
-        row = fgetc(save);
-        col = fgetc(save);
-
-        wrapping = fgetc(save);
-        neighbour = fgetc(save);
+        fscanf(save, " %d", &row);
+        fscanf(save, " %d", &col);
+        fscanf(save, " %d", &wrapping);
+        fscanf(save, " %d", &neighbour);
+        fgetc(save);
         
-    }
     constraint constraints1[row * col];
     color colors1[row * col];
-    while (!feof(save)) {
-
-        
-
         // second line of the file.
 
         for (int x = 0; x < row; x++) {
+            
             for (int y = 0; y < col; y++) {
 
-                if (fgetc(save) == '-') {
+                char test = fgetc(save);
+
+                if (test == '-') {
                     constraints1[y+col*x]=UNCONSTRAINED;
                 } else {
-                    constraints1[y+col*x]=fgetc(save);
+                    constraints1[y+col*x]= test - '0';
                 }
-
-                if (fgetc(save) == 'e') {
+                char test2 = fgetc(save);
+                if (test2 == 'e') {
                     colors1[y+col*x]=EMPTY;
-                } else if (fgetc(save) == 'w') {
+                } else if (test2 == 'w') {
                     colors1[y+col*x]=WHITE;
-                } else if (fgetc(save) == 'b') {
+                } else if (test2 == 'b') {
                     colors1[y+col*x]=BLACK;
                 }
             }
-        }     
+            fgetc(save);
+            
+       
     }
     fclose(save);
     
