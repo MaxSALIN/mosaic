@@ -6,6 +6,7 @@
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
+#include "game_tools.h"
 #include "queue.h"
 
 bool test_dummy() { return true; }
@@ -220,6 +221,18 @@ bool test_set_constraint() {
   return true;
 }
 
+bool test_game_load_save(){
+  game g_default = game_default();
+  game_play_move(g_default, 2, 2, BLACK);
+  game_play_move(g_default, 1, 1, WHITE);
+  game_save(g_default, "defaultTest.txt");
+  game g_load = game_load("defaultTest.txt");
+  bool equal = game_equal(g_default,g_load);
+  game_delete(g_default);
+  game_delete(g_load);
+  return equal;
+}
+
 int test_toccelli(char *argv[]) {
   bool ok = false;
   if (!(strcmp("dummy", argv[1]))) {
@@ -236,6 +249,8 @@ int test_toccelli(char *argv[]) {
     ok = test_copy();
   } else if (!(strcmp("set_constraint", argv[1]))) {
     ok = test_set_constraint();
+  } else if (!(strcmp("game_load_save", argv[1]))) {
+    ok = test_game_load_save();
   } else {
     fprintf(stderr, "Error: test \"%s\" not found!\n", argv[1]);
     exit(EXIT_FAILURE);
