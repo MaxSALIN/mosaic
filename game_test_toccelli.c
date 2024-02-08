@@ -221,13 +221,13 @@ bool test_set_constraint() {
   return true;
 }
 
-bool test_game_load_save(){
+bool test_game_load_save() {
   game g_default = game_default();
   game_play_move(g_default, 2, 2, BLACK);
   game_play_move(g_default, 1, 1, WHITE);
   game_save(g_default, "defaultTest.txt");
   game g_load = game_load("defaultTest.txt");
-  bool equal = game_equal(g_default,g_load);
+  bool equal = game_equal(g_default, g_load);
   game_delete(g_default);
   game_delete(g_load);
   return equal;
