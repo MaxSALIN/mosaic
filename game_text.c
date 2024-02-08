@@ -78,7 +78,6 @@ int main(int argc, char** argv) {
 
       } else if (choice == 's') {
         int r2 = scanf(" %s", filename);
-        printf(filename);
         if (r2 == 1) {
           game_save(g, filename);
 
