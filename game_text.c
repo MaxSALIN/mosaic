@@ -9,7 +9,6 @@
 int main(int argc, char** argv) {
   // Initialising game
   game g;
-  bool stop = false;
   if (argc == 1) {
     g = game_default();
   } else {
@@ -17,11 +16,8 @@ int main(int argc, char** argv) {
   }
   while (!game_won(g)) {
     int i, j = 0;
-    if(!stop){
-      printf("\n");
-      game_print(g);
-    }
-    
+    printf("\n");
+    game_print(g);
 
     // Verify if the game has any error
     for (i = 0; i < DEFAULT_SIZE; i++) {
@@ -35,7 +31,11 @@ int main(int argc, char** argv) {
 
     // First scanf between help, restart, quit and the move
     char choice = 0;
-    char* filename = NULL;
+    char* filename = malloc(sizeof(char)*100);
+    if(filename==NULL){
+      fprintf(stderr, "failed allocation memory for savefile");
+      exit(EXIT_FAILURE);
+    }
     
     printf("\nPress 'h' for help\n");
     int r1 = scanf(" %c", &choice);
@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 
       // When we want to get the whole text instead of one character.
 
-      if (choice == 'h' && !stop)  // Help
+      if (choice == 'h')  // Help
       {
         printf(
             "\nPress 'w <i> <j>' to set the square (i,j) white\nPress 'b <i> <j>' to set the square (i,j) "
@@ -55,69 +55,69 @@ int main(int argc, char** argv) {
             "'r' "
             "to restart\nPress 'q' to quit\nPress 's filename.txt' to save your game in a filename.txt (filename can be "
             "any one word name)\n");
-            stop = true;
+            
       }
-      else if (choice == 'r' && !stop)  // Restart
+      else if (choice == 'r')  // Restart
       {
         printf("\nGame restarted\n");
         game_restart(g);
-        stop = true;
+        
       }
-      else if (choice == 'q'&& !stop)  // Quit
+      else if (choice == 'q')  // Quit
       {
         printf("\nToo bad, you were so close, what a shame..\n");
         game_delete(g);
-        stop = true;
+        
         return EXIT_SUCCESS;
       }
-      else if (choice == 'z' && !stop)  // Undo
+      else if (choice == 'z')  // Undo
       {
         printf("\nMove Undo\n");
         game_undo(g);
-        stop = true;
+        
       }
-      else if (choice == 'y' && !stop)  // Redo
+      else if (choice == 'y')  // Redo
       {
         printf("\nMove Redo\n");
         game_redo(g);
-        stop = true;
+        
       }
-      else if (choice == 's' && !stop) {
+      else if (choice == 's') {
         int r2 = scanf(" %s", filename);
+        printf(filename);
         if (r2 == 1) {
           game_save(g, filename);
-          stop = true;
+          
         } else {
           printf("\nIncorrect file name arguments\n");
-          stop = true;
         }
+        
       }
-      else if ((choice == 'w' || choice == 'b' || choice == 'e') && !stop)  // Move
+      else if ((choice == 'w' || choice == 'b' || choice == 'e') )  // Move
       {
         int r3 = scanf(" %d %d", &i, &j);  // Scanf for the position of the move
         if (r3 == 2) {
           if (i < DEFAULT_SIZE && i >= 0 && j < DEFAULT_SIZE && j >= 0) {
             if (choice == 'w') {
               game_play_move(g, i, j, WHITE);  // Play white color at the chosen square
-              stop = true;
+              
             }
             if (choice == 'b') {
               game_play_move(g, i, j, BLACK);  // Play black color at the chosen square
-              stop = true;
+              
             }
             if (choice == 'e') {
               game_play_move(g, i, j, EMPTY);  // Empty the chosen square
-              stop = true;
+              
             }
 
           } else {
             printf("\nYour move is not legal, it has to be between 0 and %d\n",
                    DEFAULT_SIZE - 1);  // The move is illegal
-                   stop = true;
+                   
           }
         }
       }
-      stop=false;
     }
   }
 
