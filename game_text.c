@@ -36,7 +36,6 @@ int main(int argc, char** argv) {
       fprintf(stderr, "failed allocation memory for savefile");
       exit(EXIT_FAILURE);
     }
-
     printf("\nPress 'h' for help\n");
     int r1 = scanf(" %c", &choice);
 
@@ -80,9 +79,11 @@ int main(int argc, char** argv) {
         int r2 = scanf(" %s", filename);
         if (r2 == 1) {
           game_save(g, filename);
+          free(filename);
 
         } else {
           printf("\nIncorrect file name arguments\n");
+          free(filename);
         }
 
       } else if ((choice == 'w' || choice == 'b' || choice == 'e'))  // Move
