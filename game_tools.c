@@ -27,6 +27,10 @@ game game_load(char *filename) {
   fscanf(save, " %d", &wrapping);
   fscanf(save, " %d", &neighbour);
   fgetc(save);
+  if(row >10 || col>10){
+    fprintf(stderr, "rows or cols too big");
+    exit(EXIT_FAILURE);
+  }
 
   constraint constraints1[row * col];
   color colors1[row * col];
@@ -82,3 +86,4 @@ void game_save(cgame g, char *filename) {
   }
   fclose(file);
 }
+

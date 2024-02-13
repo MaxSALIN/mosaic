@@ -230,7 +230,24 @@ bool test_game_load_save() {
   bool equal = game_equal(g_default, g_load);
   game_delete(g_default);
   game_delete(g_load);
-  return equal;
+
+  constraint constrainte[28];
+  color colore[28];
+  for(int i=0; i<28; i++){
+    constrainte[i]=UNCONSTRAINED;
+    colore[i]=EMPTY;
+  }
+  constrainte[4]=5;
+  constrainte[26]=3;
+  colore[21]=BLACK;
+  game g2=game_new_ext(4, 7, constrainte, colore, true, ORTHO_EXCLUDE);
+  game_save(g2, "defaultTest2.txt");
+  game g_load2 = game_load("defaultTest2.txt");
+  bool equal2 = game_equal(g2, g_load2);
+  game_delete(g2);
+  game_delete(g_load2);
+
+  return (equal && equal2);
 }
 
 int test_toccelli(char *argv[]) {
