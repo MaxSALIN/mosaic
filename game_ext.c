@@ -12,6 +12,7 @@
 game safeMalloc(uint row, uint col);
 void checkGame(game g, uint i, uint j, char *text);
 void putStatus(game g, uint i, uint j);
+void putAllStatus(game g, uint i, uint j);
 void make_move(game g, uint i, uint j, color c);
 
 game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *colors, bool wrapping,
@@ -39,7 +40,7 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
   // changes the status according to the colors and constraints previously chosen
   for (int i = 0; i < nb_rows; i++) {
     for (int j = 0; j < nb_cols; j++) {
-      putStatus(g, i, j);
+      putStatus(g, i, j);  // problème de status, à voir avec le débuggeur
     }
   }
   return g;

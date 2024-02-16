@@ -20,8 +20,8 @@ int main(int argc, char** argv) {
     game_print(g);
 
     // Verify if the game has any error
-    for (i = 0; i < DEFAULT_SIZE; i++) {
-      for (j = 0; j < DEFAULT_SIZE; j++) {
+    for (i = 0; i < game_nb_rows(g); i++) {
+      for (j = 0; j < game_nb_cols(g); j++) {
         if (game_get_status(g, i, j) == ERROR) {
           printf("\nSquare (%d,%d) : error\n", i, j);
         }
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
       {
         int r3 = scanf(" %d %d", &i, &j);  // Scanf for the position of the move
         if (r3 == 2) {
-          if (i < DEFAULT_SIZE && i >= 0 && j < DEFAULT_SIZE && j >= 0) {
+          if (i < game_nb_rows(g) && i >= 0 && j < game_nb_cols(g) && j >= 0) {
             if (choice == 'w') {
               game_play_move(g, i, j, WHITE);  // Play white color at the chosen square
             }

@@ -27,7 +27,7 @@ game game_load(char *filename) {
   fscanf(save, " %d", &wrapping);
   fscanf(save, " %d", &neighbour);
   fgetc(save);
-  if(row >10 || col>10){
+  if (row > 10 || col > 10) {
     fprintf(stderr, "rows or cols too big");
     exit(EXIT_FAILURE);
   }
@@ -57,7 +57,7 @@ game game_load(char *filename) {
     fgetc(save);
   }
   fclose(save);
-
+  printf("%d %d", row, col);
   return game_new_ext(row, col, constraints1, colors1, wrapping, neighbour);
 }
 
@@ -87,3 +87,45 @@ void game_save(cgame g, char *filename) {
   fclose(file);
 }
 
+void first_solver(game g, uint pos, uint len, uint *word, uint *count) {
+  if (pos == len) {
+    if (game_won(g)) {
+      (*count)++;
+    }
+    return;
+  }
+  // extend current word recursively with value 0 at position pos
+
+  if ((*count) == 0) {
+    word[pos] = 0;
+    game_play_move(g, pos / game_nb_cols(g), pos % game_nb_cols(g), WHITE);
+    first_solver(g, pos + 1, len, word, count);
+  }
+
+  // extend current word recursively with value 1 at position pos
+  if ((*count) == 0) {
+    word[pos] = 1;
+    game_play_move(g, pos / game_nb_cols(g), pos % game_nb_cols(g), BLACK);
+    first_solver(g, pos + 1, len, word, count);
+  }
+}
+
+bool game_solve(game g) {
+  // Initialization
+  uint word[game_nb_cols(g) * game_nb_rows(g)];
+  uint nbwords = 0;
+  for (int k = 0; k < game_nb_cols(g) * game_nb_rows(g); k++) {
+    word[k] = 0;
+  }
+  game g2 = game_copy(g);
+
+  first_solver(g, 0, game_nb_cols(g) * game_nb_rows(g), word, &nbwords);
+  if (nbwords == 0) {
+    g = g2;
+    game_print(g);
+    return false;
+  } else {
+    game_print(g);
+    return true;
+  }
+}
