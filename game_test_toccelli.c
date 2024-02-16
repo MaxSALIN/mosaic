@@ -250,12 +250,12 @@ bool test_game_load_save() {
   game g2 = game_new_ext(4, 6, constrainte, colore, true, ORTHO_EXCLUDE);
   game_save(g2, "defaultTest2.txt");
   game g_load2 = game_load("defaultTest2.txt");
-  game_equal(g2, g_load2);
+  bool equal2 = game_equal(g2, g_load2);
   game_play_move(g_load2, 0, 0, WHITE);
   game_delete(g_load2);
   game_delete(g2);
 
-  return (equal);
+  return (equal && equal2);
 }
 
 int test_toccelli(char *argv[]) {
