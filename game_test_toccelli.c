@@ -248,10 +248,10 @@ bool test_game_load_save() {
   constrainte[17] = 7;
   constrainte[19] = 1;
   game g2 = game_new_ext(4, 6, constrainte, colore, true, ORTHO_EXCLUDE);
-  game_print(g2);
   game_save(g2, "defaultTest2.txt");
   game g_load2 = game_load("defaultTest2.txt");
-  game_play_move(g_load2, 0, 0,WHITE);
+  game_equal(g2, g_load2);
+  game_play_move(g_load2, 0, 0, WHITE);
   game_delete(g_load2);
   game_delete(g2);
 
