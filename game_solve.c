@@ -30,30 +30,27 @@
 }*/
 
 int main(int argc, char** argv) {
-  /*if (argc != 4) {
-      fprintf(stderr, "No arguments input");
-      exit(EXIT_FAILURE);
+  if (argc != 4) {
+    fprintf(stderr, "No arguments input");
+    exit(EXIT_FAILURE);
   } else {
-      game g=game_load(argv[2]);
-      FILE *file = fopen(argv[3], "r");
-      if (file == NULL) {
-          fprintf(stderr, "output not loaded");
-          exit(EXIT_FAILURE);
+    game g = game_load(argv[2]);
+    FILE* file = fopen(argv[3], "w");
+    if (file == NULL) {
+      fprintf(stderr, "output not loaded");
+      exit(EXIT_FAILURE);
+    }
+    if (!strcmp(argv[1], "-s")) {
+      if (game_solve(g)) {
+        game_save(g, argv[3]);
+      } else {
+        exit(EXIT_FAILURE);
       }
-      if(!strcmp(argv[1], "-s")){
-          if(game_solve(g)){
-              game_save(g, argv[3]);
-          }
-          else{
-              exit(EXIT_FAILURE);
-          }
-      }
-      else if(!strcmp(argv[1], "-c")){
-
-          fprintf(file, "%d",game_nb_solutions(g));
-      }
-  }*/
-  constraint con[4];
+    } else if (!strcmp(argv[1], "-c")) {
+      fprintf(file, "%d", game_nb_solutions(g));
+    }
+  }
+  /*constraint con[4];
   color col[4];
   for (int i = 0; i < 4; i++) {
     con[i] = UNCONSTRAINED;
@@ -62,13 +59,6 @@ int main(int argc, char** argv) {
   con[0] = 1;
   game g = game_new_ext(2, 2, con, col, false, FULL);
   game_solve(g);
-  /*game g=game_default();
-  uint word[game_nb_cols(g)*game_nb_rows(g)];
-  unsigned long nbwords = 0;
-
-  // reset word
-  for (int k = 0; k < game_nb_cols(g)*game_nb_rows(g); k++)
-      word[k] = 0;
-  first_solver(g, 0, game_nb_cols(g)*game_nb_rows(g), word, &nbwords);
-  printf("Nombre de solutions: %lu\n", nbwords);*/
+  game gcopy=game_default();
+  printf("%d",game_nb_solutions(gcopy));*/
 }

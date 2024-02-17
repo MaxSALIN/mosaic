@@ -57,7 +57,6 @@ game game_load(char *filename) {
     fgetc(save);
   }
   fclose(save);
-  printf("%d %d", row, col);
   return game_new_ext(row, col, constraints1, colors1, wrapping, neighbour);
 }
 
@@ -87,27 +86,30 @@ void game_save(cgame g, char *filename) {
   fclose(file);
 }
 
-void first_solver(game g, uint pos, uint len, uint *word, uint *count) {
+void first_solver(game g, game g3, uint pos, uint len, uint *word, uint *count) {
   if (pos == len) {
-    if (game_won(g)) {
+    if (game_won(g3)) {
+      if ((*count) == 0) {
+        for (int i = 0; i < game_nb_rows(g3); i++) {
+          for (int j = 0; j < game_nb_cols(g3); j++) {
+            uint colorGame = game_get_color(g3, i, j);
+            game_play_move(g, i, j, colorGame);
+          }
+        }
+      }
       (*count)++;
     }
     return;
   }
   // extend current word recursively with value 0 at position pos
-
-  if ((*count) == 0) {
-    word[pos] = 0;
-    game_play_move(g, pos / game_nb_cols(g), pos % game_nb_cols(g), WHITE);
-    first_solver(g, pos + 1, len, word, count);
-  }
+  word[pos] = 0;
+  game_play_move(g3, pos / game_nb_cols(g), pos % game_nb_cols(g), WHITE);
+  first_solver(g, g3, pos + 1, len, word, count);
 
   // extend current word recursively with value 1 at position pos
-  if ((*count) == 0) {
-    word[pos] = 1;
-    game_play_move(g, pos / game_nb_cols(g), pos % game_nb_cols(g), BLACK);
-    first_solver(g, pos + 1, len, word, count);
-  }
+  word[pos] = 1;
+  game_play_move(g3, pos / game_nb_cols(g), pos % game_nb_cols(g), BLACK);
+  first_solver(g, g3, pos + 1, len, word, count);
 }
 
 bool game_solve(game g) {
@@ -118,14 +120,30 @@ bool game_solve(game g) {
     word[k] = 0;
   }
   game g2 = game_copy(g);
-
-  first_solver(g, 0, game_nb_cols(g) * game_nb_rows(g), word, &nbwords);
+  game g3 = game_copy(g);
+  first_solver(g, g3, 0, game_nb_cols(g) * game_nb_rows(g), word, &nbwords);
   if (nbwords == 0) {
     g = g2;
+    game_delete(g2);
+    game_delete(g3);
     game_print(g);
     return false;
   } else {
+    game_delete(g2);
+    game_delete(g3);
     game_print(g);
     return true;
   }
+}
+
+uint game_nb_solutions(cgame g) {
+  uint word[game_nb_cols(g) * game_nb_rows(g)];
+  uint nbwords = 0;
+  for (int k = 0; k < game_nb_cols(g) * game_nb_rows(g); k++) {
+    word[k] = 0;
+  }
+  game gcopy = game_copy(g);
+  first_solver(gcopy, gcopy, 0, game_nb_cols(g) * game_nb_rows(g), word, &nbwords);
+  game_delete(gcopy);
+  return nbwords;
 }
