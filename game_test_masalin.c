@@ -8,6 +8,7 @@
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
+#include "game_tools.h"
 #include "queue.h"
 
 // functions
@@ -25,6 +26,8 @@ bool test_wrapping(void);
 bool test_neigh(void);
 bool test_row_col(void);
 bool test_nb_neigh_new(void);
+bool test_solve(void);
+bool test_nb_solutions(void);
 void usage(int argc, char *argv[]);
 
 // coding of functions
@@ -693,6 +696,57 @@ bool test_nb_neigh_new(void) {
   return true;
 }
 
+bool test_solve(void) {
+  /*game g=game_default();
+  game gsol=game_default_solution();
+  game_solve(g);
+  if(!game_equal(g, gsol)){
+    game_delete(g);
+    game_delete(gsol);
+    return false;
+  }
+  game_delete(g);
+  game_delete(gsol);*/
+  game g2 = game_load("defaultTest3.txt");
+  game_solve(g2);
+  if (!game_won(g2)) {
+    game_delete(g2);
+    return false;
+  }
+  game_delete(g2);
+  /*game g3=game_load("defaultTest2.txt");
+  game_solve(g3);
+  if(game_won(g3)){
+    game_delete(g3);
+    return false;
+  }
+  game_delete(g3);*/
+  return true;
+}
+
+bool test_nb_solutions(void) {
+  /*game g=game_default();
+  if(game_nb_solutions(g)!=1){
+    game_delete(g);
+    return false;
+  }
+  game_delete(g);*/
+  game g2 = game_load("defaultTest3.txt");
+  game_solve(g2);
+  if (game_nb_solutions(g2) != 16) {
+    game_delete(g2);
+    return false;
+  }
+  game_delete(g2);
+  /* game g3=game_load("defaultTest2.txt");
+   if(game_nb_solutions(g3)!=0){
+     game_delete(g3);
+     return false;
+   }
+   game_delete(g3);*/
+  return true;
+}
+
 int main(int argc, char *argv[]) {
   if (argc == 1) {
     usage(argc, argv);
@@ -766,6 +820,14 @@ int main(int argc, char *argv[]) {
   // test nb_neigh_new
   else if (strcmp("nb_neigh_new", argv[1]) == 0) {
     result_test = test_nb_neigh_new();
+  }
+  // test solve
+  else if (strcmp("solve", argv[1]) == 0) {
+    result_test = test_solve();
+  }
+  // test nb_solutions
+  else if (strcmp("nb_solutions", argv[1]) == 0) {
+    result_test = test_nb_solutions();
   }
 
   else {
