@@ -44,6 +44,8 @@ add_test(test_masalin_wrapping ./game_test_masalin wrapping)
 add_test(test_masalin_neigh ./game_test_masalin neigh)
 add_test(test_masalin_row_col ./game_test_masalin row_col)
 add_test(test_masalin_nb_neigh_new ./game_test_masalin nb_neigh_new)
+add_test(test_masalin_solve ./game_test_masalin solve)
+add_test(test_masalin_nb_solutions ./game_test_masalin nb_solutions)
 
 add_test(test_mavigierlafo_dummy ./game_test_mavigierlafo dummy)
 add_test(test_mavigierlafo_won ./game_test_mavigierlafo test_won)
