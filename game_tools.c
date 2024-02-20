@@ -132,15 +132,11 @@ bool game_solve(game g) {
   }
   game g3 = game_copy(g);
   first_solver(g, g3, 0, game_nb_cols(g) * game_nb_rows(g), word, &nbwords, &solve, &found);
-  if (nbwords == 0) {
-    game_delete(g3);
-    game_print(g);
-    return false;
-  } else {
-    game_delete(g3);
-    game_print(g);
-    return true;
-  }
+
+  game_delete(g3);
+  game_print(g);
+
+  return nbwords == 0;
 }
 
 uint game_nb_solutions(cgame g) {
