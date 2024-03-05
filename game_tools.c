@@ -5,8 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "game.h"
 #include "game_ext.h"
 #include "game_struct.h"
+
+void putStatus(game g, uint i, uint j);
 
 game game_load(char *filename) {
   FILE *save = fopen(filename, "r");
@@ -116,10 +119,80 @@ void first_solver(game g, game g3, uint pos, uint len, uint *word, uint *count, 
     word[pos] = 1;
     game_play_move(g3, pos / game_nb_cols(g), pos % game_nb_cols(g), BLACK);
     first_solver(g, g3, pos + 1, len, word, count, solve, found);
-
-    game_print(g3);
   }
 }
+
+void second_solver(game g, game g3, uint pos, uint len, uint *word, uint *count, bool *solve, bool *found, bool * start, bool gridPlayed[game_nb_rows(g3)][game_nb_cols(g3)]) {
+  
+  if(*start){
+    *start=false;
+    for(int i=0; i<game_nb_rows(g3); i++){
+      for(int j=0; j<game_nb_cols(g3); j++){
+        
+        if(game_get_constraint(g3,i, j)==0 && (game_get_color(g3,i, j)==EMPTY)){
+          uint pi_next=0;
+          uint pj_next=0;
+          for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+            if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
+              game_play_move(g3, pi_next, pj_next , WHITE);
+              gridPlayed[pi_next][pj_next]=true;
+            }
+          }
+        }
+        if(game_get_constraint(g3,i, j)==game_nb_neighbors(g3,i,j, EMPTY)+game_nb_neighbors(g3,i,j, BLACK)+game_nb_neighbors(g3,i,j, WHITE) && (game_get_color(g3,i, j)==EMPTY)){
+          uint pi_next=0;
+          uint pj_next=0;
+          for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+            if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
+              game_play_move(g3, pi_next, pj_next , BLACK);
+              gridPlayed[pi_next][pj_next]=true;
+            }
+          }
+        }
+        if(gridPlayed[i][j]!=true){
+          gridPlayed[i][j]=false;
+        }
+      }
+    }
+  }
+    if (!*found) {
+      if (pos == len) {
+        if (game_won(g3)) {
+          if ((*count) == 0) {
+            for (int i = 0; i < game_nb_rows(g3); i++) {
+              for (int j = 0; j < game_nb_cols(g3); j++) {
+                uint colorGame = game_get_color(g3, i, j);
+                game_play_move(g, i, j, colorGame);
+                if (*solve) {
+                  *found = true;
+                }
+              }
+            }
+          }
+          (*count)++;
+        }
+        return;
+      }
+    
+      // extend current word recursively with value 0 at position pos
+
+      word[pos] = 0;
+      if(gridPlayed[pos / game_nb_cols(g)][pos % game_nb_cols(g)]==false){
+        game_play_move(g3, pos / game_nb_cols(g), pos % game_nb_cols(g), WHITE);
+      }
+      second_solver(g, g3, pos + 1, len, word, count, solve, found, start, gridPlayed);
+
+      // extend current word recursively with value 1 at position pos
+
+      word[pos] = 1;
+      if(gridPlayed[pos / game_nb_cols(g)][pos % game_nb_cols(g)]==false){
+        game_play_move(g3, pos / game_nb_cols(g), pos % game_nb_cols(g), BLACK);
+      }
+      second_solver(g, g3, pos + 1, len, word, count, solve, found, start, gridPlayed);
+    }
+  
+}
+
 
 bool game_solve(game g) {
   // Initialization
@@ -131,16 +204,14 @@ bool game_solve(game g) {
     word[k] = 0;
   }
   game g3 = game_copy(g);
-  first_solver(g, g3, 0, game_nb_cols(g) * game_nb_rows(g), word, &nbwords, &solve, &found);
-  if (nbwords == 0) {
-    game_delete(g3);
-    game_print(g);
-    return false;
-  } else {
-    game_delete(g3);
-    game_print(g);
-    return true;
-  }
+  //first_solver(g, g3, 0, game_nb_cols(g) * game_nb_rows(g), word, &nbwords, &solve, &found);
+  bool start=true;
+  bool gridPlayed[game_nb_rows(g3)][game_nb_cols(g3)];
+  second_solver(g, g3, 0, game_nb_cols(g) * game_nb_rows(g), word, &nbwords, &solve, &found, &start, gridPlayed);
+
+  game_delete(g3);
+  game_print(g);
+  return (nbwords==1);
 }
 
 uint game_nb_solutions(cgame g) {

@@ -697,7 +697,7 @@ bool test_nb_neigh_new(void) {
 }
 
 bool test_solve(void) {
-  /*game g=game_default();
+  game g=game_default();
   game gsol=game_default_solution();
   game_solve(g);
   if(!game_equal(g, gsol)){
@@ -706,14 +706,15 @@ bool test_solve(void) {
     return false;
   }
   game_delete(g);
-  game_delete(gsol);*/
-  game g2 = game_load("defaultTest3.txt");
+  game_delete(gsol);
+  /*game g2 = game_load("defaultTest3.txt");
   game_solve(g2);
+  printf("%d",game_get_status(g2,0,0));
   if (!game_won(g2)) {
     game_delete(g2);
     return false;
   }
-  game_delete(g2);
+  game_delete(g2);*/
   /*game g3=game_load("defaultTest2.txt");
   game_solve(g3);
   if(game_won(g3)){
