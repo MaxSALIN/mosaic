@@ -709,15 +709,15 @@ bool test_solve(void) {
   game_delete(gsol);
   game g2 = game_load("defaultTest3.txt");
   game_solve(g2);
-  printf("%d",game_get_status(g2,0,0));
+  printf("%d", game_get_status(g2, 0, 0));
   if (!game_won(g2)) {
     game_delete(g2);
     return false;
   }
   game_delete(g2);
-  game g3=game_load("defaultTest2.txt");
+  game g3 = game_load("defaultTest2.txt");
   game_solve(g3);
-  if(game_won(g3)){
+  if (game_won(g3)) {
     game_delete(g3);
     return false;
   }
@@ -726,8 +726,8 @@ bool test_solve(void) {
 }
 
 bool test_nb_solutions(void) {
-  game g=game_default();
-  if(game_nb_solutions(g)!=1){
+  game g = game_default();
+  if (game_nb_solutions(g) != 1) {
     game_delete(g);
     return false;
   }
@@ -739,12 +739,12 @@ bool test_nb_solutions(void) {
     return false;
   }
   game_delete(g2);
-  game g3=game_load("defaultTest2.txt");
-   if(game_nb_solutions(g3)!=0){
-     game_delete(g3);
-     return false;
-   }
-   game_delete(g3);
+  game g3 = game_load("defaultTest2.txt");
+  if (game_nb_solutions(g3) != 0) {
+    game_delete(g3);
+    return false;
+  }
+  game_delete(g3);
   return true;
 }
 

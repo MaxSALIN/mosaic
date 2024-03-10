@@ -11,6 +11,85 @@
 
 void putStatus(game g, uint i, uint j);
 
+bool checkStatus(game g, uint i, uint j) {
+  uint pi_next = 0;
+  uint pj_next = 0;
+  if (game_get_neighbourhood(g) == FULL) {
+    for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+        if (game_get_status(g, pi_next, pj_next) == ERROR) {
+          return true;
+        }
+      }
+    }
+  }
+  if (game_get_neighbourhood(g) == FULL_EXCLUDE) {
+    for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+        if (game_get_status(g, pi_next, pj_next) == ERROR) {
+          return true;
+        }
+      }
+    }
+  }
+  if (game_get_neighbourhood(g) == ORTHO) {
+    for (direction dir = HERE; dir <= RIGHT; dir++) {
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+        if (game_get_status(g, pi_next, pj_next) == ERROR) {
+          return true;
+        }
+      }
+    }
+  }
+  if (game_get_neighbourhood(g) == ORTHO_EXCLUDE) {
+    for (direction dir = UP; dir <= RIGHT; dir++) {
+      if (game_get_next_square(g, i, j, dir, &pi_next, &pj_next) == true) {
+        if (game_get_status(g, pi_next, pj_next) == ERROR) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+void startGameSolver(game g3, uint i, uint j, bool gridPlayed[game_nb_rows(g3)][game_nb_cols(g3)], color c) {
+  uint pi_next = 0;
+  uint pj_next = 0;
+  if (game_get_neighbourhood(g3) == FULL) {
+    for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
+      if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
+        game_set_color(g3, pi_next, pj_next, c);
+        gridPlayed[pi_next][pj_next] = true;
+      }
+    }
+  }
+  if (game_get_neighbourhood(g3) == FULL_EXCLUDE) {
+    for (direction dir = UP; dir <= DOWN_RIGHT; dir++) {
+      if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
+        game_set_color(g3, pi_next, pj_next, c);
+        gridPlayed[pi_next][pj_next] = true;
+      }
+    }
+  }
+  if (game_get_neighbourhood(g3) == ORTHO_EXCLUDE) {
+    for (direction dir = HERE; dir <= RIGHT; dir++) {
+      if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
+        game_set_color(g3, pi_next, pj_next, c);
+        gridPlayed[pi_next][pj_next] = true;
+      }
+    }
+  }
+  if (game_get_neighbourhood(g3) == ORTHO_EXCLUDE) {
+    for (direction dir = UP; dir <= RIGHT; dir++) {
+      if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
+        game_set_color(g3, pi_next, pj_next, c);
+        gridPlayed[pi_next][pj_next] = true;
+      }
+    }
+  }
+}
+
 game game_load(char *filename) {
   FILE *save = fopen(filename, "r");
   if (save == NULL) {
@@ -122,34 +201,18 @@ void first_solver(game g, game g3, uint pos, uint len, uint *count, bool *solve,
 
 void first_solver2(game g, game g3, uint pos, uint len, uint *count, bool *solve, bool *found, bool *start,
                    bool gridPlayed[game_nb_rows(g3)][game_nb_cols(g3)]) {
-  uint pi_next = 0;
-  uint pj_next = 0;
   bool error = false;
   if (*start) {
     *start = false;
     for (int i = 0; i < game_nb_rows(g3); i++) {
       for (int j = 0; j < game_nb_cols(g3); j++) {
         if (game_get_constraint(g3, i, j) == 0 && (game_get_color(g3, i, j) == EMPTY)) {
-          uint pi_next = 0;
-          uint pj_next = 0;
-          for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-            if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
-              game_set_color(g3, pi_next, pj_next, WHITE);
-              gridPlayed[pi_next][pj_next] = true;
-            }
-          }
+          startGameSolver(g3, i, j, gridPlayed, WHITE);
         }
         if (game_get_constraint(g3, i, j) == game_nb_neighbors(g3, i, j, EMPTY) + game_nb_neighbors(g3, i, j, BLACK) +
                                                  game_nb_neighbors(g3, i, j, WHITE) &&
             (game_get_color(g3, i, j) == EMPTY)) {
-          uint pi_next = 0;
-          uint pj_next = 0;
-          for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-            if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
-              game_set_color(g3, pi_next, pj_next, BLACK);
-              gridPlayed[pi_next][pj_next] = true;
-            }
-          }
+          startGameSolver(g3, i, j, gridPlayed, BLACK);
         }
         if (gridPlayed[i][j] != true) {
           gridPlayed[i][j] = false;
@@ -181,14 +244,7 @@ void first_solver2(game g, game g3, uint pos, uint len, uint *count, bool *solve
     uint j = pos % game_nb_cols(g);
     if (gridPlayed[i][j] == false) {
       game_set_color(g3, i, j, WHITE);
-
-      for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-        if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
-          if (game_get_status(g3, pi_next, pj_next) == ERROR) {
-            error = true;
-          }
-        }
-      }
+      error = checkStatus(g3, i, j);
     }
     if (!error) {
       first_solver2(g, g3, pos + 1, len, count, solve, found, start, gridPlayed);
@@ -198,113 +254,13 @@ void first_solver2(game g, game g3, uint pos, uint len, uint *count, bool *solve
     // extend current word recursively with value 1 at position pos
     if (gridPlayed[i][j] == false) {
       game_set_color(g3, i, j, BLACK);
-      for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-        if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
-          if (game_get_status(g3, pi_next, pj_next) == ERROR) {
-            error = true;
-          }
-        }
-      }
+      error = checkStatus(g, i, j);
     }
     if (!error) {
       first_solver2(g, g3, pos + 1, len, count, solve, found, start, gridPlayed);
     }
     game_set_color(g3, i, j, EMPTY);
     error = false;
-  }
-}
-
-void second_solver(game g, game g3, uint pos, uint len, uint *word, uint *count, bool *solve, bool *found, bool *start,
-                   bool gridPlayed[game_nb_rows(g3)][game_nb_cols(g3)]) {
-  /*if(*start){
-    *start=false;
-    for(int i=0; i<game_nb_rows(g3); i++){
-      for(int j=0; j<game_nb_cols(g3); j++){
-
-        if(game_get_constraint(g3,i, j)==0 && (game_get_color(g3,i, j)==EMPTY)){
-          uint pi_next=0;
-          uint pj_next=0;
-          for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-            if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) == true) {
-              game_play_move(g3, pi_next, pj_next , WHITE);
-              gridPlayed[pi_next][pj_next]=true;
-            }
-          }
-        }
-        if(game_get_constraint(g3,i, j)==game_nb_neighbors(g3,i,j, EMPTY)+game_nb_neighbors(g3,i,j,
-  BLACK)+game_nb_neighbors(g3,i,j, WHITE) && (game_get_color(g3,i, j)==EMPTY)){ uint pi_next=0; uint pj_next=0; for
-  (direction dir = HERE; dir <= DOWN_RIGHT; dir++) { if (game_get_next_square(g3, i, j, dir, &pi_next, &pj_next) ==
-  true) { game_play_move(g3, pi_next, pj_next , BLACK); gridPlayed[pi_next][pj_next]=true;
-            }
-          }
-        }
-        if(gridPlayed[i][j]!=true){
-          gridPlayed[i][j]=false;
-        }
-      }
-    }
-  }*/
-
-  if (!*found) {
-    if (pos == len) {
-      if (game_won(g3)) {
-        if ((*count) == 0) {
-          for (int i = 0; i < game_nb_rows(g3); i++) {
-            for (int j = 0; j < game_nb_cols(g3); j++) {
-              uint colorGame = game_get_color(g3, i, j);
-              game_play_move(g, i, j, colorGame);
-              if (*solve) {
-                *found = true;
-              }
-            }
-          }
-        }
-        for (int i = 0; i < game_nb_cols(g); i++) {
-        }
-        (*count)++;
-      }
-      return;
-    }
-
-    // extend current word recursively with value 0 at position pos
-    uint pi_next = 0;
-    uint pj_next = 0;
-    word[pos] = 0;
-    if (gridPlayed[game_nb_rows(g) - 1 - (pos / game_nb_cols(g))][game_nb_cols(g) - 1 - (pos % game_nb_cols(g))] ==
-        false) {
-      game_play_move(g3, game_nb_rows(g) - 1 - (pos / game_nb_cols(g)), game_nb_cols(g) - 1 - (pos % game_nb_cols(g)),
-                     WHITE);
-      for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-        if (game_get_next_square(g3, game_nb_rows(g) - 1 - (pos / game_nb_cols(g)),
-                                 game_nb_cols(g) - 1 - (pos % game_nb_cols(g)), dir, &pi_next, &pj_next) == true) {
-          if (game_get_status(g3, pi_next, pj_next) == ERROR) {
-            return;
-          }
-        }
-      }
-    }
-
-    second_solver(g, g3, pos + 1, len, word, count, solve, found, start, gridPlayed);
-
-    // extend current word recursively with value 1 at position pos
-
-    word[pos] = 1;
-
-    if (gridPlayed[game_nb_rows(g) - 1 - (pos / game_nb_cols(g))][game_nb_cols(g) - 1 - (pos % game_nb_cols(g))] ==
-        false) {
-      game_play_move(g3, game_nb_rows(g) - 1 - (pos / game_nb_cols(g)), game_nb_cols(g) - 1 - (pos % game_nb_cols(g)),
-                     BLACK);
-      for (direction dir = HERE; dir <= DOWN_RIGHT; dir++) {
-        if (game_get_next_square(g3, game_nb_rows(g) - 1 - (pos / game_nb_cols(g)),
-                                 game_nb_cols(g) - 1 - (pos % game_nb_cols(g)), dir, &pi_next, &pj_next) == true) {
-          if (game_get_status(g3, pi_next, pj_next) == ERROR) {
-            return;
-          }
-        }
-      }
-    }
-
-    second_solver(g, g3, pos + 1, len, word, count, solve, found, start, gridPlayed);
   }
 }
 
