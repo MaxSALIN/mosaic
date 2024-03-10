@@ -4,7 +4,9 @@ include(CTest)
 enable_testing()
 
 set(CMAKE_VERBOSE_MAKEFILE on)
-set(CMAKE_C_FLAGS "-std=c99 -g -Wall --coverage")
+set(CMAKE_C_FLAGS "-std=c99 -g -O0 -Wall --coverage")       # options de compilation génériques
+set(CMAKE_C_FLAGS_DEBUG "-g -O0 --coverage")   # options de compilation en mode Debug
+set(CMAKE_C_FLAGS_RELEASE "-O3")               # options de compilation en mode Release
 link_directories(${CMAKE_SOURCE_DIR})
 
 add_executable(game_text game_text.c)
@@ -20,6 +22,10 @@ target_link_libraries(game_solve game)
 target_link_libraries(game_test_toccelli game)
 target_link_libraries(game_test_masalin game)
 target_link_libraries(game_test_mavigierlafo game)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/defaultTest.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/defaultTest2.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/defaultTest3.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_test(test_toccelli_dummy ./game_test_toccelli dummy)
 add_test(test_toccelli_set_color ./game_test_toccelli set_color)
