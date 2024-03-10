@@ -202,7 +202,7 @@ void first_solver(game g, game g3, uint pos, uint len, uint *count, bool *solve,
 void first_solver2(game g, game g3, uint pos, uint len, uint *count, bool *solve, bool *found, bool *start,
                    bool gridPlayed[game_nb_rows(g3)][game_nb_cols(g3)]) {
   bool error = false;
-  if (*start) {
+  /*if (*start) {
     *start = false;
     for (int i = 0; i < game_nb_rows(g3); i++) {
       for (int j = 0; j < game_nb_cols(g3); j++) {
@@ -219,7 +219,7 @@ void first_solver2(game g, game g3, uint pos, uint len, uint *count, bool *solve
         }
       }
     }
-  }
+  }*/
   if (!*found) {
     if (pos == len) {
       if (game_won(g3)) {
@@ -242,20 +242,20 @@ void first_solver2(game g, game g3, uint pos, uint len, uint *count, bool *solve
     // extend current word recursively with value 0 at position pos
     uint i = pos / game_nb_cols(g);
     uint j = pos % game_nb_cols(g);
-    if (gridPlayed[i][j] == false) {
+    //if (gridPlayed[i][j] == false) {
       game_set_color(g3, i, j, WHITE);
       error = checkStatus(g3, i, j);
-    }
+    //}
     if (!error) {
       first_solver2(g, g3, pos + 1, len, count, solve, found, start, gridPlayed);
     }
     game_set_color(g3, i, j, EMPTY);
     error = false;
     // extend current word recursively with value 1 at position pos
-    if (gridPlayed[i][j] == false) {
+    //if (gridPlayed[i][j] == false) {
       game_set_color(g3, i, j, BLACK);
       error = checkStatus(g, i, j);
-    }
+    //}
     if (!error) {
       first_solver2(g, g3, pos + 1, len, count, solve, found, start, gridPlayed);
     }
