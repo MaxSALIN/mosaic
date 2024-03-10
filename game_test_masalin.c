@@ -697,41 +697,41 @@ bool test_nb_neigh_new(void) {
 }
 
 bool test_solve(void) {
-  game g=game_default();
-  game gsol=game_default_solution();
+  game g = game_default();
+  game gsol = game_default_solution();
   game_solve(g);
-  if(!game_equal(g, gsol)){
+  if (!game_equal(g, gsol)) {
     game_delete(g);
     game_delete(gsol);
     return false;
   }
   game_delete(g);
   game_delete(gsol);
-  /*game g2 = game_load("defaultTest3.txt");
+  game g2 = game_load("defaultTest3.txt");
   game_solve(g2);
   printf("%d",game_get_status(g2,0,0));
   if (!game_won(g2)) {
     game_delete(g2);
     return false;
   }
-  game_delete(g2);*/
-  /*game g3=game_load("defaultTest2.txt");
+  game_delete(g2);
+  game g3=game_load("defaultTest2.txt");
   game_solve(g3);
   if(game_won(g3)){
     game_delete(g3);
     return false;
   }
-  game_delete(g3);*/
+  game_delete(g3);
   return true;
 }
 
 bool test_nb_solutions(void) {
-  /*game g=game_default();
+  game g=game_default();
   if(game_nb_solutions(g)!=1){
     game_delete(g);
     return false;
   }
-  game_delete(g);*/
+  game_delete(g);
   game g2 = game_load("defaultTest3.txt");
   game_solve(g2);
   if (game_nb_solutions(g2) != 16) {
@@ -739,12 +739,12 @@ bool test_nb_solutions(void) {
     return false;
   }
   game_delete(g2);
-  /* game g3=game_load("defaultTest2.txt");
+  game g3=game_load("defaultTest2.txt");
    if(game_nb_solutions(g3)!=0){
      game_delete(g3);
      return false;
    }
-   game_delete(g3);*/
+   game_delete(g3);
   return true;
 }
 

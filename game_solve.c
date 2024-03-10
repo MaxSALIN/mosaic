@@ -30,12 +30,12 @@
 }*/
 
 int main(int argc, char** argv) {
-  if (argc <3 || argc >4) {
+  if (argc < 3 || argc > 4) {
     fprintf(stderr, "No arguments input");
     exit(EXIT_FAILURE);
   } else {
     game g = game_load(argv[2]);
-    if(argc == 4){
+    if (argc == 4) {
       FILE* file = fopen(argv[3], "w");
       if (file == NULL) {
         fprintf(stderr, "output not loaded");
@@ -51,8 +51,8 @@ int main(int argc, char** argv) {
         fprintf(file, "%d", game_nb_solutions(g));
       }
     }
-    if(argc ==3){
-      if(!strcmp(argv[1], "-s")) {
+    if (argc == 3) {
+      if (!strcmp(argv[1], "-s")) {
         if (game_solve(g)) {
           game_print(g);
         } else {
