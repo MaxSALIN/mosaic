@@ -23,9 +23,6 @@ target_link_libraries(game_test_toccelli game)
 target_link_libraries(game_test_masalin game)
 target_link_libraries(game_test_mavigierlafo game)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/defaultTest.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/defaultTest2.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/defaultTest3.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_test(test_toccelli_dummy ./game_test_toccelli dummy)
 add_test(test_toccelli_set_color ./game_test_toccelli set_color)
