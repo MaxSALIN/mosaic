@@ -9,6 +9,11 @@ set(CMAKE_C_FLAGS_DEBUG "-g -O0 --coverage")   # options de compilation en mode 
 set(CMAKE_C_FLAGS_RELEASE "-O3")               # options de compilation en mode Release
 link_directories(${CMAKE_SOURCE_DIR})
 
+## find SDL2
+include(sdl2.cmake)
+message(STATUS "SDL2 include dir: ${SDL2_ALL_INC}")
+message(STATUS "SDL2 all libraries: ${SDL2_ALL_LIBS}")
+
 add_executable(game_text game_text.c)
 add_executable(game_solve game_solve.c)
 add_executable(game_test_toccelli game_test_toccelli.c)
