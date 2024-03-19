@@ -4,7 +4,7 @@ include(CTest)
 enable_testing()
 
 set(CMAKE_VERBOSE_MAKEFILE on)
-set(CMAKE_C_FLAGS "-std=c99 -g -O0 -Wall --coverage")       # options de compilation génériques
+set(CMAKE_C_FLAGS "-std=c99 -g -Wall")   # options de compilation génériques
 set(CMAKE_C_FLAGS_DEBUG "-g -O0 --coverage")   # options de compilation en mode Debug
 set(CMAKE_C_FLAGS_RELEASE "-O3")               # options de compilation en mode Release
 link_directories(${CMAKE_SOURCE_DIR})
@@ -13,6 +13,11 @@ link_directories(${CMAKE_SOURCE_DIR})
 include(sdl2.cmake)
 message(STATUS "SDL2 include dir: ${SDL2_ALL_INC}")
 message(STATUS "SDL2 all libraries: ${SDL2_ALL_LIBS}")
+
+include_directories(${SDL2_ALL_INC})
+add_executable(game_sdl main.c game_sdl.c)
+target_link_libraries(game_sdl ${SDL2_ALL_LIBS} m)
+
 
 add_executable(game_text game_text.c)
 add_executable(game_solve game_solve.c)
