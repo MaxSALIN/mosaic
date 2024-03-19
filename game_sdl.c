@@ -1,6 +1,4 @@
-// SDL2 Demo by aurelien.esnard@u-bordeaux.fr
-
-#include "model.h"
+#include "game_sdl.h"
 #include <SDL.h>
 #include <SDL_image.h>  // required to load transparent texture from PNG
 #include <SDL_ttf.h>    // required to use TTF fonts
@@ -26,7 +24,46 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
 
 /* **************************************************************** */
 
-void render(SDL_Window *win, SDL_Renderer *ren, Env *env) { /* PUT YOUR CODE HERE TO RENDER TEXTURES, ... */
+void render(SDL_Window *win, SDL_Renderer *ren, Env *env) { 
+  int w, h;
+  SDL_GetWindowSize(win, &w, &h);
+  float left_sidex;
+  float right_sidex;
+  float up_sidey;
+  float down_sidey;
+  SDL_SetRenderDrawColor(ren, 0, 0, 0, SDL_ALPHA_OPAQUE); /* red */
+
+  //game screen
+  left_sidex=w/20;
+  right_sidex=w-w/5;
+  up_sidey=h/8;
+  down_sidey=h-h/8;
+  
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, left_sidex, down_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, right_sidex, down_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, down_sidey, right_sidex, down_sidey);
+
+  //message screen
+  left_sidex=w/4;
+  right_sidex=w-w/4;
+  up_sidey=h/50;
+  down_sidey=h/10;
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, left_sidex, down_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, right_sidex, down_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, down_sidey, right_sidex, down_sidey);
+
+  //current and solve
+  left_sidex=w-w/7;
+  right_sidex=w-w/20;
+  up_sidey=h/1.85;
+  down_sidey=h/2.15;
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, left_sidex, down_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, right_sidex, down_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, down_sidey, right_sidex, down_sidey);
+
 }
 
 /* **************************************************************** */
