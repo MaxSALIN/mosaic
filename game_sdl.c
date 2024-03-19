@@ -44,6 +44,43 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   SDL_RenderDrawLine(ren, right_sidex, down_sidey, right_sidex, up_sidey);
   SDL_RenderDrawLine(ren, left_sidex, down_sidey, right_sidex, down_sidey);
 
+  // grid game
+  float game_width = right_sidex - left_sidex;
+  float game_height = down_sidey - up_sidey;
+
+  int window_width = (game_width) + 1;
+  int window_height = (game_height) + 1;
+
+  int cell_required = 9;
+
+  int grid_cell_size = game_height / cell_required;
+
+  //printf("cell_size: %d", grid_cell_size);
+
+  // Dark theme.
+  SDL_Color grid_background = {22, 22, 22, 255}; // Barely Black
+  SDL_Color grid_line_color = {44, 44, 44, 255}; // Dark grey
+   //SDL_Color grid_cursor_color = {255, 255, 255, 255}; // White
+
+    // Draw grid background.
+    /*SDL_SetRenderDrawColor(ren, grid_background.r, grid_background.g,
+                          grid_background.b, grid_background.a);  
+    SDL_RenderClear(ren);
+
+    // Draw grid lines.
+    SDL_SetRenderDrawColor(ren, grid_line_color.r, grid_line_color.g,
+                          grid_line_color.b, grid_line_color.a);*/
+
+  for (int x = left_sidex; x <= game_width; x += grid_cell_size) {
+      
+       SDL_RenderDrawLine(ren, x, up_sidey, x, game_height);
+  }
+
+  for (int y = up_sidey; y <= game_height; y += grid_cell_size) {
+    SDL_RenderDrawLine(ren, left_sidex, y, game_width, y);
+       
+  }
+
   //message screen
   left_sidex=w/4;
   right_sidex=w-w/4;
@@ -57,49 +94,13 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   //current and solve
   left_sidex=w-w/7;
   right_sidex=w-w/20;
-
-  up_sidey=h/1.9;
-  down_sidey=h/1.6;
+  up_sidey=h/1.85;
+  down_sidey=h/2.15;
   SDL_RenderDrawLine(ren, left_sidex, up_sidey, left_sidex, down_sidey);
   SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
   SDL_RenderDrawLine(ren, right_sidex, down_sidey, right_sidex, up_sidey);
   SDL_RenderDrawLine(ren, left_sidex, down_sidey, right_sidex, down_sidey);
 
-  up_sidey=h-h/1.9;
-  down_sidey=h-h/1.6;
-  SDL_RenderDrawLine(ren, left_sidex, up_sidey, left_sidex, down_sidey);
-  SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
-  SDL_RenderDrawLine(ren, right_sidex, down_sidey, right_sidex, up_sidey);
-  SDL_RenderDrawLine(ren, left_sidex, down_sidey, right_sidex, down_sidey);
-
-  //undo/redo
-  float up_sidey_square=h-h/12.5;
-  float down_sidey_square=h-h/25;
-  up_sidey=h-h/16.5;
-
-
-  left_sidex=w/1.7;
-  right_sidex=w/1.4;
-  SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
-  SDL_RenderDrawLine(ren, left_sidex, down_sidey_square, right_sidex, up_sidey);
-  SDL_RenderDrawLine(ren, left_sidex, up_sidey_square, right_sidex, up_sidey);
-
-  left_sidex=w-w/1.7;
-  right_sidex=w-w/1.4;
-  SDL_RenderDrawLine(ren, right_sidex, up_sidey, left_sidex, up_sidey);
-  SDL_RenderDrawLine(ren, right_sidex, up_sidey, left_sidex, down_sidey_square);
-  SDL_RenderDrawLine(ren, right_sidex, up_sidey, left_sidex, up_sidey_square);
-
-  //help
-  left_sidex=w-w/10;
-  right_sidex=w-w/25;
-
-  up_sidey=h/10;
-  down_sidey=h/25;
-  SDL_RenderDrawLine(ren, left_sidex, up_sidey, left_sidex, down_sidey);
-  SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
-  SDL_RenderDrawLine(ren, right_sidex, down_sidey, right_sidex, up_sidey);
-  SDL_RenderDrawLine(ren, left_sidex, down_sidey, right_sidex, down_sidey);
 }
 
 /* **************************************************************** */
