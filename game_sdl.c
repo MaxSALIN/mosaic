@@ -57,13 +57,49 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   //current and solve
   left_sidex=w-w/7;
   right_sidex=w-w/20;
-  up_sidey=h/1.85;
-  down_sidey=h/2.15;
+
+  up_sidey=h/1.9;
+  down_sidey=h/1.6;
   SDL_RenderDrawLine(ren, left_sidex, up_sidey, left_sidex, down_sidey);
   SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
   SDL_RenderDrawLine(ren, right_sidex, down_sidey, right_sidex, up_sidey);
   SDL_RenderDrawLine(ren, left_sidex, down_sidey, right_sidex, down_sidey);
 
+  up_sidey=h-h/1.9;
+  down_sidey=h-h/1.6;
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, left_sidex, down_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, right_sidex, down_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, down_sidey, right_sidex, down_sidey);
+
+  //undo/redo
+  float up_sidey_square=h-h/12.5;
+  float down_sidey_square=h-h/25;
+  up_sidey=h-h/16.5;
+
+
+  left_sidex=w/1.7;
+  right_sidex=w/1.4;
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, down_sidey_square, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey_square, right_sidex, up_sidey);
+
+  left_sidex=w-w/1.7;
+  right_sidex=w-w/1.4;
+  SDL_RenderDrawLine(ren, right_sidex, up_sidey, left_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, right_sidex, up_sidey, left_sidex, down_sidey_square);
+  SDL_RenderDrawLine(ren, right_sidex, up_sidey, left_sidex, up_sidey_square);
+
+  //help
+  left_sidex=w-w/10;
+  right_sidex=w-w/25;
+
+  up_sidey=h/10;
+  down_sidey=h/25;
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, left_sidex, down_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, up_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, right_sidex, down_sidey, right_sidex, up_sidey);
+  SDL_RenderDrawLine(ren, left_sidex, down_sidey, right_sidex, down_sidey);
 }
 
 /* **************************************************************** */
