@@ -10,6 +10,7 @@
 #include "game_struct.h"
 #include "game_tools.h"
 #include "game_aux.h"
+#include "game_perso.h"
 
 
 
@@ -227,7 +228,6 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   SDL_RenderDrawLine(ren, env->help_left_sidex, env->help_down_sidey, env->help_right_sidex, env->help_down_sidey);
 
 
-  env->undo_redo[0];
 
 
 
@@ -288,7 +288,11 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
         SDL_RenderCopy(ren, env->text[0], NULL, &(env->cases[i]));
         printf("%d\n", game_get_constraint(env->g, i%5, i/5));
         game_set_color(env->g, i%5, i/5, env->playColor);
+        if(checkStatus(env->g, i%5, i/5)==true){
+          printf("error"); //ajouter les coordonnées de la case via checkStatus
+        }
         game_print(env->g);
+        
       }
     }
     if(e->button.button == SDL_BUTTON_RIGHT){
