@@ -49,6 +49,22 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
   int w, h;
   SDL_GetWindowSize(win, &w, &h);
   
+// numbers images init
+  for (int i = 0; i < 10; i++) {
+    char filename[50];
+
+    sprintf(filename, "res/%db.png", i);
+    
+    env->numbers[i] = IMG_LoadTexture(ren, filename);
+
+    sprintf(filename, "res/%de.png", i);
+    env->numbers[i] = IMG_LoadTexture(ren, filename);
+
+    sprintf(filename, "res/%dw.png", i);
+    env->numbers[i] = IMG_LoadTexture(ren, filename);
+  }
+  printf(env->numbers[4]);
+
   env->playColor=WHITE;
 
   env->g=game_default();
@@ -292,7 +308,23 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
           printf("error"); //ajouter les coordonnées de la case via checkStatus
         }
         game_print(env->g);
-        
+
+        int number = game_get_constraint(env->g, i%5, i/5);
+        char filename[50];
+
+        if (env->playColor == WHITE) {
+          sprintf(filename, "res/%dw.png", number);
+          SDL_RenderCopy(ren, env->numbers[number+2], NULL, &(env->cases[i]));
+
+          // render
+
+          
+        } else if (env->playColor == BLACK) {
+
+        } else if (env->playColor == EMPTY) {
+
+        }
+
       }
     }
     if(e->button.button == SDL_BUTTON_RIGHT){
