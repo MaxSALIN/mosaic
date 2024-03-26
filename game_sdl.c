@@ -9,6 +9,15 @@
 #include "game_ext.h"
 #include "game_struct.h"
 #include "game_tools.h"
+#include "game_aux.h"
+
+
+
+#define FONT "res/arial.ttf"
+#define FONTSIZE 36
+#define TEST1 "res/mario.png"
+#define TEST2 "res/test2.png"
+
 
 /* **************************************************************** */
 
@@ -18,9 +27,14 @@ struct Env_t {
   float current_left_sidex,current_right_sidex,current_up_sidex,current_down_sidex;
   float current_solve_left_sidex,current_solve_right_sidex,current_solve_up_sidex,current_solve_down_sidex;
   float up_sidey_square,down_sidey_square;
-  float undo_redo_up_sidey,undo_redo_left_sidex,undo_redo_right_sidex;
+  float undo_redo_up_sidey,undo_redo_left_sidex,undo_redo_right_sidex, undo_right_sidex, undo_left_sidex;
   float help_left_sidex,help_right_sidex,help_up_sidey,help_down_sidey;
+  SDL_Texture* text[10];
+  SDL_Texture* test1;
   game g;
+  SDL_Rect * cases;
+  color playColor;
+  
 };
 
 /* **************************************************************** */
@@ -29,17 +43,78 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
   Env *env = malloc(sizeof(struct Env_t));
 
   /* PUT YOUR CODE HERE TO INIT TEXTURES, ... */
+  int w, h;
+  SDL_GetWindowSize(win, &w, &h);
+  
+  env->playColor=WHITE;
+
   env->g=game_default();
+  env->cases=malloc(sizeof(SDL_Rect)*game_nb_rows(env->g)*game_nb_cols(env->g));
+  env->test1 = IMG_LoadTexture(ren, TEST1);
+  if (!env->test1) ERROR("IMG_LoadTexture: %s\n", TEST1);
+
+  SDL_Color color = {0, 0, 255, 255}; /* blue color in RGBA */
+  TTF_Font* font = TTF_OpenFont(FONT, FONTSIZE);
+  if (!font) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font, TTF_STYLE_BOLD); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
+  SDL_Surface* surf;
+  for(int i=0; i<10;i++){
+    switch (i)
+    {
+    case 0:
+      surf = TTF_RenderText_Blended(font, "0", color);
+      break;
+    case 1:
+      surf = TTF_RenderText_Blended(font, "1", color);
+      break;
+    case 2:
+      surf = TTF_RenderText_Blended(font, "2", color);
+      break;
+    case 3:
+      surf = TTF_RenderText_Blended(font, "3", color);
+      break;
+    case 4:
+      surf = TTF_RenderText_Blended(font, "4", color);
+      break;
+    case 5:
+      surf = TTF_RenderText_Blended(font, "5", color);
+      break;
+    case 6:
+      surf = TTF_RenderText_Blended(font, "6", color);
+      break;
+    case 7:
+      surf = TTF_RenderText_Blended(font, "7", color);
+      break;
+    case 8:
+      surf = TTF_RenderText_Blended(font, "8", color);
+      break;
+    case 9:
+      surf = TTF_RenderText_Blended(font, "9", color);
+      break;
+    default:
+      break;
+    }
+        // blended rendering for ultra nice text
+    env->text[i] = SDL_CreateTextureFromSurface(ren, surf);
+    SDL_FreeSurface(surf);
+    
+  }
+                           
+  
+  
+  TTF_CloseFont(font);
+  
   return env;
 }
 
 /* **************************************************************** */
 
 void render(SDL_Window *win, SDL_Renderer *ren, Env *env) { 
+  
   int w, h;
   SDL_GetWindowSize(win, &w, &h);
+  SDL_Rect rect;
   SDL_SetRenderDrawColor(ren, 0, 0, 0, SDL_ALPHA_OPAQUE); /* red */
-
   env->game_screen_left_sidex=w/20;
   env->game_screen_right_sidex=w-w/5;
   env->game_screen_up_sidex=h/8;
@@ -52,8 +127,11 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
 
   env->current_solve_left_sidex=w-w/7;
   env->current_solve_right_sidex=w-w/20;
-  env->current_solve_up_sidex=h/1.85;
-  env->current_solve_down_sidex=h/2.15;
+  env->current_up_sidex=h/1.9;
+  env->current_down_sidex=h/1.6;
+
+  env->current_solve_up_sidex=h-h/1.9;
+  env->current_solve_down_sidex=h-h/1.6;
 
   env->up_sidey_square=h-h/12.5;
   env->down_sidey_square=h-h/25;
@@ -66,46 +144,38 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   env->help_up_sidey=h/10;
   env->help_down_sidey=h/25;
 
+  env->undo_left_sidex=w-w/1.7;
+  env->undo_right_sidex=w-w/1.4;
+
   //game screen 
-  SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_up_sidex, env->game_screen_left_sidex, env->game_screen_down_sidex);
+  /*SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_up_sidex, env->game_screen_left_sidex, env->game_screen_down_sidex);
   SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_up_sidex, env->game_screen_right_sidex, env->game_screen_up_sidex);
   SDL_RenderDrawLine(ren, env->game_screen_right_sidex, env->game_screen_down_sidex, env->game_screen_right_sidex, env->game_screen_up_sidex);
-  SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_down_sidex, env->game_screen_right_sidex, env->game_screen_down_sidex);
+  SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_down_sidex, env->game_screen_right_sidex, env->game_screen_down_sidex);*/
 
   // grid game
-  float game_width = right_sidex - left_sidex;
-  float game_height = down_sidey - up_sidey;
+  float game_width = env->game_screen_right_sidex - env->game_screen_left_sidex;
+  float game_height = env->game_screen_down_sidex - env->game_screen_up_sidex;
 
-  int window_width = (game_width) + 1;
-  int window_height = (game_height) + 1;
+  int cell_required = 5;
+  float min=0;
+  if (game_height<game_width){
+    min=game_height;
+  }
+  else{
+    min=game_width;
+  }
+  float grid_cell_size = min / cell_required;
 
-  int cell_required = 9;
+  float offsetx=env->game_screen_left_sidex+((game_width-min)/2);
+  float offsety=env->game_screen_up_sidex+((game_height-min)/2);
 
-  int grid_cell_size = game_height / cell_required;
-
-  //printf("cell_size: %d", grid_cell_size);
-
-  // Dark theme.
-  SDL_Color grid_background = {22, 22, 22, 255}; // Barely Black
-  SDL_Color grid_line_color = {44, 44, 44, 255}; // Dark grey
-   //SDL_Color grid_cursor_color = {255, 255, 255, 255}; // White
-
-    // Draw grid background.
-    /*SDL_SetRenderDrawColor(ren, grid_background.r, grid_background.g,
-                          grid_background.b, grid_background.a);  
-    SDL_RenderClear(ren);
-
-    // Draw grid lines.
-    SDL_SetRenderDrawColor(ren, grid_line_color.r, grid_line_color.g,
-                          grid_line_color.b, grid_line_color.a);*/
-
-  for (int x = left_sidex; x <= game_width; x += grid_cell_size) {
-      
-       SDL_RenderDrawLine(ren, x, up_sidey, x, game_height);
+  for (float x = offsetx; x <= offsetx+min+1; x += grid_cell_size){
+       SDL_RenderDrawLine(ren, x, offsety, x, offsety+min);
   }
 
-  for (int y = up_sidey; y <= game_height; y += grid_cell_size) {
-    SDL_RenderDrawLine(ren, left_sidex, y, game_width, y);
+  for (float y = offsety; y <= offsety+min+1; y += grid_cell_size) {
+    SDL_RenderDrawLine(ren, offsetx, y, offsetx+min, y);
        
   }
 
@@ -116,34 +186,66 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   SDL_RenderDrawLine(ren, env->message_screen_left_sidex, env->message_screen_down_sidex, env->message_screen_right_sidex, env->message_screen_down_sidex);
 
   //current and solve
-  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_solve_up_sidex, env->current_solve_left_sidex, env->current_solve_down_sidex);
-  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_solve_up_sidex, env->current_solve_right_sidex, env->current_solve_up_sidex);
-  SDL_RenderDrawLine(ren, env->current_solve_right_sidex, env->current_solve_down_sidex, env->current_solve_right_sidex, env->current_solve_up_sidex);
-  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_solve_down_sidex, env->current_solve_right_sidex, env->current_solve_down_sidex);
+  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_up_sidex, env->current_solve_left_sidex, env->current_down_sidex);
+  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_up_sidex, env->current_solve_right_sidex, env->current_up_sidex);
+  SDL_RenderDrawLine(ren, env->current_solve_right_sidex, env->current_down_sidex, env->current_solve_right_sidex, env->current_up_sidex);
+  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_down_sidex, env->current_solve_right_sidex, env->current_down_sidex);
 
-  env->current_solve_up_sidex=h-h/1.9;
-  env->current_solve_down_sidex=h-h/1.6;
+  
   SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_solve_up_sidex, env->current_solve_left_sidex, env->current_solve_down_sidex);
   SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_solve_up_sidex, env->current_solve_right_sidex, env->current_solve_up_sidex);
   SDL_RenderDrawLine(ren, env->current_solve_right_sidex, env->current_solve_down_sidex, env->current_solve_right_sidex, env->current_solve_up_sidex);
   SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_solve_down_sidex, env->current_solve_right_sidex, env->current_solve_down_sidex);
 
   //undo/redo
-  SDL_RenderDrawLine(ren, env->undo_redo_left_sidexx, env->undo_redo_up_sidey, env->undo_redo_right_sidex, env->undo_redo_up_sidey);
+  SDL_RenderDrawLine(ren, env->undo_redo_left_sidex, env->undo_redo_up_sidey, env->undo_redo_right_sidex, env->undo_redo_up_sidey);
   SDL_RenderDrawLine(ren, env->undo_redo_left_sidex, env->down_sidey_square, env->undo_redo_right_sidex, env->undo_redo_up_sidey);
   SDL_RenderDrawLine(ren, env->undo_redo_left_sidex, env->up_sidey_square, env->undo_redo_right_sidex, env->undo_redo_up_sidey);
 
-  env->undo_redo_left_sidex=w-w/1.7;
-  env->undo_redo_right_sidex=w-w/1.4;
-  SDL_RenderDrawLine(ren, env->undo_redo_right_sidex, env->undo_redo_up_sidey, env->undo_redo_left_sidex, env->undo_redo_up_sidey);
-  SDL_RenderDrawLine(ren, env->undo_redo_right_sidex, env->undo_redo_up_sidey, env->undo_redo_left_sidex, env->down_sidey_square);
-  SDL_RenderDrawLine(ren, env->undo_redo_right_sidex, env->undo_redo_up_sidey, env->undo_redo_left_sidex, env->up_sidey_square);
+  
+  SDL_RenderDrawLine(ren, env->undo_right_sidex, env->undo_redo_up_sidey, env->undo_left_sidex, env->undo_redo_up_sidey);
+  SDL_RenderDrawLine(ren, env->undo_right_sidex, env->undo_redo_up_sidey, env->undo_left_sidex, env->down_sidey_square);
+  SDL_RenderDrawLine(ren, env->undo_right_sidex, env->undo_redo_up_sidey, env->undo_left_sidex, env->up_sidey_square);
 
   //help
   SDL_RenderDrawLine(ren, env->help_left_sidex, env->help_up_sidey, env->help_left_sidex, env->help_down_sidey);
   SDL_RenderDrawLine(ren, env->help_left_sidex, env->help_up_sidey, env->help_right_sidex, env->help_up_sidey);
   SDL_RenderDrawLine(ren, env->help_right_sidex, env->help_down_sidey, env->help_right_sidex, env->help_up_sidey);
   SDL_RenderDrawLine(ren, env->help_left_sidex, env->help_down_sidey, env->help_right_sidex, env->help_down_sidey);
+
+  
+
+
+
+  /* render text texture */
+  for(int i=0; i<10;i++){
+    SDL_QueryTexture(env->text[i], NULL, NULL, &rect.w, &rect.h);
+  } 
+  int x1=0;
+  int y1=0;
+  for(float x = offsetx; x < offsetx+min-1; x += grid_cell_size) {
+      for (float y = offsety; y < offsety+min-1; y += grid_cell_size) {
+          rect.x =  x;
+          rect.y = y;
+          rect.w=grid_cell_size;
+          rect.h=grid_cell_size;
+          env->cases[game_nb_cols(env->g)*x1+y1]=rect;
+              for(int i=0; i<10;i++){
+                if(game_get_constraint(env->g, y1,x1)==-1){
+                  break;
+                  }
+                if(game_get_constraint(env->g, y1,x1)==i){
+                   SDL_RenderCopy(ren, env->text[i], NULL, &(env->cases[game_nb_cols(env->g)*x1+y1]));
+                }
+              }
+              
+              y1=(y1+1)%game_nb_cols(env->g);
+             
+            }
+        x1=(x1+1)%game_nb_rows(env->g);
+        } 
+
+       
 }
 
 /* **************************************************************** */
@@ -167,6 +269,17 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
   else if (e->type == SDL_MOUSEBUTTONDOWN) {
     SDL_Point mouse;
     SDL_GetMouseState(&mouse.x, &mouse.y);
+    for(int i=0; i<game_nb_cols(env->g)*game_nb_rows(env->g); i++){
+      if (SDL_PointInRect(&mouse, &(env->cases[i])) && e->type==SDL_BUTTON_LEFT){
+        SDL_RenderCopy(ren, env->text[0], NULL, &(env->cases[i]));
+        printf("%d\n", game_get_constraint(env->g, i%5, i/5));
+        game_play_move(env->g, i%5, i/5, env->playColor);
+        game_print(env->g);
+      }
+    }
+    if(e->type == SDL_BUTTON_RIGHT){
+      env->playColor=(env->playColor+1)%3;
+    }
   } else if (e->type == SDL_KEYDOWN) {
     
     switch (e->key.keysym.sym) {
@@ -177,6 +290,9 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
       case SDLK_RIGHT:
         game_redo(env->g);
         game_print(env->g);
+        break;
+      case SDLK_ESCAPE:
+        return true;
         break;
     }
   }
@@ -189,6 +305,12 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
 
 void clean(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   /* PUT YOUR CODE HERE TO CLEAN MEMORY */
+  
+  for(int i=0; i<10;i++){
+    SDL_DestroyTexture(env->text[i]);
+  } 
+  SDL_DestroyTexture(env->test1);
+
 
   free(env);
 }
