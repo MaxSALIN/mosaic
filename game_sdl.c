@@ -33,6 +33,8 @@ struct Env_t {
   SDL_Texture* test1;
   game g;
   SDL_Rect * cases;
+  SDL_Rect * undo_redo;
+  SDL_Rect * solve_current; 
   color playColor;
   
 };
@@ -114,7 +116,7 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   int w, h;
   SDL_GetWindowSize(win, &w, &h);
   SDL_Rect rect;
-  SDL_SetRenderDrawColor(ren, 0, 0, 0, SDL_ALPHA_OPAQUE); /* red */
+  SDL_SetRenderDrawColor(ren, 0, 0, 0, SDL_ALPHA_OPAQUE);
   env->game_screen_left_sidex=w/20;
   env->game_screen_right_sidex=w-w/5;
   env->game_screen_up_sidex=h/8;
@@ -198,14 +200,25 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_solve_down_sidex, env->current_solve_right_sidex, env->current_solve_down_sidex);
 
   //undo/redo
-  SDL_RenderDrawLine(ren, env->undo_redo_left_sidex, env->undo_redo_up_sidey, env->undo_redo_right_sidex, env->undo_redo_up_sidey);
-  SDL_RenderDrawLine(ren, env->undo_redo_left_sidex, env->down_sidey_square, env->undo_redo_right_sidex, env->undo_redo_up_sidey);
-  SDL_RenderDrawLine(ren, env->undo_redo_left_sidex, env->up_sidey_square, env->undo_redo_right_sidex, env->undo_redo_up_sidey);
+  SDL_RenderDrawLine(ren, env->undo_redo_left_sidex, env->down_sidey_square, env->undo_redo_right_sidex, env->down_sidey_square);
+  SDL_RenderDrawLine(ren, env->undo_redo_right_sidex, env->down_sidey_square, env->undo_redo_right_sidex, env->up_sidey_square);
+  SDL_RenderDrawLine(ren, env->undo_redo_left_sidex, env->up_sidey_square, env->undo_redo_left_sidex, env->down_sidey_square);
+  SDL_RenderDrawLine(ren, env->undo_redo_right_sidex, env->up_sidey_square, env->undo_redo_left_sidex, env->up_sidey_square);
 
-  
-  SDL_RenderDrawLine(ren, env->undo_right_sidex, env->undo_redo_up_sidey, env->undo_left_sidex, env->undo_redo_up_sidey);
-  SDL_RenderDrawLine(ren, env->undo_right_sidex, env->undo_redo_up_sidey, env->undo_left_sidex, env->down_sidey_square);
-  SDL_RenderDrawLine(ren, env->undo_right_sidex, env->undo_redo_up_sidey, env->undo_left_sidex, env->up_sidey_square);
+  env->undo_redo[0].x=env->undo_redo_left_sidex;
+  env->undo_redo[0].y=env->down_sidey_square;
+  env->undo_redo[0].w=env->undo_redo_right_sidex-env->undo_redo_left_sidex;
+  env->undo_redo[0].h=env->down_sidey_square-env->up_sidey_square;
+
+  SDL_RenderDrawLine(ren, env->undo_left_sidex, env->down_sidey_square, env->undo_right_sidex, env->down_sidey_square);
+  SDL_RenderDrawLine(ren, env->undo_right_sidex, env->down_sidey_square, env->undo_right_sidex, env->up_sidey_square);
+  SDL_RenderDrawLine(ren, env->undo_left_sidex, env->up_sidey_square, env->undo_left_sidex, env->down_sidey_square);
+  SDL_RenderDrawLine(ren, env->undo_right_sidex, env->up_sidey_square, env->undo_left_sidex, env->up_sidey_square);
+
+  env->undo_redo[1].x=env->undo_left_sidex;
+  env->undo_redo[1].y=env->down_sidey_square;
+  env->undo_redo[1].w=env->undo_right_sidex-env->undo_left_sidex;
+  env->undo_redo[1].h=env->down_sidey_square-env->up_sidey_square;
 
   //help
   SDL_RenderDrawLine(ren, env->help_left_sidex, env->help_up_sidey, env->help_left_sidex, env->help_down_sidey);
@@ -213,7 +226,8 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   SDL_RenderDrawLine(ren, env->help_right_sidex, env->help_down_sidey, env->help_right_sidex, env->help_up_sidey);
   SDL_RenderDrawLine(ren, env->help_left_sidex, env->help_down_sidey, env->help_right_sidex, env->help_down_sidey);
 
-  
+
+  env->undo_redo[0];
 
 
 
@@ -230,7 +244,7 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
           rect.w=grid_cell_size;
           rect.h=grid_cell_size;
           env->cases[game_nb_cols(env->g)*x1+y1]=rect;
-              for(int i=0; i<10;i++){
+              for(int i=0; i<10;i++){        
                 if(game_get_constraint(env->g, y1,x1)==-1){
                   break;
                   }
@@ -273,7 +287,7 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
       if (SDL_PointInRect(&mouse, &(env->cases[i])) && e->button.button == SDL_BUTTON_LEFT){
         SDL_RenderCopy(ren, env->text[0], NULL, &(env->cases[i]));
         printf("%d\n", game_get_constraint(env->g, i%5, i/5));
-        game_play_move(env->g, i%5, i/5, env->playColor);
+        game_set_color(env->g, i%5, i/5, env->playColor);
         game_print(env->g);
       }
     }
