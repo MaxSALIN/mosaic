@@ -18,6 +18,9 @@ include_directories(${SDL2_ALL_INC})
 add_executable(game_sdl main.c game_sdl.c)
 target_link_libraries(game_sdl ${SDL2_ALL_LIBS} m)
 
+file(COPY res DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+
 
 add_executable(game_text game_text.c)
 add_executable(game_solve game_solve.c)
