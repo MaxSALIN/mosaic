@@ -270,14 +270,14 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
     SDL_Point mouse;
     SDL_GetMouseState(&mouse.x, &mouse.y);
     for(int i=0; i<game_nb_cols(env->g)*game_nb_rows(env->g); i++){
-      if (SDL_PointInRect(&mouse, &(env->cases[i])) && e->type==SDL_BUTTON_LEFT){
+      if (SDL_PointInRect(&mouse, &(env->cases[i])) && e->button.button == SDL_BUTTON_LEFT){
         SDL_RenderCopy(ren, env->text[0], NULL, &(env->cases[i]));
         printf("%d\n", game_get_constraint(env->g, i%5, i/5));
         game_play_move(env->g, i%5, i/5, env->playColor);
         game_print(env->g);
       }
     }
-    if(e->type == SDL_BUTTON_RIGHT){
+    if(e->button.button == SDL_BUTTON_RIGHT){
       env->playColor=(env->playColor+1)%3;
     }
   } else if (e->type == SDL_KEYDOWN) {
