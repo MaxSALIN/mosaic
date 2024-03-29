@@ -1,7 +1,7 @@
 // SDL2 Model by aurelien.esnard@u-bordeaux.fr
 
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef GAME_SDL_H
+#define GAME_SDL_H
 
 #include <SDL.h>
 #include <stdio.h>

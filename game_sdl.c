@@ -16,8 +16,21 @@
 
 #define FONT "res/arial.ttf"
 #define FONTSIZE 36
-#define TEST1 "res/mario.png"
-#define TEST2 "res/test2.png"
+
+#define TOTALNUMBER 9
+
+bool min_number(float a, float b);
+
+bool min_number(float a, float b){
+  return a<b;
+}
+
+float min_number_return(float a, float b){
+  if(a<=b){
+    return a;
+  }
+  return b;
+}
 
 
 /* **************************************************************** */
@@ -30,8 +43,7 @@ struct Env_t {
   float up_sidey_square,down_sidey_square;
   float undo_redo_up_sidey,undo_redo_left_sidex,undo_redo_right_sidex, undo_right_sidex, undo_left_sidex;
   float help_left_sidex,help_right_sidex,help_up_sidey,help_down_sidey;
-  SDL_Texture* text[10];
-  SDL_Texture* test1;
+  SDL_Texture** numbers;
   game g;
   SDL_Rect * cases;
   SDL_Rect * undo_redo;
@@ -48,36 +60,54 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
   /* PUT YOUR CODE HERE TO INIT TEXTURES, ... */
   int w, h;
   SDL_GetWindowSize(win, &w, &h);
-  
+  env->numbers=malloc(sizeof(SDL_Texture*)*6);
+  if(env->numbers==NULL){
+    ERROR("malloc numbers");
+  } 
 // numbers images init
-  for (int i = 0; i < 10; i++) {
+  int count=0;
+  for (int i = 0; i <= 1; i++) {//TOTALNUMBER; i++) {
     char filename[50];
 
     sprintf(filename, "res/%db.png", i);
     
-    env->numbers[i] = IMG_LoadTexture(ren, filename);
+    env->numbers[count] = IMG_LoadTexture(ren, filename);
+    if (!env->numbers[count]) ERROR("IMG_LoadTexture: %s\n", filename);
+    count++;
 
     sprintf(filename, "res/%de.png", i);
-    env->numbers[i] = IMG_LoadTexture(ren, filename);
+    env->numbers[count] = IMG_LoadTexture(ren, filename);
+    if (!env->numbers[count]) ERROR("IMG_LoadTexture: %s\n", filename);
+    count++;
 
     sprintf(filename, "res/%dw.png", i);
-    env->numbers[i] = IMG_LoadTexture(ren, filename);
+    env->numbers[count] = IMG_LoadTexture(ren, filename);
+    if (!env->numbers[count]) ERROR("IMG_LoadTexture: %s\n", filename);
+    count++;
   }
-  printf(env->numbers[4]);
 
   env->playColor=WHITE;
-
-  env->g=game_default();
+  if(argc==2){
+    env->g=game_load(argv[1]);
+  }
+  else{
+    env->g=game_default();
+  }
   env->cases=malloc(sizeof(SDL_Rect)*game_nb_rows(env->g)*game_nb_cols(env->g));
-  env->test1 = IMG_LoadTexture(ren, TEST1);
-  if (!env->test1) ERROR("IMG_LoadTexture: %s\n", TEST1);
+  if(env->cases==NULL){
+    ERROR("malloc cases");
+  } 
+  env->undo_redo=malloc(sizeof(SDL_Texture*)*2);
+  if(env->undo_redo==NULL){
+    ERROR("malloc undo_redo");
+  } 
 
-  SDL_Color color = {0, 0, 255, 255}; /* blue color in RGBA */
+  /*SDL_Color color = {0, 0, 255, 255}; /* blue color in RGBA 
   TTF_Font* font = TTF_OpenFont(FONT, FONTSIZE);
   if (!font) ERROR("TTF_OpenFont: %s\n", FONT);
   TTF_SetFontStyle(font, TTF_STYLE_BOLD); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
   SDL_Surface* surf;
-  for(int i=0; i<10;i++){
+  for(int i=0; i<=TOTALNUMBER;i++){
     switch (i)
     {
     case 0:
@@ -121,7 +151,7 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
                            
   
   
-  TTF_CloseFont(font);
+  TTF_CloseFont(font);*/
   
   return env;
 }
@@ -167,16 +197,76 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   env->undo_right_sidex=w-w/1.4;
 
   //game screen 
-  /*SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_up_sidex, env->game_screen_left_sidex, env->game_screen_down_sidex);
+  SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_up_sidex, env->game_screen_left_sidex, env->game_screen_down_sidex);
   SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_up_sidex, env->game_screen_right_sidex, env->game_screen_up_sidex);
   SDL_RenderDrawLine(ren, env->game_screen_right_sidex, env->game_screen_down_sidex, env->game_screen_right_sidex, env->game_screen_up_sidex);
-  SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_down_sidex, env->game_screen_right_sidex, env->game_screen_down_sidex);*/
+  SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_down_sidex, env->game_screen_right_sidex, env->game_screen_down_sidex);
 
   // grid game
-  float game_width = env->game_screen_right_sidex - env->game_screen_left_sidex;
+  // float game_width = env->game_screen_right_sidex - env->game_screen_left_sidex;
+  // float game_height = env->game_screen_down_sidex - env->game_screen_up_sidex;
+
+  // bool min_game_size= min_number(game_width, game_height);
+  // float min=min_number_return(game_width, game_height);
+  // float offsetx=0;
+  // float offsety=0;
+  // float cell_size=0;
+  // float cell_size1=0;
+  // float cell_size2=0;
+  // if(game_width<=game_height){
+  //   cell_size1=game_width/game_nb_cols(env->g);
+  //   cell_size2=game_width/game_nb_rows(env->g);
+
+  //   if(min_number(cell_size1, cell_size2)){
+  //     cell_size=cell_size1;
+      
+  //     offsetx=env->game_screen_left_sidex+(game_width-(cell_size*game_nb_cols(env->g)))/2;
+  //     offsety=env->game_screen_up_sidex;
+
+  //   }
+  //   else{
+  //     cell_size=cell_size2;
+  //     offsetx=env->game_screen_left_sidex;
+  //     offsety=env->game_screen_up_sidex+(game_height-(cell_size*game_nb_rows(env->g)))/2;
+      
+  //   }
+    
+  // }
+  // else if(game_width>=game_height){
+  //   cell_size1=game_height/game_nb_cols(env->g);
+  //   cell_size2=game_height/game_nb_rows(env->g);
+
+  //   if(min_number(cell_size1, cell_size2)){
+  //     cell_size=cell_size2;
+      
+  //     offsetx=env->game_screen_left_sidex;
+  //     offsety=env->game_screen_up_sidex+(game_height-(cell_size*game_nb_rows(env->g)))/2;
+  //   }
+  //   else{
+  //     cell_size=cell_size1;
+  //     offsetx=env->game_screen_left_sidex+(game_width-(cell_size*game_nb_cols(env->g)))/2;
+  //     offsety=env->game_screen_up_sidex;
+  //   }
+  // }
+
+  // for (float x = offsetx; x <= env->game_screen_right_sidex-offsetx+1; x += cell_size){
+  //      SDL_RenderDrawLine(ren, x, offsety, x, offsety+min);
+  // }
+
+  // for (float y = offsety; y <= env->game_screen_down_sidex-offsetx+1; y += cell_size){
+  //      SDL_RenderDrawLine(ren, offsetx, y, offsetx+min, y);
+  // }
+
+float game_width = env->game_screen_right_sidex - env->game_screen_left_sidex;
   float game_height = env->game_screen_down_sidex - env->game_screen_up_sidex;
 
-  int cell_required = 5;
+  int cell_required = 0;
+  if(game_nb_cols(env->g)<game_nb_rows(env->g)){
+    cell_required=game_nb_cols(env->g);
+  }
+  else{
+    cell_required=game_nb_rows(env->g);
+  }
   float min=0;
   if (game_height<game_width){
     min=game_height;
@@ -184,19 +274,51 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   else{
     min=game_width;
   }
-  float grid_cell_size = min / cell_required;
 
+    float cell_size=0;
+  float cell_size1=0;
+  float cell_size2=0;
+  if(game_width<=game_height){
+    cell_size1=game_width/game_nb_cols(env->g);
+    cell_size2=game_width/game_nb_rows(env->g);
+
+    if(min_number(cell_size1, cell_size2)){
+      cell_size=cell_size1;
+
+    }
+    else{
+      cell_size=cell_size2;
+    }
+    
+  }
+  else if(game_width>=game_height){
+    cell_size1=game_height/game_nb_cols(env->g);
+    cell_size2=game_height/game_nb_rows(env->g);
+
+    if(min_number(cell_size1, cell_size2)){
+      cell_size=cell_size2;
+    }
+    else{
+      cell_size=cell_size1;
+    }
+  }
   float offsetx=env->game_screen_left_sidex+((game_width-min)/2);
   float offsety=env->game_screen_up_sidex+((game_height-min)/2);
 
-  for (float x = offsetx; x <= offsetx+min+1; x += grid_cell_size){
+  for (float x = offsetx; x <= offsetx+min+1; x += cell_size){
        SDL_RenderDrawLine(ren, x, offsety, x, offsety+min);
   }
 
-  for (float y = offsety; y <= offsety+min+1; y += grid_cell_size) {
+  for (float y = offsety; y <= offsety+min+1; y += cell_size) {
     SDL_RenderDrawLine(ren, offsetx, y, offsetx+min, y);
        
   }
+
+
+
+
+
+  
 
   //message screen
   SDL_RenderDrawLine(ren, env->message_screen_left_sidex, env->message_screen_up_sidex, env->message_screen_left_sidex, env->message_screen_down_sidex);
@@ -248,24 +370,35 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
 
 
   /* render text texture */
-  for(int i=0; i<10;i++){
+  for(int i=0; i<=5; i++){//TOTALNUMBER*3; i++){
+    SDL_QueryTexture(env->numbers[i], NULL, NULL, &rect.w, &rect.h);
+  }
+  /*for(int i=0; i<10;i++){
     SDL_QueryTexture(env->text[i], NULL, NULL, &rect.w, &rect.h);
-  } 
+  } */
   int x1=0;
   int y1=0;
-  for(float x = offsetx; x < offsetx+min-1; x += grid_cell_size) {
-      for (float y = offsety; y < offsety+min-1; y += grid_cell_size) {
+  for(float x = offsetx; x < offsetx+min-1; x += cell_size) {
+      for (float y = offsety; y < offsety+min-1; y += cell_size) {
           rect.x =  x;
           rect.y = y;
-          rect.w=grid_cell_size;
-          rect.h=grid_cell_size;
-          env->cases[game_nb_cols(env->g)*x1+y1]=rect;
+          rect.w=cell_size;
+          rect.h=cell_size;
+          env->cases[game_nb_rows(env->g)*x1+y1]=rect;
               for(int i=0; i<10;i++){        
-                if(game_get_constraint(env->g, y1,x1)==-1){
+                if(game_get_constraint(env->g, x1,y1)==-1){
                   break;
                   }
-                if(game_get_constraint(env->g, y1,x1)==i){
-                   SDL_RenderCopy(ren, env->text[i], NULL, &(env->cases[game_nb_cols(env->g)*x1+y1]));
+                if(game_get_constraint(env->g, x1,y1)==i){
+                  if(game_get_constraint(env->g, x1,y1)==1){
+                    SDL_RenderCopy(ren, env->numbers[4], NULL, &(env->cases[game_nb_rows(env->g)*x1+y1]));
+                  }
+                  if(game_get_constraint(env->g, x1,y1)==0){
+                    SDL_RenderCopy(ren, env->numbers[1], NULL, &(env->cases[game_nb_rows(env->g)*x1+y1]));
+                  }
+                  else{
+                   //SDL_RenderCopy(ren, env->text[i], NULL, &(env->cases[game_nb_cols(env->g)*x1+y1]));
+                  }
                 }
               }
               
@@ -273,7 +406,7 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
              
             }
         x1=(x1+1)%game_nb_rows(env->g);
-        } 
+        }
 
        
 }
@@ -301,15 +434,13 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
     SDL_GetMouseState(&mouse.x, &mouse.y);
     for(int i=0; i<game_nb_cols(env->g)*game_nb_rows(env->g); i++){
       if (SDL_PointInRect(&mouse, &(env->cases[i])) && e->button.button == SDL_BUTTON_LEFT){
-        SDL_RenderCopy(ren, env->text[0], NULL, &(env->cases[i]));
-        printf("%d\n", game_get_constraint(env->g, i%5, i/5));
         game_set_color(env->g, i%5, i/5, env->playColor);
         if(checkStatus(env->g, i%5, i/5)==true){
           printf("error"); //ajouter les coordonnées de la case via checkStatus
         }
         game_print(env->g);
 
-        int number = game_get_constraint(env->g, i%5, i/5);
+        /*int number = game_get_constraint(env->g, i%5, i/5);
         char filename[50];
 
         if (env->playColor == WHITE) {
@@ -323,7 +454,7 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
 
         } else if (env->playColor == EMPTY) {
 
-        }
+        }*/
 
       }
     }
@@ -356,10 +487,11 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
 void clean(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   /* PUT YOUR CODE HERE TO CLEAN MEMORY */
   
-  for(int i=0; i<10;i++){
-    SDL_DestroyTexture(env->text[i]);
-  } 
-  SDL_DestroyTexture(env->test1);
+
+  for(int i=0; i<6; i++){
+    SDL_DestroyTexture(env->numbers[i]);
+  }
+  game_delete(env->g);
 
 
   free(env);
