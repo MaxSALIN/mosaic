@@ -17,20 +17,17 @@
 #define FONT "res/arial.ttf"
 #define FONTSIZE 36
 
+#define UNCONSTRAINT "res/-1.png"
+#define BLACKSQUARE "res/Black.png"
+#define WHITESQUARE "res/White.png"
+#define EMPTYSQUARE "res/Empty.png"
+#define TITLE "res/Mosaic.png"
+#define BACKGROUND "res/Background.png"
+
+#define UNDO "res/undo.png"
+#define REDO "res/redo.png"
+
 #define TOTALNUMBER 9
-
-bool min_number(float a, float b);
-
-bool min_number(float a, float b){
-  return a<=b;
-}
-
-float min_number_return(float a, float b){
-  if(a<=b){
-    return a;
-  }
-  return b;
-}
 
 
 /* **************************************************************** */
@@ -43,12 +40,30 @@ struct Env_t {
   float up_sidey_square,down_sidey_square;
   float undo_redo_up_sidey,undo_redo_left_sidex,undo_redo_right_sidex, undo_right_sidex, undo_left_sidex;
   float help_left_sidex,help_right_sidex,help_up_sidey,help_down_sidey;
-  SDL_Texture** numbers;
+
+  SDL_Texture** green_numbers;
+  SDL_Texture** blue_numbers;
+  SDL_Texture** red_numbers;
+  SDL_Texture* unconstraitSquare;
+  SDL_Texture* blackSquare;
+  SDL_Texture* whiteSquare;
+  SDL_Texture* emptySquare;
+
+  SDL_Rect titleSquare;
+  SDL_Texture* title;
+
+  SDL_Rect backgroundSquare;
+  SDL_Texture* background;
+
+
   game g;
   SDL_Rect * cases;
   SDL_Rect * undo_redo;
+  SDL_Texture ** undo_redoSquare;
   SDL_Rect * solve_current; 
   color playColor;
+
+  bool hasWon;
   
 };
 
@@ -60,31 +75,67 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
   /* PUT YOUR CODE HERE TO INIT TEXTURES, ... */
   int w, h;
   SDL_GetWindowSize(win, &w, &h);
-  env->numbers=malloc(sizeof(SDL_Texture*)*6);
-  if(env->numbers==NULL){
-    ERROR("malloc numbers");
+
+  env->backgroundSquare.x=0;
+  env->backgroundSquare.y=0;
+  env->backgroundSquare.w=w;
+  env->backgroundSquare.h=h;
+  SDL_RenderCopy(ren, env->background, NULL, &(env->backgroundSquare));
+
+  //initialisation of the numbers
+  env->green_numbers=malloc(sizeof(SDL_Texture*)*TOTALNUMBER+1);
+  if(env->green_numbers==NULL){
+    ERROR("malloc green numbers");
   } 
+  env->blue_numbers=malloc(sizeof(SDL_Texture*)*TOTALNUMBER+1);
+  if(env->blue_numbers==NULL){
+    ERROR("malloc blue numbers");
+  } 
+  env->red_numbers=malloc(sizeof(SDL_Texture*)*TOTALNUMBER+1);
+  if(env->red_numbers==NULL){
+    ERROR("malloc red numbers");
+  } 
+
 // numbers images init
-  int count=0;
-  for (int i = 0; i <= 1; i++) {//TOTALNUMBER; i++) {
+  for (int i = 0; i <= TOTALNUMBER; i++){
     char filename[50];
 
-    sprintf(filename, "res/%db.png", i);
+    sprintf(filename, "res/Green/%dv.png", i);
     
-    env->numbers[count] = IMG_LoadTexture(ren, filename);
-    if (!env->numbers[count]) ERROR("IMG_LoadTexture: %s\n", filename);
-    count++;
-
-    sprintf(filename, "res/%de.png", i);
-    env->numbers[count] = IMG_LoadTexture(ren, filename);
-    if (!env->numbers[count]) ERROR("IMG_LoadTexture: %s\n", filename);
-    count++;
-
-    sprintf(filename, "res/%dw.png", i);
-    env->numbers[count] = IMG_LoadTexture(ren, filename);
-    if (!env->numbers[count]) ERROR("IMG_LoadTexture: %s\n", filename);
-    count++;
+    env->green_numbers[i] = IMG_LoadTexture(ren, filename);
+    if (!env->green_numbers[i]) ERROR("IMG_LoadTexture: %s\n", filename);
   }
+  for (int i = 0; i <= TOTALNUMBER; i++){
+    char filename[50];
+
+    sprintf(filename, "res/Blue/%db.png", i);
+    
+    env->blue_numbers[i] = IMG_LoadTexture(ren, filename);
+    if (!env->blue_numbers[i]) ERROR("IMG_LoadTexture: %s\n", filename);
+  }
+  for (int i = 0; i <= TOTALNUMBER; i++){
+    char filename[50];
+
+    sprintf(filename, "res/Red/%dr.png", i);
+    
+    env->red_numbers[i] = IMG_LoadTexture(ren, filename);
+    if (!env->red_numbers[i]) ERROR("IMG_LoadTexture: %s\n", filename);
+  }
+  env->unconstraitSquare = IMG_LoadTexture(ren, UNCONSTRAINT);
+  if (!env->unconstraitSquare) ERROR("IMG_LoadTexture: %s\n", UNCONSTRAINT);
+
+  env->blackSquare = IMG_LoadTexture(ren, BLACKSQUARE);
+  if (!env->blackSquare) ERROR("IMG_LoadTexture: %s\n", BLACKSQUARE);
+  env->whiteSquare = IMG_LoadTexture(ren, WHITESQUARE);
+  if (!env->whiteSquare) ERROR("IMG_LoadTexture: %s\n", WHITESQUARE);
+  env->emptySquare = IMG_LoadTexture(ren, EMPTYSQUARE);
+  if (!env->emptySquare) ERROR("IMG_LoadTexture: %s\n", EMPTYSQUARE);
+
+  env->title = IMG_LoadTexture(ren, TITLE);
+  if (!env->title) ERROR("IMG_LoadTexture: %s\n", TITLE);
+
+  env->background = IMG_LoadTexture(ren, BACKGROUND);
+  if (!env->background) ERROR("IMG_LoadTexture: %s\n", BACKGROUND);
 
   env->playColor=WHITE;
   if(argc==2){
@@ -102,6 +153,15 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
     ERROR("malloc undo_redo");
   } 
   
+  env->undo_redoSquare=malloc(sizeof(SDL_Texture *)*2);
+  if(env->undo_redoSquare==NULL){
+    ERROR("malloc undo_redo");
+  }
+  env->undo_redoSquare[1] = IMG_LoadTexture(ren, UNDO);
+  if (!env->undo_redoSquare[1]) ERROR("IMG_LoadTexture: %s\n", UNDO);
+  env->undo_redoSquare[0] = IMG_LoadTexture(ren, REDO);
+  if (!env->undo_redoSquare[0]) ERROR("IMG_LoadTexture: %s\n", REDO);
+
   return env;
 }
 
@@ -111,7 +171,9 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   
   int w, h;
   SDL_GetWindowSize(win, &w, &h);
-  SDL_Rect rect;
+
+  
+
   SDL_SetRenderDrawColor(ren, 0, 0, 0, SDL_ALPHA_OPAQUE);
   env->game_screen_left_sidex=w/20;
   env->game_screen_right_sidex=w-w/5;
@@ -193,6 +255,13 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   SDL_RenderDrawLine(ren, env->message_screen_right_sidex, env->message_screen_down_sidex, env->message_screen_right_sidex, env->message_screen_up_sidex);
   SDL_RenderDrawLine(ren, env->message_screen_left_sidex, env->message_screen_down_sidex, env->message_screen_right_sidex, env->message_screen_down_sidex);
 
+  env->titleSquare.x=env->message_screen_left_sidex;
+  env->titleSquare.y=env->message_screen_up_sidex;
+  env->titleSquare.w=env->message_screen_right_sidex-env->message_screen_left_sidex;
+  env->titleSquare.h=env->message_screen_down_sidex-env->message_screen_up_sidex;
+  SDL_RenderCopy(ren, env->title, NULL, &(env->titleSquare));
+
+
   //current and solve
   SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_up_sidex, env->current_solve_left_sidex, env->current_down_sidex);
   SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_up_sidex, env->current_solve_right_sidex, env->current_up_sidex);
@@ -212,9 +281,10 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   SDL_RenderDrawLine(ren, env->undo_redo_right_sidex, env->up_sidey_square, env->undo_redo_left_sidex, env->up_sidey_square);
 
   env->undo_redo[0].x=env->undo_redo_left_sidex;
-  env->undo_redo[0].y=env->down_sidey_square;
+  env->undo_redo[0].y=env->undo_redo_up_sidey;
   env->undo_redo[0].w=env->undo_redo_right_sidex-env->undo_redo_left_sidex;
-  env->undo_redo[0].h=env->down_sidey_square-env->up_sidey_square;
+  env->undo_redo[0].h=env->down_sidey_square-env->undo_redo_up_sidey;
+  SDL_RenderCopy(ren, env->undo_redoSquare[0], NULL, &(env->undo_redo[0]));
 
   SDL_RenderDrawLine(ren, env->undo_left_sidex, env->down_sidey_square, env->undo_right_sidex, env->down_sidey_square);
   SDL_RenderDrawLine(ren, env->undo_right_sidex, env->down_sidey_square, env->undo_right_sidex, env->up_sidey_square);
@@ -222,9 +292,10 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   SDL_RenderDrawLine(ren, env->undo_right_sidex, env->up_sidey_square, env->undo_left_sidex, env->up_sidey_square);
 
   env->undo_redo[1].x=env->undo_left_sidex;
-  env->undo_redo[1].y=env->down_sidey_square;
+  env->undo_redo[1].y=env->undo_redo_up_sidey;
   env->undo_redo[1].w=env->undo_right_sidex-env->undo_left_sidex;
   env->undo_redo[1].h=env->down_sidey_square-env->up_sidey_square;
+  SDL_RenderCopy(ren, env->undo_redoSquare[1], NULL, &( env->undo_redo[1]));
 
   //help
   SDL_RenderDrawLine(ren, env->help_left_sidex, env->help_up_sidey, env->help_left_sidex, env->help_down_sidey);
@@ -237,10 +308,14 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
 
 
   /* render text texture */
-  for(int i=0; i<=5; i++){//TOTALNUMBER*3; i++){
-    SDL_QueryTexture(env->numbers[i], NULL, NULL, &rect.w, &rect.h);
-  }
 
+
+  if(game_won(env->g)){
+    env->hasWon =true;
+  }
+  else{
+    env->hasWon=false;
+  }
   
   float x1=env->game_screen_left_sidex+offsetx_count;
   float y1=env->game_screen_up_sidex+offsety_count;
@@ -253,26 +328,40 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
       env->cases[game_nb_cols(env->g)*x+y].w=cell_size+1;
       env->cases[game_nb_cols(env->g)*x+y].h=cell_size+1;
       //env->cases[game_nb_rows(env->g)*x+y]=rect;
-      for(int i=-1; i<10;i++){        
-                if(game_get_constraint(env->g, x,y)==i){
-                  if(game_get_constraint(env->g, x,y)==1){
-                    SDL_RenderCopy(ren, env->numbers[4], NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
-                  }
-                  if(game_get_constraint(env->g, x,y)==0){
-                    SDL_RenderCopy(ren, env->numbers[1], NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
-                  }
-                  else{
-                   SDL_RenderCopy(ren, env->numbers[3], NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
-                  }
-                }
-              }
-              x1+=cell_size;
+      if(game_get_color(env->g, x, y)==WHITE){
+        SDL_RenderCopy(ren, env->whiteSquare, NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
+
+      }
+      else if(game_get_color(env->g, x, y)==BLACK){
+        SDL_RenderCopy(ren, env->blackSquare, NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
+      }
+      else{
+        SDL_RenderCopy(ren, env->emptySquare, NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
+      }
+
+      for(int i=0; i<=TOTALNUMBER;i++){        
+        
+          if(game_get_constraint(env->g, x,y)==i){
+
+            if(game_get_status((env->g), x, y)==SATISFIED){
+              SDL_RenderCopy(ren, env->green_numbers[i], NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
+            }
+            else if(game_get_status((env->g), x, y)==UNSATISFIED){
+              SDL_RenderCopy(ren, env->blue_numbers[i], NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
+            }
+            else if(game_get_status((env->g), x, y)==ERROR){
+              SDL_RenderCopy(ren, env->red_numbers[i], NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
+            }
+          }
+        }
+        x1+=cell_size;
       
     }
     y1+=cell_size;
     
   }
-
+  
+  
        
 }
 
@@ -298,33 +387,18 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
     SDL_Point mouse;
     SDL_GetMouseState(&mouse.x, &mouse.y);
     for(int i=0; i<game_nb_cols(env->g)*game_nb_rows(env->g); i++){
-      if (SDL_PointInRect(&mouse, &(env->cases[i])) && e->button.button == SDL_BUTTON_LEFT){
+      if (SDL_PointInRect(&mouse, &(env->cases[i])) && e->button.button == SDL_BUTTON_LEFT && env->hasWon==false){
         game_play_move(env->g, i/game_nb_cols(env->g), i%game_nb_cols(env->g), env->playColor);
-        if(checkStatus(env->g, i/game_nb_cols(env->g), i%game_nb_cols(env->g))==true){
-          printf("error"); //ajouter les coordonnées de la case via checkStatus
-        }
-        game_print(env->g);
-
-        /*int number = game_get_constraint(env->g, i%5, i/5);
-        char filename[50];
-
-        if (env->playColor == WHITE) {
-          sprintf(filename, "res/%dw.png", number);
-          SDL_RenderCopy(ren, env->numbers[number+2], NULL, &(env->cases[i]));
-
-          // render
-
-          
-        } else if (env->playColor == BLACK) {
-
-        } else if (env->playColor == EMPTY) {
-
-        }*/
-
       }
     }
     if(e->button.button == SDL_BUTTON_RIGHT){
       env->playColor=(env->playColor+1)%3;
+    }
+    if (SDL_PointInRect(&mouse, &(env->undo_redo[1]))){
+      game_undo(env->g);
+    }
+    if (SDL_PointInRect(&mouse, &(env->undo_redo[0]))){
+      game_redo(env->g);
     }
   } else if (e->type == SDL_KEYDOWN) {
     
@@ -341,6 +415,15 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
         return true;
         break;
     }
+    if(e->key.keysym.sym==SDLK_s){
+      game_solve(env->g);
+    }
+    else if(e->key.keysym.sym==SDLK_r){
+        env->hasWon=false;
+        game_restart(env->g);
+    }
+
+      
   }
 #endif
 
@@ -353,11 +436,19 @@ void clean(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   /* PUT YOUR CODE HERE TO CLEAN MEMORY */
   
 
-  for(int i=0; i<6; i++){
-    SDL_DestroyTexture(env->numbers[i]);
+  for(int i=0; i<=TOTALNUMBER; i++){
+    SDL_DestroyTexture(env->green_numbers[i]);
+    SDL_DestroyTexture(env->blue_numbers[i]);
+    SDL_DestroyTexture(env->red_numbers[i]);
   }
+  free(env->green_numbers);
+  free(env->blue_numbers);
+  free(env->red_numbers);
+
+  SDL_DestroyTexture(env->unconstraitSquare);
+
   game_delete(env->g);
-  free(env->numbers);
+
   
   free(env->cases);
 
