@@ -338,6 +338,14 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
     if(e->button.button == SDL_BUTTON_RIGHT){
       env->playColor=(env->playColor+1)%3;
     }
+    if (SDL_PointInRect(&mouse, &(env->undo_redo[0])) && e->button.button == SDL_BUTTON_LEFT){
+      game_undo(env->g);
+      game_print(env->g);
+    } 
+    if (SDL_PointInRect(&mouse, &(env->undo_redo[1])) && e->button.button == SDL_BUTTON_LEFT){
+      game_redo(env->g);
+      game_print(env->g);
+    } 
   } else if (e->type == SDL_KEYDOWN) {
     
     switch (e->key.keysym.sym) {
@@ -372,6 +380,20 @@ void clean(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   free(env->numbers);
   
   free(env->cases);
+
+  free(env->game_screen);
+
+  free(env->current_color);
+
+  free(env->help);
+
+  free(env->undo);
+
+  free(env->redo);
+
+  free(env->message_screen);
+
+  free(env->solve);
 
   free(env);
 }
