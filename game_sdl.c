@@ -22,7 +22,7 @@
 bool min_number(float a, float b);
 
 bool min_number(float a, float b){
-  return a<b;
+  return a<=b;
 }
 
 float min_number_return(float a, float b){
@@ -97,61 +97,10 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
   if(env->cases==NULL){
     ERROR("malloc cases");
   } 
-  env->undo_redo=malloc(sizeof(SDL_Texture*)*2);
+  env->undo_redo=malloc(sizeof(SDL_Rect)*2);
   if(env->undo_redo==NULL){
     ERROR("malloc undo_redo");
   } 
-
-  /*SDL_Color color = {0, 0, 255, 255}; /* blue color in RGBA 
-  TTF_Font* font = TTF_OpenFont(FONT, FONTSIZE);
-  if (!font) ERROR("TTF_OpenFont: %s\n", FONT);
-  TTF_SetFontStyle(font, TTF_STYLE_BOLD); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
-  SDL_Surface* surf;
-  for(int i=0; i<=TOTALNUMBER;i++){
-    switch (i)
-    {
-    case 0:
-      surf = TTF_RenderText_Blended(font, "0", color);
-      break;
-    case 1:
-      surf = TTF_RenderText_Blended(font, "1", color);
-      break;
-    case 2:
-      surf = TTF_RenderText_Blended(font, "2", color);
-      break;
-    case 3:
-      surf = TTF_RenderText_Blended(font, "3", color);
-      break;
-    case 4:
-      surf = TTF_RenderText_Blended(font, "4", color);
-      break;
-    case 5:
-      surf = TTF_RenderText_Blended(font, "5", color);
-      break;
-    case 6:
-      surf = TTF_RenderText_Blended(font, "6", color);
-      break;
-    case 7:
-      surf = TTF_RenderText_Blended(font, "7", color);
-      break;
-    case 8:
-      surf = TTF_RenderText_Blended(font, "8", color);
-      break;
-    case 9:
-      surf = TTF_RenderText_Blended(font, "9", color);
-      break;
-    default:
-      break;
-    }
-        // blended rendering for ultra nice text
-    env->text[i] = SDL_CreateTextureFromSurface(ren, surf);
-    SDL_FreeSurface(surf);
-    
-  }
-                           
-  
-  
-  TTF_CloseFont(font);*/
   
   return env;
 }
@@ -203,122 +152,40 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_down_sidex, env->game_screen_right_sidex, env->game_screen_down_sidex);
 
   // grid game
-  // float game_width = env->game_screen_right_sidex - env->game_screen_left_sidex;
-  // float game_height = env->game_screen_down_sidex - env->game_screen_up_sidex;
 
-  // bool min_game_size= min_number(game_width, game_height);
-  // float min=min_number_return(game_width, game_height);
-  // float offsetx=0;
-  // float offsety=0;
-  // float cell_size=0;
-  // float cell_size1=0;
-  // float cell_size2=0;
-  // if(game_width<=game_height){
-  //   cell_size1=game_width/game_nb_cols(env->g);
-  //   cell_size2=game_width/game_nb_rows(env->g);
-
-  //   if(min_number(cell_size1, cell_size2)){
-  //     cell_size=cell_size1;
-      
-  //     offsetx=env->game_screen_left_sidex+(game_width-(cell_size*game_nb_cols(env->g)))/2;
-  //     offsety=env->game_screen_up_sidex;
-
-  //   }
-  //   else{
-  //     cell_size=cell_size2;
-  //     offsetx=env->game_screen_left_sidex;
-  //     offsety=env->game_screen_up_sidex+(game_height-(cell_size*game_nb_rows(env->g)))/2;
-      
-  //   }
-    
-  // }
-  // else if(game_width>=game_height){
-  //   cell_size1=game_height/game_nb_cols(env->g);
-  //   cell_size2=game_height/game_nb_rows(env->g);
-
-  //   if(min_number(cell_size1, cell_size2)){
-  //     cell_size=cell_size2;
-      
-  //     offsetx=env->game_screen_left_sidex;
-  //     offsety=env->game_screen_up_sidex+(game_height-(cell_size*game_nb_rows(env->g)))/2;
-  //   }
-  //   else{
-  //     cell_size=cell_size1;
-  //     offsetx=env->game_screen_left_sidex+(game_width-(cell_size*game_nb_cols(env->g)))/2;
-  //     offsety=env->game_screen_up_sidex;
-  //   }
-  // }
-
-  // for (float x = offsetx; x <= env->game_screen_right_sidex-offsetx+1; x += cell_size){
-  //      SDL_RenderDrawLine(ren, x, offsety, x, offsety+min);
-  // }
-
-  // for (float y = offsety; y <= env->game_screen_down_sidex-offsetx+1; y += cell_size){
-  //      SDL_RenderDrawLine(ren, offsetx, y, offsetx+min, y);
-  // }
-
-float game_width = env->game_screen_right_sidex - env->game_screen_left_sidex;
+  float game_width = env->game_screen_right_sidex - env->game_screen_left_sidex;
   float game_height = env->game_screen_down_sidex - env->game_screen_up_sidex;
 
-  int cell_required = 0;
-  if(game_nb_cols(env->g)<game_nb_rows(env->g)){
-    cell_required=game_nb_cols(env->g);
-  }
-  else{
-    cell_required=game_nb_rows(env->g);
-  }
-  float min=0;
-  if (game_height<game_width){
-    min=game_height;
-  }
-  else{
-    min=game_width;
-  }
-
-    float cell_size=0;
-  float cell_size1=0;
-  float cell_size2=0;
-  if(game_width<=game_height){
-    cell_size1=game_width/game_nb_cols(env->g);
-    cell_size2=game_width/game_nb_rows(env->g);
-
-    if(min_number(cell_size1, cell_size2)){
-      cell_size=cell_size1;
-
-    }
-    else{
+  float cell_size=0;
+  float offsetx_count=0;
+  float offsety_count=0;
+    float cell_size1=game_width/game_nb_cols(env->g);
+    float cell_size2=game_height/game_nb_rows(env->g);
+    if(game_width>=cell_size2*game_nb_cols(env->g)){
       cell_size=cell_size2;
+      offsetx_count=(game_width-game_nb_cols(env->g)*cell_size)/2;
+      offsety_count=0;
     }
-    
-  }
-  else if(game_width>=game_height){
-    cell_size1=game_height/game_nb_cols(env->g);
-    cell_size2=game_height/game_nb_rows(env->g);
-
-    if(min_number(cell_size1, cell_size2)){
-      cell_size=cell_size2;
-    }
-    else{
+    else if(game_height>cell_size1*game_nb_rows(env->g)){
       cell_size=cell_size1;
+      offsetx_count=0;
+      offsety_count=(game_height-game_nb_rows(env->g)*cell_size)/2;
+
     }
+
+
+  for(int i=0; i<=game_nb_cols(env->g); i++){
+    SDL_RenderDrawLine(ren, env->game_screen_left_sidex+offsetx_count, env->game_screen_up_sidex+offsety_count, env->game_screen_left_sidex+offsetx_count, env->game_screen_down_sidex-offsety_count);
+    offsetx_count+=cell_size;
   }
-  float offsetx=env->game_screen_left_sidex+((game_width-min)/2);
-  float offsety=env->game_screen_up_sidex+((game_height-min)/2);
-
-  for (float x = offsetx; x <= offsetx+min+1; x += cell_size){
-       SDL_RenderDrawLine(ren, x, offsety, x, offsety+min);
+  offsetx_count=offsetx_count-(cell_size*(game_nb_cols(env->g)+1));
+  for(int i=0; i<=game_nb_rows(env->g); i++){
+    SDL_RenderDrawLine(ren, env->game_screen_left_sidex+offsetx_count, env->game_screen_up_sidex+offsety_count, env->game_screen_right_sidex-offsetx_count, env->game_screen_up_sidex+offsety_count);
+    offsety_count+=cell_size;
   }
-
-  for (float y = offsety; y <= offsety+min+1; y += cell_size) {
-    SDL_RenderDrawLine(ren, offsetx, y, offsetx+min, y);
-       
-  }
+  offsety_count=offsety_count-(cell_size*(game_nb_rows(env->g)+1));
 
 
-
-
-
-  
 
   //message screen
   SDL_RenderDrawLine(ren, env->message_screen_left_sidex, env->message_screen_up_sidex, env->message_screen_left_sidex, env->message_screen_down_sidex);
@@ -373,40 +240,38 @@ float game_width = env->game_screen_right_sidex - env->game_screen_left_sidex;
   for(int i=0; i<=5; i++){//TOTALNUMBER*3; i++){
     SDL_QueryTexture(env->numbers[i], NULL, NULL, &rect.w, &rect.h);
   }
-  /*for(int i=0; i<10;i++){
-    SDL_QueryTexture(env->text[i], NULL, NULL, &rect.w, &rect.h);
-  } */
-  int x1=0;
-  int y1=0;
-  for(float x = offsetx; x < offsetx+min-1; x += cell_size) {
-      for (float y = offsety; y < offsety+min-1; y += cell_size) {
-          rect.x =  x;
-          rect.y = y;
-          rect.w=cell_size;
-          rect.h=cell_size;
-          env->cases[game_nb_rows(env->g)*x1+y1]=rect;
-              for(int i=0; i<10;i++){        
-                if(game_get_constraint(env->g, x1,y1)==-1){
-                  break;
+
+  
+  float x1=env->game_screen_left_sidex+offsetx_count;
+  float y1=env->game_screen_up_sidex+offsety_count;
+  int test=0;
+  for(int x=0; x<game_nb_rows(env->g); x++){
+    x1=env->game_screen_left_sidex+offsetx_count;
+    for(int y=0; y<game_nb_cols(env->g); y++){
+      env->cases[game_nb_cols(env->g)*x+y].x =  x1;
+      env->cases[game_nb_cols(env->g)*x+y].y = y1;
+      env->cases[game_nb_cols(env->g)*x+y].w=cell_size+1;
+      env->cases[game_nb_cols(env->g)*x+y].h=cell_size+1;
+      //env->cases[game_nb_rows(env->g)*x+y]=rect;
+      for(int i=-1; i<10;i++){        
+                if(game_get_constraint(env->g, x,y)==i){
+                  if(game_get_constraint(env->g, x,y)==1){
+                    SDL_RenderCopy(ren, env->numbers[4], NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
                   }
-                if(game_get_constraint(env->g, x1,y1)==i){
-                  if(game_get_constraint(env->g, x1,y1)==1){
-                    SDL_RenderCopy(ren, env->numbers[4], NULL, &(env->cases[game_nb_rows(env->g)*x1+y1]));
-                  }
-                  if(game_get_constraint(env->g, x1,y1)==0){
-                    SDL_RenderCopy(ren, env->numbers[1], NULL, &(env->cases[game_nb_rows(env->g)*x1+y1]));
+                  if(game_get_constraint(env->g, x,y)==0){
+                    SDL_RenderCopy(ren, env->numbers[1], NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
                   }
                   else{
-                   //SDL_RenderCopy(ren, env->text[i], NULL, &(env->cases[game_nb_cols(env->g)*x1+y1]));
+                   SDL_RenderCopy(ren, env->numbers[3], NULL, &(env->cases[game_nb_cols(env->g)*x+y]));
                   }
                 }
               }
-              
-              y1=(y1+1)%game_nb_cols(env->g);
-             
-            }
-        x1=(x1+1)%game_nb_rows(env->g);
-        }
+              x1+=cell_size;
+      
+    }
+    y1+=cell_size;
+    
+  }
 
        
 }
@@ -434,8 +299,8 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
     SDL_GetMouseState(&mouse.x, &mouse.y);
     for(int i=0; i<game_nb_cols(env->g)*game_nb_rows(env->g); i++){
       if (SDL_PointInRect(&mouse, &(env->cases[i])) && e->button.button == SDL_BUTTON_LEFT){
-        game_set_color(env->g, i%5, i/5, env->playColor);
-        if(checkStatus(env->g, i%5, i/5)==true){
+        game_play_move(env->g, i/game_nb_cols(env->g), i%game_nb_cols(env->g), env->playColor);
+        if(checkStatus(env->g, i/game_nb_cols(env->g), i%game_nb_cols(env->g))==true){
           printf("error"); //ajouter les coordonnées de la case via checkStatus
         }
         game_print(env->g);
@@ -492,7 +357,9 @@ void clean(SDL_Window *win, SDL_Renderer *ren, Env *env) {
     SDL_DestroyTexture(env->numbers[i]);
   }
   game_delete(env->g);
-
+  free(env->numbers);
+  
+  free(env->cases);
 
   free(env);
 }
