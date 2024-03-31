@@ -23,9 +23,15 @@
 #define EMPTYSQUARE "res/Empty.png"
 #define TITLE "res/Mosaic.png"
 #define BACKGROUND "res/Background.png"
+#define VICTORY "res/VictoryScreen.png"
+#define SOLVE "res/Solve.png"
 
 #define UNDO "res/undo.png"
 #define REDO "res/redo.png"
+
+#define CURRENTWHITE "res/CurrentWhite.png"
+#define CURRENTBLACK "res/CurrentBlack.png"
+#define CURRENTEMPTY "res/CurrentEmpty.png"
 
 #define TOTALNUMBER 9
 
@@ -37,7 +43,7 @@ struct Env_t {
   float message_screen_left_sidex,message_screen_right_sidex,message_screen_up_sidex,message_screen_down_sidex;
   float current_left_sidex,current_right_sidex,current_up_sidex,current_down_sidex;
   float current_solve_left_sidex,current_solve_right_sidex,current_solve_up_sidex,current_solve_down_sidex;
-  float up_sidey_square,down_sidey_square;
+  float up_sidey_square,down_sidey_square, undo_up_sidey_square, undo_down_sidey_square;
   float undo_redo_up_sidey,undo_redo_left_sidex,undo_redo_right_sidex, undo_right_sidex, undo_left_sidex;
   float help_left_sidex,help_right_sidex,help_up_sidey,help_down_sidey;
 
@@ -54,13 +60,20 @@ struct Env_t {
 
   SDL_Rect backgroundSquare;
   SDL_Texture* background;
+  SDL_Texture* victoryScreen;
 
+  SDL_Rect currentColor;
+  SDL_Texture* currentColorWhite;
+  SDL_Texture* currentColorBlack;
+  SDL_Texture* currentColorEmpty;
 
   game g;
   SDL_Rect * cases;
   SDL_Rect * undo_redo;
   SDL_Texture ** undo_redoSquare;
-  SDL_Rect * solve_current; 
+
+  SDL_Rect solve; 
+  SDL_Texture* solveText;
   color playColor;
 
   bool hasWon;
@@ -76,11 +89,7 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
   int w, h;
   SDL_GetWindowSize(win, &w, &h);
 
-  env->backgroundSquare.x=0;
-  env->backgroundSquare.y=0;
-  env->backgroundSquare.w=w;
-  env->backgroundSquare.h=h;
-  SDL_RenderCopy(ren, env->background, NULL, &(env->backgroundSquare));
+  
 
   //initialisation of the numbers
   env->green_numbers=malloc(sizeof(SDL_Texture*)*TOTALNUMBER+1);
@@ -137,6 +146,12 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
   env->background = IMG_LoadTexture(ren, BACKGROUND);
   if (!env->background) ERROR("IMG_LoadTexture: %s\n", BACKGROUND);
 
+  env->victoryScreen = IMG_LoadTexture(ren, VICTORY);
+  if (!env->victoryScreen) ERROR("IMG_LoadTexture: %s\n", VICTORY);
+
+  env->solveText = IMG_LoadTexture(ren, SOLVE);
+  if (!env->solveText) ERROR("IMG_LoadTexture: %s\n", SOLVE);
+
   env->playColor=WHITE;
   if(argc==2){
     env->g=game_load(argv[1]);
@@ -162,6 +177,15 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
   env->undo_redoSquare[0] = IMG_LoadTexture(ren, REDO);
   if (!env->undo_redoSquare[0]) ERROR("IMG_LoadTexture: %s\n", REDO);
 
+
+  
+  env->currentColorWhite = IMG_LoadTexture(ren, CURRENTWHITE);
+  if (!env->currentColorWhite) ERROR("IMG_LoadTexture: %s\n", CURRENTWHITE);
+  env->currentColorBlack = IMG_LoadTexture(ren, CURRENTBLACK);
+  if (!env->currentColorBlack) ERROR("IMG_LoadTexture: %s\n", CURRENTBLACK);
+  env->currentColorEmpty = IMG_LoadTexture(ren, CURRENTEMPTY);
+  if (!env->currentColorEmpty) ERROR("IMG_LoadTexture: %s\n", CURRENTEMPTY);
+
   return env;
 }
 
@@ -172,7 +196,19 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   int w, h;
   SDL_GetWindowSize(win, &w, &h);
 
+
+
+  env->backgroundSquare.x=0;
+  env->backgroundSquare.y=0;
+  env->backgroundSquare.w=w;
+  env->backgroundSquare.h=h;
+  SDL_RenderCopy(ren, env->background, NULL, &(env->backgroundSquare));
+
   
+  if(!game_won(env->g)){
+    env->hasWon=false;
+    SDL_RenderCopy(ren, env->background, NULL, &( env->backgroundSquare));
+  }
 
   SDL_SetRenderDrawColor(ren, 0, 0, 0, SDL_ALPHA_OPAQUE);
   env->game_screen_left_sidex=w/20;
@@ -188,10 +224,10 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   env->current_solve_left_sidex=w-w/7;
   env->current_solve_right_sidex=w-w/20;
   env->current_up_sidex=h/1.9;
-  env->current_down_sidex=h/1.6;
+  env->current_down_sidex=h/1.7;
 
-  env->current_solve_up_sidex=h-h/1.9;
-  env->current_solve_down_sidex=h-h/1.6;
+  env->current_solve_up_sidex=h/2.1;
+  env->current_solve_down_sidex=h/2.4;
 
   env->up_sidey_square=h-h/12.5;
   env->down_sidey_square=h-h/25;
@@ -206,6 +242,8 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
 
   env->undo_left_sidex=w-w/1.7;
   env->undo_right_sidex=w-w/1.4;
+
+  
 
   //game screen 
   SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_up_sidex, env->game_screen_left_sidex, env->game_screen_down_sidex);
@@ -263,59 +301,49 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
 
 
   //current and solve
-  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_up_sidex, env->current_solve_left_sidex, env->current_down_sidex);
-  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_up_sidex, env->current_solve_right_sidex, env->current_up_sidex);
-  SDL_RenderDrawLine(ren, env->current_solve_right_sidex, env->current_down_sidex, env->current_solve_right_sidex, env->current_up_sidex);
-  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_down_sidex, env->current_solve_right_sidex, env->current_down_sidex);
+
+  env->currentColor.x=env->current_solve_left_sidex;
+  env->currentColor.y=env->current_up_sidex;
+  env->currentColor.w=env->current_solve_right_sidex-env->current_solve_left_sidex;
+  env->currentColor.h=env->current_down_sidex-env->current_up_sidex;
+
+  if(env->playColor==WHITE){
+    SDL_RenderCopy(ren, env->currentColorWhite, NULL, &(env->currentColor));
+  }
+  else if(env->playColor==BLACK){
+    SDL_RenderCopy(ren, env->currentColorBlack, NULL, &(env->currentColor));
+  }
+  else{
+    SDL_RenderCopy(ren, env->currentColorEmpty, NULL, &(env->currentColor));
+  }
 
   
-  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_solve_up_sidex, env->current_solve_left_sidex, env->current_solve_down_sidex);
-  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_solve_up_sidex, env->current_solve_right_sidex, env->current_solve_up_sidex);
-  SDL_RenderDrawLine(ren, env->current_solve_right_sidex, env->current_solve_down_sidex, env->current_solve_right_sidex, env->current_solve_up_sidex);
-  SDL_RenderDrawLine(ren, env->current_solve_left_sidex, env->current_solve_down_sidex, env->current_solve_right_sidex, env->current_solve_down_sidex);
+
+  env->solve.x=env->current_solve_left_sidex;
+  env->solve.y=env->current_solve_down_sidex;
+  env->solve.w=env->current_solve_right_sidex-env->current_solve_left_sidex;
+  env->solve.h=env->current_solve_up_sidex-env->current_solve_down_sidex;
+  SDL_RenderCopy(ren, env->solveText, NULL, &(env->solve));
+
+
+
+  
+
 
   //undo/redo
-  SDL_RenderDrawLine(ren, env->undo_redo_left_sidex, env->down_sidey_square, env->undo_redo_right_sidex, env->down_sidey_square);
-  SDL_RenderDrawLine(ren, env->undo_redo_right_sidex, env->down_sidey_square, env->undo_redo_right_sidex, env->up_sidey_square);
-  SDL_RenderDrawLine(ren, env->undo_redo_left_sidex, env->up_sidey_square, env->undo_redo_left_sidex, env->down_sidey_square);
-  SDL_RenderDrawLine(ren, env->undo_redo_right_sidex, env->up_sidey_square, env->undo_redo_left_sidex, env->up_sidey_square);
-
   env->undo_redo[0].x=env->undo_redo_left_sidex;
-  env->undo_redo[0].y=env->undo_redo_up_sidey;
+  env->undo_redo[0].y=env->up_sidey_square;
   env->undo_redo[0].w=env->undo_redo_right_sidex-env->undo_redo_left_sidex;
-  env->undo_redo[0].h=env->down_sidey_square-env->undo_redo_up_sidey;
+  env->undo_redo[0].h=env->down_sidey_square-env->up_sidey_square;
   SDL_RenderCopy(ren, env->undo_redoSquare[0], NULL, &(env->undo_redo[0]));
 
-  SDL_RenderDrawLine(ren, env->undo_left_sidex, env->down_sidey_square, env->undo_right_sidex, env->down_sidey_square);
-  SDL_RenderDrawLine(ren, env->undo_right_sidex, env->down_sidey_square, env->undo_right_sidex, env->up_sidey_square);
-  SDL_RenderDrawLine(ren, env->undo_left_sidex, env->up_sidey_square, env->undo_left_sidex, env->down_sidey_square);
-  SDL_RenderDrawLine(ren, env->undo_right_sidex, env->up_sidey_square, env->undo_left_sidex, env->up_sidey_square);
 
-  env->undo_redo[1].x=env->undo_left_sidex;
-  env->undo_redo[1].y=env->undo_redo_up_sidey;
-  env->undo_redo[1].w=env->undo_right_sidex-env->undo_left_sidex;
+  env->undo_redo[1].x=env->undo_right_sidex;
+  env->undo_redo[1].y=env->up_sidey_square;
+  env->undo_redo[1].w=env->undo_left_sidex-env->undo_right_sidex;
   env->undo_redo[1].h=env->down_sidey_square-env->up_sidey_square;
   SDL_RenderCopy(ren, env->undo_redoSquare[1], NULL, &( env->undo_redo[1]));
 
-  //help
-  SDL_RenderDrawLine(ren, env->help_left_sidex, env->help_up_sidey, env->help_left_sidex, env->help_down_sidey);
-  SDL_RenderDrawLine(ren, env->help_left_sidex, env->help_up_sidey, env->help_right_sidex, env->help_up_sidey);
-  SDL_RenderDrawLine(ren, env->help_right_sidex, env->help_down_sidey, env->help_right_sidex, env->help_up_sidey);
-  SDL_RenderDrawLine(ren, env->help_left_sidex, env->help_down_sidey, env->help_right_sidex, env->help_down_sidey);
-
-
-
-
-
-  /* render text texture */
-
-
-  if(game_won(env->g)){
-    env->hasWon =true;
-  }
-  else{
-    env->hasWon=false;
-  }
   
   float x1=env->game_screen_left_sidex+offsetx_count;
   float y1=env->game_screen_up_sidex+offsety_count;
@@ -361,8 +389,12 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
     
   }
   
-  
-       
+  //if the game is won, makes it that you can't play any moves and put the victory screen
+  if(game_won(env->g)){
+    env->hasWon =true;
+    
+    SDL_RenderCopy(ren, env->victoryScreen, NULL, &( env->backgroundSquare));
+  }
 }
 
 /* **************************************************************** */
@@ -377,47 +409,57 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
   }
   /* Android events */
 #ifdef __ANDROID__
-  else if (e->type == SDL_FINGERDOWN) {
-    //env->mario_x = e->tfinger.x * w; /* tfinger.x, normalized in [0..1] */
-    //env->mario_y = e->tfinger.y * h; /* tfinger.y, normalized in [0..1] */
-  }
-  /* other events */
+
 #else
+  //checks the events when the mouse is pressed
   else if (e->type == SDL_MOUSEBUTTONDOWN) {
     SDL_Point mouse;
     SDL_GetMouseState(&mouse.x, &mouse.y);
+    //plays the move
     for(int i=0; i<game_nb_cols(env->g)*game_nb_rows(env->g); i++){
       if (SDL_PointInRect(&mouse, &(env->cases[i])) && e->button.button == SDL_BUTTON_LEFT && env->hasWon==false){
         game_play_move(env->g, i/game_nb_cols(env->g), i%game_nb_cols(env->g), env->playColor);
       }
     }
+    //switches the color
     if(e->button.button == SDL_BUTTON_RIGHT){
       env->playColor=(env->playColor+1)%3;
     }
+    //presses the undo/redo buttons
     if (SDL_PointInRect(&mouse, &(env->undo_redo[1]))){
       game_undo(env->g);
     }
     if (SDL_PointInRect(&mouse, &(env->undo_redo[0]))){
       game_redo(env->g);
     }
+    if (SDL_PointInRect(&mouse, &(env->solve))){
+      game_solve(env->g);
+    }
+
+    //checks the vent when a key on the keyboard is pressed
   } else if (e->type == SDL_KEYDOWN) {
     
     switch (e->key.keysym.sym) {
+      //left arrow
       case SDLK_LEFT:
         game_undo(env->g);
         game_print(env->g);
         break;
+      //right arrow
       case SDLK_RIGHT:
         game_redo(env->g);
         game_print(env->g);
         break;
+      //escape
       case SDLK_ESCAPE:
         return true;
         break;
     }
+    // s key
     if(e->key.keysym.sym==SDLK_s){
       game_solve(env->g);
     }
+    // r key
     else if(e->key.keysym.sym==SDLK_r){
         env->hasWon=false;
         game_restart(env->g);
@@ -446,10 +488,17 @@ void clean(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   free(env->red_numbers);
 
   SDL_DestroyTexture(env->unconstraitSquare);
+  SDL_DestroyTexture(env->emptySquare);
+  SDL_DestroyTexture(env->whiteSquare);
+  SDL_DestroyTexture(env->blackSquare);
+  SDL_DestroyTexture(env->background);
 
   game_delete(env->g);
 
-  
+
+  SDL_DestroyTexture(env->undo_redoSquare[0]);
+  SDL_DestroyTexture(env->undo_redoSquare[1]);
+  free(env->undo_redo);
   free(env->cases);
 
   free(env);
