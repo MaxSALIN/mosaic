@@ -33,6 +33,9 @@
 #define CURRENTBLACK "res/CurrentBlack.png"
 #define CURRENTEMPTY "res/CurrentEmpty.png"
 
+#define SOLVETEXTE "res/SolveTexte.png"
+#define CURRENTTEXTE "res/CurrentTexte.png"
+
 #define TOTALNUMBER 9
 
 
@@ -66,6 +69,8 @@ struct Env_t {
   SDL_Texture* currentColorWhite;
   SDL_Texture* currentColorBlack;
   SDL_Texture* currentColorEmpty;
+  SDL_Rect currentColorTexte;
+  SDL_Texture* currentColorTextTexte;
 
   game g;
   SDL_Rect * cases;
@@ -74,6 +79,8 @@ struct Env_t {
 
   SDL_Rect solve; 
   SDL_Texture* solveText;
+  SDL_Rect SolveTexte; 
+  SDL_Texture* solveTexteText;
   color playColor;
 
   bool hasWon;
@@ -152,6 +159,12 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[]) {
   env->solveText = IMG_LoadTexture(ren, SOLVE);
   if (!env->solveText) ERROR("IMG_LoadTexture: %s\n", SOLVE);
 
+  env->currentColorTextTexte = IMG_LoadTexture(ren, CURRENTTEXTE);
+  if (!env->currentColorTextTexte) ERROR("IMG_LoadTexture: %s\n", CURRENTTEXTE);
+
+  env->solveTexteText = IMG_LoadTexture(ren, SOLVETEXTE);
+  if (!env->solveTexteText) ERROR("IMG_LoadTexture: %s\n", SOLVETEXTE);
+
   env->playColor=WHITE;
   if(argc==2){
     env->g=game_load(argv[1]);
@@ -216,15 +229,7 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   env->game_screen_up_sidex=h/8;
   env->game_screen_down_sidex=h-h/8;
 
-  env->message_screen_left_sidex=w/4;
-  env->message_screen_right_sidex=w-w/4;
-  env->message_screen_up_sidex=h/50;
-  env->message_screen_down_sidex=h/10;
-
-  env->current_solve_left_sidex=w-w/7;
-  env->current_solve_right_sidex=w-w/20;
-  env->current_up_sidex=h/1.9;
-  env->current_down_sidex=h/1.7;
+  
 
   env->current_solve_up_sidex=h/2.1;
   env->current_solve_down_sidex=h/2.4;
@@ -235,21 +240,9 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   env->undo_redo_left_sidex=w/1.7;
   env->undo_redo_right_sidex=w/1.4;
 
-  env->help_left_sidex=w-w/10;
-  env->help_right_sidex=w-w/25;
-  env->help_up_sidey=h/10;
-  env->help_down_sidey=h/25;
-
-  env->undo_left_sidex=w-w/1.7;
-  env->undo_right_sidex=w-w/1.4;
-
-  
 
   //game screen 
-  SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_up_sidex, env->game_screen_left_sidex, env->game_screen_down_sidex);
-  SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_up_sidex, env->game_screen_right_sidex, env->game_screen_up_sidex);
-  SDL_RenderDrawLine(ren, env->game_screen_right_sidex, env->game_screen_down_sidex, env->game_screen_right_sidex, env->game_screen_up_sidex);
-  SDL_RenderDrawLine(ren, env->game_screen_left_sidex, env->game_screen_down_sidex, env->game_screen_right_sidex, env->game_screen_down_sidex);
+
 
   // grid game
 
@@ -274,24 +267,15 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
     }
 
 
-  for(int i=0; i<=game_nb_cols(env->g); i++){
-    SDL_RenderDrawLine(ren, env->game_screen_left_sidex+offsetx_count, env->game_screen_up_sidex+offsety_count, env->game_screen_left_sidex+offsetx_count, env->game_screen_down_sidex-offsety_count);
-    offsetx_count+=cell_size;
-  }
-  offsetx_count=offsetx_count-(cell_size*(game_nb_cols(env->g)+1));
-  for(int i=0; i<=game_nb_rows(env->g); i++){
-    SDL_RenderDrawLine(ren, env->game_screen_left_sidex+offsetx_count, env->game_screen_up_sidex+offsety_count, env->game_screen_right_sidex-offsetx_count, env->game_screen_up_sidex+offsety_count);
-    offsety_count+=cell_size;
-  }
-  offsety_count=offsety_count-(cell_size*(game_nb_rows(env->g)+1));
+  env->message_screen_left_sidex=env->game_screen_left_sidex+offsetx_count;
+  env->message_screen_right_sidex=env->game_screen_left_sidex+game_width-offsetx_count;
+  env->message_screen_up_sidex=h/50;
+  env->message_screen_down_sidex=h/10;
 
 
 
   //message screen
-  SDL_RenderDrawLine(ren, env->message_screen_left_sidex, env->message_screen_up_sidex, env->message_screen_left_sidex, env->message_screen_down_sidex);
-  SDL_RenderDrawLine(ren, env->message_screen_left_sidex, env->message_screen_up_sidex, env->message_screen_right_sidex, env->message_screen_up_sidex);
-  SDL_RenderDrawLine(ren, env->message_screen_right_sidex, env->message_screen_down_sidex, env->message_screen_right_sidex, env->message_screen_up_sidex);
-  SDL_RenderDrawLine(ren, env->message_screen_left_sidex, env->message_screen_down_sidex, env->message_screen_right_sidex, env->message_screen_down_sidex);
+
 
   env->titleSquare.x=env->message_screen_left_sidex;
   env->titleSquare.y=env->message_screen_up_sidex;
@@ -302,10 +286,22 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
 
   //current and solve
 
+  
+  env->current_solve_left_sidex=env->game_screen_left_sidex+offsetx_count+(game_nb_cols(env->g)*cell_size)+w/20;
+  env->current_solve_right_sidex=env->game_screen_left_sidex+offsetx_count+(game_nb_cols(env->g)*cell_size)+w/8;
+  env->current_up_sidex=h/1.9;
+  env->current_down_sidex=h/1.7;
+
+
   env->currentColor.x=env->current_solve_left_sidex;
   env->currentColor.y=env->current_up_sidex;
   env->currentColor.w=env->current_solve_right_sidex-env->current_solve_left_sidex;
   env->currentColor.h=env->current_down_sidex-env->current_up_sidex;
+
+  env->currentColorTexte=env->currentColor;
+  env->currentColorTexte.y=env->currentColor.y+env->currentColor.h;
+  SDL_RenderCopy(ren, env->currentColorTextTexte, NULL, &(env->currentColorTexte));
+
 
   if(env->playColor==WHITE){
     SDL_RenderCopy(ren, env->currentColorWhite, NULL, &(env->currentColor));
@@ -323,11 +319,25 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env) {
   env->solve.y=env->current_solve_down_sidex;
   env->solve.w=env->current_solve_right_sidex-env->current_solve_left_sidex;
   env->solve.h=env->current_solve_up_sidex-env->current_solve_down_sidex;
+
+  env->SolveTexte=env->solve;
+  env->SolveTexte.y=env->solve.y-env->solve.h;
+  SDL_RenderCopy(ren, env->solveTexteText, NULL, &(env->SolveTexte));
+
   SDL_RenderCopy(ren, env->solveText, NULL, &(env->solve));
 
 
 
+
+
+  env->up_sidey_square=h-h/12.5;
+  env->down_sidey_square=h-h/25;
+  env->undo_redo_up_sidey=h-h/16.5;
+  env->undo_redo_left_sidex=env->game_screen_right_sidex-offsetx_count-(cell_size*game_nb_cols(env->g))/3;
+  env->undo_redo_right_sidex=env->game_screen_right_sidex-offsetx_count;
   
+  env->undo_left_sidex=env->game_screen_left_sidex+offsetx_count+(cell_size*game_nb_cols(env->g))/3;
+  env->undo_right_sidex=env->game_screen_left_sidex+offsetx_count;
 
 
   //undo/redo
@@ -457,7 +467,7 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e) {
     }
     // s key
     if(e->key.keysym.sym==SDLK_s){
-      game_solve(env->g);
+      game_save(env->g, "game_saved");
     }
     // r key
     else if(e->key.keysym.sym==SDLK_r){
