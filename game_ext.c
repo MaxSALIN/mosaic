@@ -37,7 +37,8 @@ game game_new_ext(uint nb_rows, uint nb_cols, constraint *constraints, color *co
       }
     }
   }
-  // changes the status according to the colors and constraints previously chosen
+  // changes the status according to the colors and constraints previously
+  // chosen
   for (int i = 0; i < nb_rows; i++) {
     for (int j = 0; j < nb_cols; j++) {
       putStatus(g, i, j);  // problème de status, à voir avec le débuggeur

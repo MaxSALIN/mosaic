@@ -7,8 +7,8 @@
 #include "game_ext.h"
 #include "game_tools.h"
 
-/*void first_solver(game g, uint pos, uint len, uint *word, unsigned long *count){
-  if (pos == len)
+/*void first_solver(game g, uint pos, uint len, uint *word, unsigned long
+*count){ if (pos == len)
   {
     if(game_won(g)){
       (*count)++;

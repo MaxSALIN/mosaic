@@ -218,11 +218,11 @@ void first_solver2(game g, game g3, uint pos, uint len, uint *count, bool *solve
     *start = false;
     for (int i = 0; i < game_nb_rows(g3); i++) {
       for (int j = 0; j < game_nb_cols(g3); j++) {
-        if (game_get_constraint(g3, i, j) == 0 && (game_get_color(g3, i, j) == EMPTY)) {
-          startGameSolver(g3, i, j, gridPlayed, WHITE);
+        if (game_get_constraint(g3, i, j) == 0 && (game_get_color(g3, i, j) ==
+  EMPTY)) { startGameSolver(g3, i, j, gridPlayed, WHITE);
         }
-        if (game_get_constraint(g3, i, j) == game_nb_neighbors(g3, i, j, EMPTY) + game_nb_neighbors(g3, i, j, BLACK) +
-                                                 game_nb_neighbors(g3, i, j, WHITE) &&
+        if (game_get_constraint(g3, i, j) == game_nb_neighbors(g3, i, j, EMPTY)
+  + game_nb_neighbors(g3, i, j, BLACK) + game_nb_neighbors(g3, i, j, WHITE) &&
             (game_get_color(g3, i, j) == EMPTY)) {
           startGameSolver(g3, i, j, gridPlayed, BLACK);
         }

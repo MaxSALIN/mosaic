@@ -10,7 +10,8 @@
 #include "game_struct.h"
 #include "queue.h"
 
-//#################################   Aux_functions   #################################//
+//#################################   Aux_functions
+//#################################//
 
 /**
  * @brief Allocate safely a game.
@@ -50,8 +51,8 @@ game safeMalloc(uint row, uint col) {
 
 /**
  * @brief Checks if the game is correctly allocated
- * @details Checks the different settings of the game to see if it's correctly allocated. Will print a message of the
- *error and the name of the function.
+ * @details Checks the different settings of the game to see if it's correctly
+ *allocated. Will print a message of the error and the name of the function.
  * @param g a pointer to a game.
  * @param i a coordinate to a designed row.
  * @param j a coordinate to a designed column.
@@ -63,8 +64,9 @@ void checkGame(game g, uint i, uint j, char *text) {
   // checks if i and j are between 0 and g->row-1 or g->col-1
   if (i >= g->row || j >= g->col) {
     fprintf(stderr,
-            "In %s, the parameters for i and j are not between 0 and %d for i and 0 and %d for j :\ni=%d\nj=%d\n", text,
-            g->row - 1, g->col - 1, i, j);
+            "In %s, the parameters for i and j are not between 0 and %d for i "
+            "and 0 and %d for j :\ni=%d\nj=%d\n",
+            text, g->row - 1, g->col - 1, i, j);
     exit(EXIT_FAILURE);
   }
   // checks if the game is not NULL
@@ -81,7 +83,8 @@ void checkGame(game g, uint i, uint j, char *text) {
 
 /**
  * @brief Change the status of a square, depending on their neighbours's colors
- * @details Checks the constraint of the current square, and colors of the nearby squares to change its status.
+ * @details Checks the constraint of the current square, and colors of the
+ *nearby squares to change its status.
  * @param g A pointer to a game.
  * @param i A coordinate to a designed row.
  * @param j A coordinate to a designed column.
@@ -99,7 +102,8 @@ void putStatus(game g, uint i, uint j) {
     }
   }
 
-  // changes the status for the squares with a constraint between 0 and MAX_CONSTRAINT
+  // changes the status for the squares with a constraint between 0 and
+  // MAX_CONSTRAINT
   else if (game_get_constraint(g, i, j) != -1) {
     if ((game_nb_neighbors(g, i, j, BLACK) == game_get_constraint(g, i, j) &&
          game_nb_neighbors(g, i, j, WHITE) ==
@@ -123,9 +127,10 @@ void putStatus(game g, uint i, uint j) {
 }
 
 /**
- * @brief Applies to all of the neighbor squares the function putStatus, chaging their status.
- * @details Checks the constraint of all of the neighbor squares, and colors of their nearby squares to change their
- *status.
+ * @brief Applies to all of the neighbor squares the function putStatus, chaging
+ *their status.
+ * @details Checks the constraint of all of the neighbor squares, and colors of
+ *their nearby squares to change their status.
  * @param g A pointer to a game.
  * @param i A coordinate to a designed row.
  * @param j A coordinate to a designed column.
@@ -168,7 +173,8 @@ game game_new(constraint *constraints, color *colors) {
       }
     }
   }
-  // changes the status according to the colors and constraints previously chosen
+  // changes the status according to the colors and constraints previously
+  // chosen
   for (int i = 0; i < g->row; i++) {
     for (int j = 0; j < g->col; j++) {
       putStatus(g, i, j);
@@ -216,7 +222,8 @@ bool game_equal(cgame g1, cgame g2) {
   if (g1->row != g2->row || g1->col != g2->col || g1->neighbour != g2->neighbour || g1->wrapping != g2->wrapping) {
     return false;
   }
-  // checks if constraints, colors and status are the same between g1 and g2 for all squares
+  // checks if constraints, colors and status are the same between g1 and g2 for
+  // all squares
   for (int i = 0; i < g1->col * g1->row; i++) {
     if (g2->contrainte[i] != g1->contrainte[i] || g2->statut[i] != g1->statut[i] || g2->couleur[i] != g1->couleur[i]) {
       return false;
@@ -328,7 +335,8 @@ int game_nb_neighbors(cgame g, uint i, uint j, color c) {
   uint count = 0;
   uint pi_next = 0;
   uint pj_next = 0;
-  // checks all around the square chosen the number of neighbors with the same color as c
+  // checks all around the square chosen the number of neighbors with the same
+  // color as c
 
   switch (g->neighbour) {
     case FULL:

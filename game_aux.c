@@ -175,7 +175,8 @@ game game_default(void) {
 
 game game_default_solution(void) {
   game g = game_default();
-  // puts all of the squares to SATISFIED and changes the colors of it according to the solution
+  // puts all of the squares to SATISFIED and changes the colors of it according
+  // to the solution
   for (int i = 0; i < g->row; i++) {
     for (int j = 0; j < g->col; j++) {
       g->statut[j + g->col * i] = SATISFIED;

@@ -388,7 +388,8 @@ void render(SDL_Window* win, SDL_Renderer* ren, Env* env) {
     y1 += cell_size;
   }
 
-  // if the game is won, makes it that you can't play any moves and put the victory screen
+  // if the game is won, makes it that you can't play any moves and put the
+  // victory screen
   if (game_won(env->g)) {
     env->hasWon = true;
 
