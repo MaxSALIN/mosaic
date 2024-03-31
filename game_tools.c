@@ -104,10 +104,22 @@ game game_load(char *filename) {
 
   // first line of the file.
 
-  fscanf(save, " %d", &row);
-  fscanf(save, " %d", &col);
-  fscanf(save, " %d", &wrapping);
-  fscanf(save, " %d", &neighbour);
+  int scanrow = fscanf(save, " %d", &row);
+  if (scanrow == EOF) {
+    exit(EXIT_FAILURE);
+  }
+  int scancol = fscanf(save, " %d", &col);
+  if (scancol == EOF) {
+    exit(EXIT_FAILURE);
+  }
+  int scanwrapping = fscanf(save, " %d", &wrapping);
+  if (scanwrapping == EOF) {
+    exit(EXIT_FAILURE);
+  }
+  int scanneighbour = fscanf(save, " %d", &neighbour);
+  if (scanneighbour == EOF) {
+    exit(EXIT_FAILURE);
+  }
   fgetc(save);
   if (row > 10 || col > 10) {
     fprintf(stderr, "rows or cols too big");
