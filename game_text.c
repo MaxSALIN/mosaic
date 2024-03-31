@@ -45,12 +45,15 @@ int main(int argc, char** argv) {
       if (choice == 'h')  // Help
       {
         printf(
-            "\nPress 'w <i> <j>' to set the square (i,j) white\nPress 'b <i> <j>' to set the square (i,j) "
+            "\nPress 'w <i> <j>' to set the square (i,j) white\nPress 'b <i> "
+            "<j>' to set the square (i,j) "
             "black\nPress "
             "'e <i> "
-            "<j>' to set the square (i,j) empty\nPress 'z' to undo your move\nPress 'y' to redo your moven\nPress "
+            "<j>' to set the square (i,j) empty\nPress 'z' to undo your "
+            "move\nPress 'y' to redo your moven\nPress "
             "'r' "
-            "to restart\nPress 'q' to quit\nPress 's filename.txt' to save your game in a filename.txt (filename can "
+            "to restart\nPress 'q' to quit\nPress 's filename.txt' to save "
+            "your game in a filename.txt (filename can "
             "be "
             "any one word name)\n");
 
@@ -92,10 +95,12 @@ int main(int argc, char** argv) {
         if (r3 == 2) {
           if (i < game_nb_rows(g) && i >= 0 && j < game_nb_cols(g) && j >= 0) {
             if (choice == 'w') {
-              game_play_move(g, i, j, WHITE);  // Play white color at the chosen square
+              game_play_move(g, i, j,
+                             WHITE);  // Play white color at the chosen square
             }
             if (choice == 'b') {
-              game_play_move(g, i, j, BLACK);  // Play black color at the chosen square
+              game_play_move(g, i, j,
+                             BLACK);  // Play black color at the chosen square
             }
             if (choice == 'e') {
               game_play_move(g, i, j, EMPTY);  // Empty the chosen square
