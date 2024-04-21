@@ -1,4 +1,4 @@
-#undo, #redo,#solve, #restart, #random{
+#undo, #redo,#solve, #restart, #start, #random{
     display: inline-block;
     background-color: #ffc494;
     border-radius: 10px;
@@ -7,7 +7,7 @@
     text-align: center;
     font-size: 20px;
     padding: 10px;
-    width: 150px;
+    width: 200px;
     cursor: pointer;
      
 

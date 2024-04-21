@@ -9,13 +9,18 @@ const ORTHO = 1;
 const FULL_EXCLUDE = 2;
 const ORTHO_EXCLUDE = 3;
 
-var g = Module._new_default();
+var g;
+
+var canvas = document.getElementById('mycanvas');
+var currentcolorcanvas = document.getElementById('currentcolor');
 
 var currentColor = WHITE;
 
 var cell_size=0;
 
-var victoryBool = false;
+var victory_bool = false;
+
+var game_init = false;
 
 var offsetx_count = 0;
 var offsety_count = 0;
@@ -58,15 +63,7 @@ function printGame(g) {
 
 function start() {
     console.log("call start routine");
-    g = Module._new_default();
-    drawCanvas(g);
-    Module._delete(g);
 }
-
-
-
-var canvas = document.getElementById('mycanvas');
-var currentcolorcanvas = document.getElementById('currentcolor');
 
 
 /* ******************** global variables ******************** */
@@ -114,14 +111,15 @@ for(var i=0; i<10; i++){
 
 /* ******************** register events ******************** */
 
-window.addEventListener('load', windowLoad);              // window load
+
 canvas.addEventListener('click', canvasLeftClick);      // left click event
-canvas.addEventListener('contextmenu', canvasRightClick);    // right click event 
+canvas.addEventListener('contextmenu', canvasRightClick);   // right click event  
 
 window.addEventListener("resize", resizeCanvas); // resize event
 
 
 // buttons event
+
 var solveButton = document.getElementById('solve');
 solveButton.addEventListener('click', solver);
 var restartButton = document.getElementById('restart');
@@ -134,7 +132,8 @@ redo.addEventListener('click', redoing);
 
 var randomButton = document.getElementById('random');
 randomButton.addEventListener('click', random);
-
+var startButton = document.getElementById('start');
+startButton.addEventListener('click', starting);
 
 
 
@@ -143,71 +142,82 @@ randomButton.addEventListener('click', random);
 
 //function to resize the playable canvas
 function resizeCanvas() {
+    if(game_init){
+        var newHeight = window.innerWidth;
+        var newWidth = window.innerHeight;
 
-    var newHeight = window.innerWidth;
-    var newWidth = window.innerHeight;
-
-    var min;
-    if (newHeight>=newWidth){
-        min=newWidth;
+        var min;
+        if (newHeight>=newWidth){
+            min=newWidth;
+        }
+        else{
+            min=newHeight;
+        }
+        canvas.width = min/2;
+        canvas.height = min/2;
+        drawCanvas(g);
     }
-    else{
-        min=newHeight;
-    }
-    canvas.width = min/2;
-    canvas.height = min/2;
-    drawCanvas(g);
 
 }
 
 function canvasLeftClick(event) {
     event.preventDefault(); // prevent default context menu to appear...
     // get relative cursor position in canvas
-    console.log("left click at position:", event.offsetX, event.offsetY);
-    // update position of mario image used by drawCanvas()
-    if(victoryBool==false){
-        if((((event.offsetY-offsety_count)/(cell_size))>=0) && (((event.offsetX-offsetx_count)/(cell_size))>=0)){
-            Module._play_move(g, (event.offsetY-offsety_count)/(cell_size), (event.offsetX-offsetx_count)/(cell_size), currentColor);
+    if(game_init){
+        console.log("left click at position:", event.offsetX, event.offsetY);
+        // update position of mario image used by drawCanvas()
+        if(!victory_bool){
+            if((((event.offsetY-offsety_count)/(cell_size))>=0) && (((event.offsetX-offsetx_count)/(cell_size))>=0)){
+                Module._play_move(g, (event.offsetY-offsety_count)/(cell_size), (event.offsetX-offsetx_count)/(cell_size), currentColor);
+            }
+            
         }
-        
     }
+
     drawCanvas(g);
 }
 function canvasRightClick(event) {
     event.preventDefault(); // prevent default context menu to appear...
-    currentColor=(currentColor+1)%3 //changes the current playable color
-    console.log(currentColor);
-    drawCanvas(g);
+    if(game_init){
+        currentColor=(currentColor+1)%3; //changes the current playable color
+        console.log(currentColor);
+        drawCanvas(g);
+    }
 }
 
-function windowLoad() {
-    console.log("window load");
-    drawCanvas(g);
-}
 
 function solver(event){
     event.preventDefault(); // prevent default context menu to appear...
-    Module._solve(g);
-    drawCanvas(g);
+    if(game_init){
+        Module._solve(g);
+        drawCanvas(g);
+    }
 }
 
 function restating(event){
     event.preventDefault(); // prevent default context menu to appear...
-    Module._restart(g);
-    victoryBool=false;
-    drawCanvas(g);
+    if(game_init){
+        Module._restart(g);
+        victory_bool=false;
+        drawCanvas(g);
+    }
 }
 
 function undoing(event){
     event.preventDefault(); // prevent default context menu to appear...
-    Module._undo(g);
-    drawCanvas(g);
+    if(game_init && !victory_bool){
+        Module._undo(g);
+        drawCanvas(g);
+    }
+    
 }
 
 function redoing(event){
     event.preventDefault(); // prevent default context menu to appear...
-    Module._redo(g);
-    drawCanvas(g);
+    if(game_init && !victory_bool){
+        Module._redo(g);
+        drawCanvas(g);
+    }
 }
 
 function random(event){
@@ -217,6 +227,14 @@ function random(event){
     var black_rate=Math.floor(Math.random() * 7)/10+0.2;
     var constraint_rate=Math.floor(Math.random() * 7)/10+0.2;
     g = Module._new_random(x, y, false, FULL, black_rate, constraint_rate);
+    game_init=true;
+    drawCanvas(g);
+}
+
+function starting(event){
+    event.preventDefault(); // prevent default context menu to appear...
+    g=Module._new_default();
+    game_init=true;
     drawCanvas(g);
 }
 
@@ -230,12 +248,13 @@ function drawCanvas(g) {
     // clear canvas
     ctx.clearRect(0, 0, width, height);
 
+    current.clearRect(0, 0, cuurentwidth, currentheight);
+
     var current = currentcolorcanvas.getContext('2d');
     var cuurentwidth = currentcolorcanvas.width;
     var currentheight = currentcolorcanvas.height;
-
-    // clear canvas
-    current.clearRect(0, 0, cuurentwidth, currentheight);
+    
+    //set up the current color
     if(currentColor==WHITE){
         current.drawImage(currentwhite, 0, 0, cuurentwidth, currentheight);
     }
@@ -249,7 +268,7 @@ function drawCanvas(g) {
    
 
     
-  
+  //calculate the offset and size of the cells
   var cell_size1 = width / Module._nb_cols(g);
   var cell_size2 = height /  Module._nb_rows(g);
   if (width >= cell_size2 *  Module._nb_cols(g)) {
@@ -263,7 +282,7 @@ function drawCanvas(g) {
   }
 
 
-
+  //set up the grid
   for(var j = 0; j<Module._nb_cols(g); j++){
         for(var i = 0; i<Module._nb_rows(g); i++){
             
@@ -301,7 +320,7 @@ function drawCanvas(g) {
         }
     
     if(Module._won(g)){
-        victoryBool=true;
+        victory_bool=true;
         ctx.drawImage(victory, 0, 0, width, height);
     }
     
