@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="game.css">
 </head>
 
 <body background="res/Background.png">
@@ -11,28 +12,26 @@
     <center>
     <h1>Mosaic-a13</h1>
     
-
-
-    <p>
-
-        <canvas id="mycanvas" width="500px" height="500px"></canvas>
-    </p>
+    <button id="random">Random</button>
 
     <p>
+        
         <button id="solve">Solve</button>
+        <canvas id="mycanvas" width="700px" height="700px"></canvas>
+        
         <button id="restart">Restart</button>
     </p>
-    
+    <canvas id="currentcolor" width="100px" height="100px"></canvas>
+    <p>
+        <button id="undo">undo</button> <button id="redo">redo</button>
         
+    </p>
     
-
-
-
     <pre id="result"></pre>
-    <button id="random">Random</button>
+    
     
     <hr>
-    <p><em>aurelien.esnard@u-bordeaux.fr, 2023.</em></p>
+    <p><em>Jeu Mosaic réalisé pour le Projet Techno, 2024.</em></p>
 </center>
     <!-- ********************* script ********************* -->
 

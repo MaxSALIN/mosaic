@@ -10,11 +10,15 @@ const FULL_EXCLUDE = 2;
 const ORTHO_EXCLUDE = 3;
 
 var g = Module._new_default();
+
 var currentColor = WHITE;
 
 var cell_size=0;
 
+var victoryBool = false;
 
+var offsetx_count = 0;
+var offsety_count = 0;
 
 
 let col2str = [" ", "□", "■"];
@@ -54,17 +58,16 @@ function printGame(g) {
 
 function start() {
     console.log("call start routine");
-    
-  
-    //var g = Module._new_random(6, 6, false, FULL, 0.6, 0.5);
-    Module._play_move(g, 0, 1, BLACK);
-    //
-    printGame(g);
+    g = Module._new_default();
     drawCanvas(g);
     Module._delete(g);
 }
 
+
+
 var canvas = document.getElementById('mycanvas');
+var currentcolorcanvas = document.getElementById('currentcolor');
+
 
 /* ******************** global variables ******************** */
 
@@ -76,6 +79,18 @@ var black = new Image();
 black.src = "res/Black.png";
 var white = new Image();
 white.src = "res/White.png";
+
+var currentempty = new Image();
+currentempty.src = "res/CurrentEmpty.png";
+var currentblack = new Image();
+currentblack.src = "res/CurrentBlack.png";
+var currentwhite = new Image();
+currentwhite.src = "res/CurrentWhite.png";
+var currenttexte = new Image();
+currenttexte.src = "res/CurrentTexte.png";
+
+var victory = new Image();
+victory.src = "res/VictoryScreenNew.png";
 
 var blues =[];
 var reds =[];
@@ -100,31 +115,67 @@ for(var i=0; i<10; i++){
 /* ******************** register events ******************** */
 
 window.addEventListener('load', windowLoad);              // window load
-canvas.addEventListener('click', canvasLeftClick);
-canvas.addEventListener('contextmenu', canvasRightClick);            // left click event
+canvas.addEventListener('click', canvasLeftClick);      // left click event
+canvas.addEventListener('contextmenu', canvasRightClick);    // right click event 
 
+window.addEventListener("resize", resizeCanvas); // resize event
+
+
+// buttons event
 var solveButton = document.getElementById('solve');
 solveButton.addEventListener('click', solver);
 var restartButton = document.getElementById('restart');
 restartButton.addEventListener('click', restating);
 
-/*var randomButton = document.getElementById('random');
-randomButton.addEventListener('click', random);*/
+var undo = document.getElementById('undo');
+undo.addEventListener('click', undoing);
+var redo = document.getElementById('redo');
+redo.addEventListener('click', redoing);
+
+var randomButton = document.getElementById('random');
+randomButton.addEventListener('click', random);
+
+
+
 
 
 /* ******************** event callback ******************** */
+
+//function to resize the playable canvas
+function resizeCanvas() {
+
+    var newHeight = window.innerWidth;
+    var newWidth = window.innerHeight;
+
+    var min;
+    if (newHeight>=newWidth){
+        min=newWidth;
+    }
+    else{
+        min=newHeight;
+    }
+    canvas.width = min/2;
+    canvas.height = min/2;
+    drawCanvas(g);
+
+}
 
 function canvasLeftClick(event) {
     event.preventDefault(); // prevent default context menu to appear...
     // get relative cursor position in canvas
     console.log("left click at position:", event.offsetX, event.offsetY);
     // update position of mario image used by drawCanvas()
-    Module._play_move(g, event.offsetX/cell_size, event.offsetY/cell_size, currentColor);
+    if(victoryBool==false){
+        if((((event.offsetY-offsety_count)/(cell_size))>=0) && (((event.offsetX-offsetx_count)/(cell_size))>=0)){
+            Module._play_move(g, (event.offsetY-offsety_count)/(cell_size), (event.offsetX-offsetx_count)/(cell_size), currentColor);
+        }
+        
+    }
     drawCanvas(g);
 }
 function canvasRightClick(event) {
     event.preventDefault(); // prevent default context menu to appear...
-    currentColor=(currentColor+1)%3
+    currentColor=(currentColor+1)%3 //changes the current playable color
     console.log(currentColor);
     drawCanvas(g);
 }
@@ -143,14 +194,31 @@ function solver(event){
 function restating(event){
     event.preventDefault(); // prevent default context menu to appear...
     Module._restart(g);
+    victoryBool=false;
     drawCanvas(g);
 }
 
-/*function random(event){
+function undoing(event){
     event.preventDefault(); // prevent default context menu to appear...
-    Module._new_random(g);
+    Module._undo(g);
     drawCanvas(g);
-}*/
+}
+
+function redoing(event){
+    event.preventDefault(); // prevent default context menu to appear...
+    Module._redo(g);
+    drawCanvas(g);
+}
+
+function random(event){
+    event.preventDefault(); // prevent default context menu to appear...
+    var x=Math.floor(Math.random() * 5)+3;
+    var y=Math.floor(Math.random() * 5)+3;
+    var black_rate=Math.floor(Math.random() * 7)/10+0.2;
+    var constraint_rate=Math.floor(Math.random() * 7)/10+0.2;
+    g = Module._new_random(x, y, false, FULL, black_rate, constraint_rate);
+    drawCanvas(g);
+}
 
 /* ******************** canvas drawing ******************** */
 
@@ -162,9 +230,26 @@ function drawCanvas(g) {
     // clear canvas
     ctx.clearRect(0, 0, width, height);
 
+    var current = currentcolorcanvas.getContext('2d');
+    var cuurentwidth = currentcolorcanvas.width;
+    var currentheight = currentcolorcanvas.height;
+
+    // clear canvas
+    current.clearRect(0, 0, cuurentwidth, currentheight);
+    if(currentColor==WHITE){
+        current.drawImage(currentwhite, 0, 0, cuurentwidth, currentheight);
+    }
+    if(currentColor==BLACK){
+        current.drawImage(currentblack, 0, 0, cuurentwidth, currentheight);
+    }
+    if(currentColor==EMPTY){
+        current.drawImage(currentempty, 0, 0, cuurentwidth, currentheight);
+    }
+    current.drawImage(currenttexte, 0, 0, cuurentwidth, currentheight);
+   
+
     
-var offsetx_count = 0;
-  var offsety_count = 0;
+  
   var cell_size1 = width / Module._nb_cols(g);
   var cell_size2 = height /  Module._nb_rows(g);
   if (width >= cell_size2 *  Module._nb_cols(g)) {
@@ -179,40 +264,45 @@ var offsetx_count = 0;
 
 
 
-    
-    for(var i = 0; i<=4; i++){
-        for(var j = 0; j<=4; j++){
-            if(Module._get_color(g, i, j)==EMPTY){
-                ctx.drawImage(empty, i*cell_size, j*cell_size, cell_size, cell_size);
-            }
-            else if(Module._get_color(g, i, j)==BLACK){
-                ctx.drawImage(black, i*cell_size, j*cell_size, cell_size, cell_size);
-            }
-            else if(Module._get_color(g, i, j)==WHITE){
-                ctx.drawImage(white, i*cell_size, j*cell_size, cell_size, cell_size);
-            }
-            else{
-                ctx.drawImage(unconstrain, i*cell_size, j*cell_size, cell_size, cell_size);
-            }
+  for(var j = 0; j<Module._nb_cols(g); j++){
+        for(var i = 0; i<Module._nb_rows(g); i++){
             
-            
-            
-            for(var val=0;val<=9; val++){
-                if(Module._get_constraint(g, i,j)==val){
-                    if(Module._get_status(g,i,j)==2){
-                        ctx.drawImage(greens[val], i*cell_size, j*cell_size, cell_size, cell_size);
-                    }
-                    else if(Module._get_status(g,i,j)==0){
-                        ctx.drawImage(reds[val], i*cell_size, j*cell_size, cell_size, cell_size);
-                    }
-                    else{
-                        ctx.drawImage(blues[val], i*cell_size, j*cell_size, cell_size, cell_size);
-                    }
-                    
+                if(Module._get_color(g, i, j)==EMPTY){
+                    ctx.drawImage(empty,j*cell_size+offsetx_count, i*cell_size+offsety_count, cell_size, cell_size);
                 }
+                else if(Module._get_color(g, i, j)==BLACK){
+                    ctx.drawImage(black,j*cell_size+offsetx_count, i*cell_size+offsety_count, cell_size, cell_size);
+                }
+                else if(Module._get_color(g, i, j)==WHITE){
+                    ctx.drawImage(white,j*cell_size+offsetx_count, i*cell_size+offsety_count, cell_size, cell_size);
+                }
+                else{
+                    ctx.drawImage(unconstrain,j*cell_size+offsetx_count, i*cell_size+offsety_count, cell_size, cell_size);
+                }
+                
+                
+                
+                for(var val=0;val<=9; val++){
+                    if(Module._get_constraint(g, i,j)==val){
+                        if(Module._get_status(g,i,j)==2){
+                            ctx.drawImage(greens[val],j*cell_size+offsetx_count, i*cell_size+offsety_count, cell_size, cell_size);
+                        }
+                        else if(Module._get_status(g,i,j)==0){
+                            ctx.drawImage(reds[val],j*cell_size+offsetx_count, i*cell_size+offsety_count, cell_size, cell_size);
+                        }
+                        else{
+                            ctx.drawImage(blues[val],j*cell_size+offsetx_count, i*cell_size+offsety_count, cell_size, cell_size);
+                        }
+                        
+                    }
+                }
+                
             }
-            
         }
+    
+    if(Module._won(g)){
+        victoryBool=true;
+        ctx.drawImage(victory, 0, 0, width, height);
     }
     
     
