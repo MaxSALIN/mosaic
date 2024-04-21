@@ -172,9 +172,10 @@ function canvasLeftClick(event) {
             }
             
         }
+        drawCanvas(g);
     }
 
-    drawCanvas(g);
+    
 }
 function canvasRightClick(event) {
     event.preventDefault(); // prevent default context menu to appear...
