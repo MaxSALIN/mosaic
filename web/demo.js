@@ -246,26 +246,28 @@ function drawCanvas(g) {
     var width = canvas.width;
     var height = canvas.height;
 
+    var current = currentcolorcanvas.getContext('2d');
+    var current_width = currentcolorcanvas.width;
+    var current_height = currentcolorcanvas.height;
+
     // clear canvas
     ctx.clearRect(0, 0, width, height);
 
-    current.clearRect(0, 0, cuurentwidth, currentheight);
+    current.clearRect(0, 0, current_width, current_height);
 
-    var current = currentcolorcanvas.getContext('2d');
-    var cuurentwidth = currentcolorcanvas.width;
-    var currentheight = currentcolorcanvas.height;
+    
     
     //set up the current color
     if(currentColor==WHITE){
-        current.drawImage(currentwhite, 0, 0, cuurentwidth, currentheight);
+        current.drawImage(currentwhite, 0, 0, current_width, current_height);
     }
     if(currentColor==BLACK){
-        current.drawImage(currentblack, 0, 0, cuurentwidth, currentheight);
+        current.drawImage(currentblack, 0, 0, current_width, current_height);
     }
     if(currentColor==EMPTY){
-        current.drawImage(currentempty, 0, 0, cuurentwidth, currentheight);
+        current.drawImage(currentempty, 0, 0, current_width, current_height);
     }
-    current.drawImage(currenttexte, 0, 0, cuurentwidth, currentheight);
+    current.drawImage(currenttexte, 0, 0, current_width, current_height);
    
 
     
